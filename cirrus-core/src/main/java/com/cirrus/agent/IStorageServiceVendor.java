@@ -18,18 +18,22 @@
 
 package com.cirrus.agent;
 
-import org.osgi.framework.BundleActivator;
+import java.io.Serializable;
 
-
-public interface ICirrusAgent extends BundleActivator {
-
-    /**
-     * Returns the unique agent identifier. Never <code>null</code>
-     */
-    ICirrusAgentIdentifier getIdentifier();
+public interface IStorageServiceVendor extends Serializable {
 
     /**
-     * Returns information about vendor of the storage service. Never <code>null</code>
+     * Returns the name of the service
      */
-    IStorageServiceVendor getStorageServiceVendor();
+    String getName();
+
+    /**
+     * Returns the version of the service
+     */
+    String getVersion();
+
+    /**
+     * Returns the service vendor
+     */
+    String getVendor();
 }

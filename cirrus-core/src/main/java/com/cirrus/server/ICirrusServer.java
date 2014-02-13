@@ -16,20 +16,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.cirrus.agent;
+package com.cirrus.server;
 
-import org.osgi.framework.BundleActivator;
+import com.cirrus.agent.ICirrusAgent;
+import com.cirrus.server.exception.StartCirrusServerException;
+import com.cirrus.server.exception.StopCirrusServerException;
 
-
-public interface ICirrusAgent extends BundleActivator {
-
-    /**
-     * Returns the unique agent identifier. Never <code>null</code>
-     */
-    ICirrusAgentIdentifier getIdentifier();
+public interface ICirrusServer {
 
     /**
-     * Returns information about vendor of the storage service. Never <code>null</code>
+     * start cirrus server
      */
-    IStorageServiceVendor getStorageServiceVendor();
+    void start() throws StartCirrusServerException;
+
+    /**
+     * stop cirrus server
+     */
+    void stop() throws StopCirrusServerException;
+
+    /**
+     * install new cirrus agent as a new bundle in the current osgi platform
+     */
+    void installCirrusAgent(final ICirrusAgent cirrusAgent);
+
+    /**
+     * uninstall existing cirrus agent from current osgi platform
+     */
+    void uninstallCirrusAgent(final ICirrusAgent cirrusAgent);
 }

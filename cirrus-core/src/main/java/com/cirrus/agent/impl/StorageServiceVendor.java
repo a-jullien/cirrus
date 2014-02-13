@@ -18,39 +18,47 @@
 
 package com.cirrus.agent.impl;
 
-import com.cirrus.agent.ICirrusAgentIdentifier;
+import com.cirrus.agent.IStorageServiceVendor;
 
-import java.util.UUID;
-
-public class UUIDBasedCirrusAgentIdentifier implements ICirrusAgentIdentifier {
+public class StorageServiceVendor implements IStorageServiceVendor {
 
     //==================================================================================================================
     // Constants
     //==================================================================================================================
-    private static final long serialVersionUID = 44549044499056945L;
+    private static final long serialVersionUID = -175173491510090334L;
 
     //==================================================================================================================
-    // Private
+    // Attributes
     //==================================================================================================================
-    private final UUID uuid;
+    private final String name;
+    private final String version;
+    private final String vendor;
 
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
-    public UUIDBasedCirrusAgentIdentifier() {
-        this.uuid = UUID.randomUUID();
-    }
-
-    public UUIDBasedCirrusAgentIdentifier(final String externalUUID) {
-        this.uuid = UUID.fromString(externalUUID);
+    public StorageServiceVendor(final String name, final String version, final String vendor) {
+        this.name = name;
+        this.version = version;
+        this.vendor = vendor;
     }
 
     //==================================================================================================================
     // Public
     //==================================================================================================================
     @Override
-    public String toExternal() {
-        return this.uuid.toString();
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public String getVersion() {
+        return this.version;
+    }
+
+    @Override
+    public String getVendor() {
+        return this.vendor;
     }
 
     //==================================================================================================================
@@ -61,14 +69,19 @@ public class UUIDBasedCirrusAgentIdentifier implements ICirrusAgentIdentifier {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        final UUIDBasedCirrusAgentIdentifier that = (UUIDBasedCirrusAgentIdentifier) o;
+        final StorageServiceVendor that = (StorageServiceVendor) o;
 
-        return !(uuid != null ? !uuid.equals(that.uuid) : that.uuid != null);
+        return !(name != null ? !name.equals(that.name) : that.name != null) &&
+                !(vendor != null ? !vendor.equals(that.vendor) : that.vendor != null) &&
+                !(version != null ? !version.equals(that.version) : that.version != null);
 
     }
 
     @Override
     public int hashCode() {
-        return uuid != null ? uuid.hashCode() : 0;
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (version != null ? version.hashCode() : 0);
+        result = 31 * result + (vendor != null ? vendor.hashCode() : 0);
+        return result;
     }
 }
