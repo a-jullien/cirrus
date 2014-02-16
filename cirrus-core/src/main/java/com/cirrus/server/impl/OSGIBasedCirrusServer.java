@@ -24,7 +24,6 @@ import com.cirrus.server.exception.StartCirrusServerException;
 import com.cirrus.server.exception.StopCirrusServerException;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
-import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 
@@ -32,15 +31,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.ServiceLoader;
-import java.util.concurrent.*;
 
 public class OSGIBasedCirrusServer implements ICirrusServer {
 
     //==================================================================================================================
     // Attributes
     //==================================================================================================================
-
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final Framework framework;
 
     //==================================================================================================================
@@ -57,35 +53,16 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
 
     @Override
     public void start() throws StartCirrusServerException {
-        final Future<StartResult> future = this.executorService.submit(new Callable<StartResult>() {
-            @Override
-            public StartResult call() throws Exception {
-                try {
-                    framework.init();
-                    framework.start();
-                    framework.waitForStop(10);
-
-                    return StartResult.success();
-
-                } catch (final BundleException e) {
-                    return StartResult.failure(e);
-                } catch (final InterruptedException e) {
-                    return StartResult.failure(e);
-                }
-            }
-        });
 
         try {
-            final StartResult startResult = future.get();
-            if (!startResult.isSuccess()) {
-                throw startResult.getReason();
-            }
+            framework.init();
+            framework.start();
+            framework.waitForStop(10);
+        } catch (final BundleException e) {
+            throw new StartCirrusServerException(e);
         } catch (final InterruptedException e) {
             throw new StartCirrusServerException(e);
-        } catch (final ExecutionException e) {
-            throw new StartCirrusServerException(e);
         }
-
 
         System.out.println("Cirrus server started...");
     }
@@ -97,9 +74,6 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
             this.framework.stop();
         } catch (final BundleException e) {
             throw new StopCirrusServerException(e);
-        } finally {
-            // finally stop main thread
-            this.executorService.shutdown();
         }
 
         System.out.println("Cirrus server stopped...");
