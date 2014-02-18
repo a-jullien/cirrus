@@ -16,31 +16,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.cirrus.server;
+package com.cirrus.server.exception;
 
-import com.cirrus.server.exception.CirrusAgentInstallationException;
-import com.cirrus.server.exception.StartCirrusServerException;
-import com.cirrus.server.exception.StopCirrusServerException;
+public class CirrusAgentInstallationException extends Exception {
 
-public interface ICirrusServer {
+    //==================================================================================================================
+    // Constants
+    //==================================================================================================================
+    private static final long serialVersionUID = -5832887182657163755L;
 
-    /**
-     * start cirrus server
-     */
-    void start() throws StartCirrusServerException;
-
-    /**
-     * stop cirrus server
-     */
-    void stop() throws StopCirrusServerException;
-
-    /**
-     * install new cirrus agent as a new bundle in the current osgi platform
-     */
-    void installCirrusAgent(final String cirrusAgentPath) throws CirrusAgentInstallationException;
-
-    /**
-     * uninstall existing cirrus agent from current osgi platform
-     */
-    void uninstallCirrusAgent(final String cirrusAgentPath);
+    //==================================================================================================================
+    // Constructors
+    //==================================================================================================================
+    public CirrusAgentInstallationException(final Throwable cause) {
+        super(cause);
+    }
 }

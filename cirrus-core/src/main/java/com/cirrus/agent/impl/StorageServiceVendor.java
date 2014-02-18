@@ -84,4 +84,9 @@ public class StorageServiceVendor implements IStorageServiceVendor {
         result = 31 * result + (vendor != null ? vendor.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "name='" + name + ", version='" + version + ", vendor='" + vendor;
+    }
 }

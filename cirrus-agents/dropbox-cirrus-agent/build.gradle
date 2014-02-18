@@ -1,8 +1,10 @@
 apply plugin: 'java'
+apply plugin: 'maven'
 apply plugin: 'osgi'
 
 sourceCompatibility = 1.7
-version = '1.0'
+version = '1.0-SNAPSHOT'
+group = "dropbox-cirrus-agent"
 
 repositories {
     mavenCentral()
@@ -16,11 +18,20 @@ dependencies {
 
 jar {
     manifest { // the manifest of the default jar is of type OsgiManifest
-        name = 'overwrittenSpecialOsgiName'
-        instruction 'Private-Package',
-                'com.cirrus.osgi'
-        instruction 'Bundle-Name', 'dropbox-cirrus-agent'
+        name = 'DropBox Cirrus Agent'
+        version = '1.0'
+        instruction 'Storage-Service-Name', 'dropbox-cirrus-agent'
+        instruction 'Storage-Service-Version', 'dropbox-cirrus-agent'
+        instruction 'Storage-Service-Vendor', 'dropbox-cirrus-agent'
+        instruction 'Storage-Service-Class', 'com.cirrus.osgi.service.dropbox.DropBoxStorageService'
         instruction 'Bundle-Vendor', 'Antoine Jullien'
         instruction 'Bundle-Description', 'DropBox Cirrus Agent'
+        instruction 'Private-Package', 'com.cirrus.osgi.service.dropbox.*'
+    }
+}
+
+task fooJar(type: Jar) {
+    manifest = osgiManifest {
+        instruction 'Bundle-Vendor', 'MyCompany'
     }
 }

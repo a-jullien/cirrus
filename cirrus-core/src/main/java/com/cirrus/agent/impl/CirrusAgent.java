@@ -23,7 +23,7 @@ import com.cirrus.agent.ICirrusAgentIdentifier;
 import com.cirrus.agent.IStorageServiceVendor;
 import org.osgi.framework.BundleContext;
 
-public abstract class AbstractCirrusAgent implements ICirrusAgent {
+public class CirrusAgent implements ICirrusAgent {
 
     //==================================================================================================================
     // Attributes
@@ -35,7 +35,7 @@ public abstract class AbstractCirrusAgent implements ICirrusAgent {
     // Constructors
     //==================================================================================================================
 
-    public AbstractCirrusAgent(final IStorageServiceVendor storageServiceVendor) {
+    public CirrusAgent(final IStorageServiceVendor storageServiceVendor) {
         super();
         this.storageServiceVendor = storageServiceVendor;
         this.identifier = new UUIDBasedCirrusAgentIdentifier();

@@ -1,8 +1,8 @@
 package com.cirrus.agent;
 
-import com.cirrus.agent.impl.AbstractCirrusAgent;
+import com.cirrus.agent.impl.CirrusAgent;
 
-public class FakeCirrusAgent extends AbstractCirrusAgent {
+public class FakeCirrusAgent extends CirrusAgent {
 
     //==================================================================================================================
     // Constructors
