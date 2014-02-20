@@ -18,10 +18,9 @@
 
 package com.cirrus.agent;
 
-import org.osgi.framework.BundleActivator;
+import com.cirrus.osgi.extension.ICirrusStorageService;
 
-
-public interface ICirrusAgent extends BundleActivator {
+public interface ICirrusAgent {
 
     /**
      * Returns the unique agent identifier. Never <code>null</code>
@@ -32,4 +31,11 @@ public interface ICirrusAgent extends BundleActivator {
      * Returns information about vendor of the storage service. Never <code>null</code>
      */
     IStorageServiceVendor getStorageServiceVendor();
+
+    /**
+     * Returns the storage service used for easily requesting data
+     *
+     * @return {@link ICirrusStorageService} service
+     */
+    ICirrusStorageService getStorageService();
 }

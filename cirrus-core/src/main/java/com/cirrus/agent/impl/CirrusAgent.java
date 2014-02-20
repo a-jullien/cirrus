@@ -21,7 +21,7 @@ package com.cirrus.agent.impl;
 import com.cirrus.agent.ICirrusAgent;
 import com.cirrus.agent.ICirrusAgentIdentifier;
 import com.cirrus.agent.IStorageServiceVendor;
-import org.osgi.framework.BundleContext;
+import com.cirrus.osgi.extension.ICirrusStorageService;
 
 public class CirrusAgent implements ICirrusAgent {
 
@@ -30,13 +30,15 @@ public class CirrusAgent implements ICirrusAgent {
     //==================================================================================================================
     private final ICirrusAgentIdentifier identifier;
     private final IStorageServiceVendor storageServiceVendor;
+    private final ICirrusStorageService storageService;
 
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
 
-    public CirrusAgent(final IStorageServiceVendor storageServiceVendor) {
+    public CirrusAgent(final ICirrusStorageService storageService, final IStorageServiceVendor storageServiceVendor) {
         super();
+        this.storageService = storageService;
         this.storageServiceVendor = storageServiceVendor;
         this.identifier = new UUIDBasedCirrusAgentIdentifier();
     }
@@ -54,17 +56,8 @@ public class CirrusAgent implements ICirrusAgent {
         return this.storageServiceVendor;
     }
 
-    //==================================================================================================================
-    // Override
-    //==================================================================================================================
-
     @Override
-    public void start(final BundleContext context) throws Exception {
-        System.out.println("Cirrus Agent " + this.storageServiceVendor + " <" + this.identifier + "> starting...");
-    }
-
-    @Override
-    public void stop(final BundleContext context) throws Exception {
-        System.out.println("Cirrus Agent " + this.storageServiceVendor + " <" + this.identifier + "> stopping...");
+    public ICirrusStorageService getStorageService() {
+        return this.storageService;
     }
 }

@@ -34,6 +34,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 
+import java.io.IOException;
 import java.util.*;
 
 public class OSGIBasedCirrusServer implements ICirrusServer {
@@ -47,7 +48,7 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
-    public OSGIBasedCirrusServer() {
+    public OSGIBasedCirrusServer() throws IOException {
         super();
         this.cirrusAgents = new ArrayList<ICirrusAgent>();
         this.framework = this.createFramework();
@@ -88,6 +89,7 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
 
     @Override
     public void installCirrusAgent(final String cirrusAgentPath) throws CirrusAgentInstallationException {
+        System.out.println("Try to install bundle '" + cirrusAgentPath + "'");
         final BundleContext bundleContext = this.framework.getBundleContext();
         try {
             final Bundle bundle = bundleContext.installBundle(cirrusAgentPath);
@@ -97,38 +99,15 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
             final String bundleVersion = dict.get(Constants.BUNDLE_VERSION);
             final String bundleVendor = dict.get(Constants.BUNDLE_VENDOR);
 
-            final String serviceName = dict.get(ICirrusStorageService.SERVICE_NAME_PROPERTY);
-            final String serviceVersion = dict.get(ICirrusStorageService.SERVICE_VERSION_PROPERTY);
-            final String serviceVendor = dict.get(ICirrusStorageService.SERVICE_VENDOR_PROPERTY);
-            final String serviceClazz = dict.get(ICirrusStorageService.SERVICE_CLASS_PROPERTY);
+            final ICirrusStorageService cirrusStorageService = this.resolveStorageServiceFrom(bundle);
+            final StorageServiceVendor storageServiceVendor = createStorageServiceVendor(bundle);
 
-            final StorageServiceVendor storageServiceVendor = new StorageServiceVendor(serviceName, serviceVersion, serviceVendor);
-            try {
+            final CirrusAgent cirrusAgent = new CirrusAgent(cirrusStorageService, storageServiceVendor);
+            this.cirrusAgents.add(cirrusAgent);
 
-
-                final long bundleId = bundle.getBundleId();
-
-                final CirrusAgent cirrusAgent = new CirrusAgent(storageServiceVendor);
-                this.cirrusAgents.add(cirrusAgent);
-
-                System.out.println("New bundle available: <" + bundleName + "> (version:" + bundleVersion + "|description:" + bundleDescription + "|vendor:" + bundleVendor);
-                bundle.start();
-                System.out.println("Bundle <" + bundleName + "> started");
-
-                final Class<ICirrusStorageService> loadClass = (Class<ICirrusStorageService>) bundle.loadClass(serviceClazz);
-                final ICirrusStorageService storageService = loadClass.newInstance();
-                final long availableDiskSpace = storageService.getAvailableDiskSpace();
-                System.out.println("available disk space = " + availableDiskSpace);
-
-
-            } catch (final ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (final InstantiationException e) {
-                e.printStackTrace();
-            } catch (final IllegalAccessException e) {
-                e.printStackTrace();
-            }
-
+            System.out.println("New bundle available: <" + bundleName + "> (version:" + bundleVersion + "|description:" + bundleDescription + "|vendor:" + bundleVendor);
+            bundle.start();
+            System.out.println("Bundle <" + bundleName + "> started");
 
 
         } catch (final BundleException e) {
@@ -138,14 +117,18 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
 
     @Override
     public void uninstallCirrusAgent(final String cirrusAgent) {
-        final BundleContext bundleContext = this.framework.getBundleContext();
         // TODO
+    }
+
+    @Override
+    public List<ICirrusAgent> listCirrusAgents() {
+        return this.cirrusAgents;
     }
 
     //==================================================================================================================
     // Main
     //==================================================================================================================
-    public static void main(final String[] args) throws StartCirrusServerException, CirrusAgentInstallationException {
+    public static void main(final String[] args) throws StartCirrusServerException, CirrusAgentInstallationException, IOException {
         final OSGIBasedCirrusServer osgiBasedCirrusServer = new OSGIBasedCirrusServer();
         osgiBasedCirrusServer.start();
 
@@ -158,10 +141,38 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     // Private
     //==================================================================================================================
 
-    private Framework createFramework() {
+    private Framework createFramework() throws IOException {
         final ServiceLoader<FrameworkFactory> factoryLoader = ServiceLoader.load(FrameworkFactory.class);
         final Iterator<FrameworkFactory> iterator = factoryLoader.iterator();
         final FrameworkFactory next = iterator.next();
         return next.newFramework(ConfigUtil.createFrameworkConfiguration());
+    }
+
+    private StorageServiceVendor createStorageServiceVendor(final Bundle bundle) {
+        final Dictionary<String, String> dictionary = bundle.getHeaders();
+
+        final String serviceName = dictionary.get(ICirrusStorageService.SERVICE_NAME_PROPERTY);
+        final String serviceVersion = dictionary.get(ICirrusStorageService.SERVICE_VERSION_PROPERTY);
+        final String serviceVendor = dictionary.get(ICirrusStorageService.SERVICE_VENDOR_PROPERTY);
+
+        return new StorageServiceVendor(serviceName, serviceVersion, serviceVendor);
+    }
+
+    private ICirrusStorageService resolveStorageServiceFrom(final Bundle bundle) throws CirrusAgentInstallationException {
+        final Dictionary<String, String> dictionary = bundle.getHeaders();
+        final String serviceClazz = dictionary.get(ICirrusStorageService.SERVICE_CLASS_PROPERTY);
+
+        final Class<?> loadClass;
+        try {
+            loadClass = bundle.loadClass(serviceClazz);
+            return (ICirrusStorageService) loadClass.newInstance();
+
+        } catch (final ClassNotFoundException e) {
+            throw new CirrusAgentInstallationException(e);
+        } catch (final InstantiationException e) {
+            throw new CirrusAgentInstallationException(e);
+        } catch (final IllegalAccessException e) {
+            throw new CirrusAgentInstallationException(e);
+        }
     }
 }
