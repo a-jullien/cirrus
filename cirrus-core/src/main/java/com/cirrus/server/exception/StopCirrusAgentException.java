@@ -16,43 +16,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.cirrus.agent;
+package com.cirrus.server.exception;
 
-import com.cirrus.osgi.extension.ICirrusStorageService;
-import com.cirrus.server.exception.StartCirrusAgentException;
-import com.cirrus.server.exception.StopCirrusAgentException;
+public class StopCirrusAgentException extends Exception {
 
-public interface ICirrusAgent {
+    //==================================================================================================================
+    // Constants
+    //==================================================================================================================
+    private static final long serialVersionUID = 3019209869710601173L;
 
-    /**
-     * Returns the unique agent identifier. Never <code>null</code>
-     */
-    ICirrusAgentIdentifier getIdentifier();
-
-    /**
-     * Returns information about the osgi bundle. Never <code>null</code>
-     */
-    ICirrusAgentBundleDescription getCirrusAgentBundleDescription();
-
-    /**
-     * Returns information about vendor of the storage service. Never <code>null</code>
-     */
-    IStorageServiceVendor getStorageServiceVendor();
-
-    /**
-     * Returns the storage service used for easily requesting data
-     *
-     * @return {@link ICirrusStorageService} service
-     */
-    ICirrusStorageService getStorageService();
-
-    /**
-     * start cirrus agent
-     */
-    void start() throws StartCirrusAgentException;
-
-    /**
-     * stop cirrus agent
-     */
-    void stop() throws StopCirrusAgentException;
+    //==================================================================================================================
+    // Constructors
+    //==================================================================================================================
+    public StopCirrusAgentException(final Throwable cause) {
+        super(cause);
+    }
 }

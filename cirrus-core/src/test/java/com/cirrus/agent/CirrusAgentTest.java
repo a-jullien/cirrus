@@ -2,7 +2,6 @@ package com.cirrus.agent;
 
 import com.cirrus.agent.impl.StorageServiceVendor;
 import com.cirrus.agent.impl.UUIDBasedCirrusAgentIdentifier;
-import com.cirrus.osgi.extension.ICirrusStorageService;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
@@ -53,35 +52,11 @@ public class CirrusAgentTest {
         assertEquals("DropBox & Co", storageServiceVendor.getVendor());
     }
 
-    @Test
-    public void shouldCreateSuccessfullyFakeCirrusAgent() {
-        final ICirrusAgent cirrusAgent = new FakeCirrusAgent(this.giveMeAStorageService(), this.giveMeAStorageServiceVendor());
-        assertNotNull(cirrusAgent);
-        assertNotNull(cirrusAgent.getIdentifier());
-        assertNotNull(cirrusAgent.getStorageServiceVendor());
-    }
-
     //==================================================================================================================
     // Private
     //==================================================================================================================
 
     private IStorageServiceVendor giveMeAStorageServiceVendor() {
         return new StorageServiceVendor("DropBox", "1.0", "DropBox & Co");
-    }
-
-    private ICirrusStorageService giveMeAStorageService() {
-        return new ICirrusStorageService() {
-            private String token;
-
-            @Override
-            public void setAuthenticationToken(final String token) {
-                this.token = token;
-            }
-
-            @Override
-            public String getAccountInformation() {
-                return "Fake Account";
-            }
-        };
     }
 }

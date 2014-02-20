@@ -19,23 +19,22 @@
 package com.cirrus.server.impl;
 
 import com.cirrus.agent.ICirrusAgent;
+import com.cirrus.agent.ICirrusAgentIdentifier;
 import com.cirrus.agent.impl.CirrusAgent;
-import com.cirrus.agent.impl.StorageServiceVendor;
-import com.cirrus.osgi.extension.ICirrusStorageService;
 import com.cirrus.server.ICirrusServer;
-import com.cirrus.server.exception.CirrusAgentInstallationException;
-import com.cirrus.server.exception.StartCirrusServerException;
-import com.cirrus.server.exception.StopCirrusServerException;
+import com.cirrus.server.exception.*;
 import com.cirrus.server.utils.ConfigUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
-import org.osgi.framework.Constants;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ServiceLoader;
 
 public class OSGIBasedCirrusServer implements ICirrusServer {
 
@@ -88,26 +87,18 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     }
 
     @Override
-    public void installCirrusAgent(final String cirrusAgentPath) throws CirrusAgentInstallationException {
+    public void installCirrusAgent(final String cirrusAgentPath) throws CirrusAgentInstallationException, StartCirrusAgentException {
         System.out.println("Try to install bundle '" + cirrusAgentPath + "'");
         final BundleContext bundleContext = this.framework.getBundleContext();
         try {
             final Bundle bundle = bundleContext.installBundle(cirrusAgentPath);
-            final Dictionary<String, String> dict = bundle.getHeaders();
-            final String bundleName = dict.get(Constants.BUNDLE_NAME);
-            final String bundleDescription = dict.get(Constants.BUNDLE_DESCRIPTION);
-            final String bundleVersion = dict.get(Constants.BUNDLE_VERSION);
-            final String bundleVendor = dict.get(Constants.BUNDLE_VENDOR);
 
-            final ICirrusStorageService cirrusStorageService = this.resolveStorageServiceFrom(bundle);
-            final StorageServiceVendor storageServiceVendor = createStorageServiceVendor(bundle);
-
-            final CirrusAgent cirrusAgent = new CirrusAgent(cirrusStorageService, storageServiceVendor);
+            final CirrusAgent cirrusAgent = new CirrusAgent(bundle);
             this.cirrusAgents.add(cirrusAgent);
 
-            System.out.println("New bundle available: <" + bundleName + "> (version:" + bundleVersion + "|description:" + bundleDescription + "|vendor:" + bundleVendor);
-            bundle.start();
-            System.out.println("Bundle <" + bundleName + "> started");
+            System.out.println("New bundle available: "  + cirrusAgent);
+            cirrusAgent.start();
+            System.out.println("Bundle " + cirrusAgent + " successfully started");
 
 
         } catch (final BundleException e) {
@@ -116,8 +107,13 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     }
 
     @Override
-    public void uninstallCirrusAgent(final String cirrusAgent) {
-        // TODO
+    public void uninstallCirrusAgent(final ICirrusAgentIdentifier cirrusAgentIdentifier) throws StopCirrusAgentException, CirrusAgentNotExistException {
+        final ICirrusAgent cirrusAgentById = this.getCirrusAgentById(cirrusAgentIdentifier);
+        if (cirrusAgentById == null) {
+            throw new CirrusAgentNotExistException(cirrusAgentIdentifier);
+        } else {
+            cirrusAgentById.stop();
+        }
     }
 
     @Override
@@ -128,7 +124,7 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     //==================================================================================================================
     // Main
     //==================================================================================================================
-    public static void main(final String[] args) throws StartCirrusServerException, CirrusAgentInstallationException, IOException {
+    public static void main(final String[] args) throws StartCirrusServerException, CirrusAgentInstallationException, IOException, StartCirrusAgentException {
         final OSGIBasedCirrusServer osgiBasedCirrusServer = new OSGIBasedCirrusServer();
         osgiBasedCirrusServer.start();
 
@@ -148,31 +144,13 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
         return next.newFramework(ConfigUtil.createFrameworkConfiguration());
     }
 
-    private StorageServiceVendor createStorageServiceVendor(final Bundle bundle) {
-        final Dictionary<String, String> dictionary = bundle.getHeaders();
-
-        final String serviceName = dictionary.get(ICirrusStorageService.SERVICE_NAME_PROPERTY);
-        final String serviceVersion = dictionary.get(ICirrusStorageService.SERVICE_VERSION_PROPERTY);
-        final String serviceVendor = dictionary.get(ICirrusStorageService.SERVICE_VENDOR_PROPERTY);
-
-        return new StorageServiceVendor(serviceName, serviceVersion, serviceVendor);
-    }
-
-    private ICirrusStorageService resolveStorageServiceFrom(final Bundle bundle) throws CirrusAgentInstallationException {
-        final Dictionary<String, String> dictionary = bundle.getHeaders();
-        final String serviceClazz = dictionary.get(ICirrusStorageService.SERVICE_CLASS_PROPERTY);
-
-        final Class<?> loadClass;
-        try {
-            loadClass = bundle.loadClass(serviceClazz);
-            return (ICirrusStorageService) loadClass.newInstance();
-
-        } catch (final ClassNotFoundException e) {
-            throw new CirrusAgentInstallationException(e);
-        } catch (final InstantiationException e) {
-            throw new CirrusAgentInstallationException(e);
-        } catch (final IllegalAccessException e) {
-            throw new CirrusAgentInstallationException(e);
+    private ICirrusAgent getCirrusAgentById(final ICirrusAgentIdentifier cirrusAgentId) {
+        for (final ICirrusAgent cirrusAgent : this.cirrusAgents) {
+            if (cirrusAgent.getIdentifier().equals(cirrusAgentId)) {
+                return cirrusAgent;
+            }
         }
+
+        return null;
     }
 }

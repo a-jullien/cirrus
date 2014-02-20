@@ -19,9 +19,8 @@
 package com.cirrus.server;
 
 import com.cirrus.agent.ICirrusAgent;
-import com.cirrus.server.exception.CirrusAgentInstallationException;
-import com.cirrus.server.exception.StartCirrusServerException;
-import com.cirrus.server.exception.StopCirrusServerException;
+import com.cirrus.agent.ICirrusAgentIdentifier;
+import com.cirrus.server.exception.*;
 
 import java.util.List;
 
@@ -40,12 +39,12 @@ public interface ICirrusServer {
     /**
      * install new cirrus agent as a new bundle in the current osgi platform
      */
-    void installCirrusAgent(final String cirrusAgentPath) throws CirrusAgentInstallationException;
+    void installCirrusAgent(final String cirrusAgentPath) throws CirrusAgentInstallationException, StartCirrusAgentException;
 
     /**
      * uninstall existing cirrus agent from current osgi platform
      */
-    void uninstallCirrusAgent(final String cirrusAgentPath);
+    void uninstallCirrusAgent(final ICirrusAgentIdentifier cirrusAgentIdentifier) throws StopCirrusAgentException, CirrusAgentNotExistException;
 
     /**
      * Returns all available installed cirrus agents
