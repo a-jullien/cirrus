@@ -26,6 +26,7 @@ import com.cirrus.osgi.extension.ICirrusStorageService;
 import com.cirrus.server.exception.CirrusAgentInstallationException;
 import com.cirrus.server.exception.StartCirrusAgentException;
 import com.cirrus.server.exception.StopCirrusAgentException;
+import com.cirrus.server.exception.UninstallCirrusAgentException;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
@@ -53,7 +54,7 @@ public class CirrusAgent implements ICirrusAgent {
         this.storageService = this.resolveStorageServiceFrom(bundle);
         this.storageServiceVendor = this.createStorageServiceVendor(bundle);
         this.bundleDescription = this.createBundleDescription(bundle);
-        this.identifier = new UUIDBasedCirrusAgentIdentifier();
+        this.identifier = new UUIDBasedCirrusAgentIdentifier(this.bundleDescription.getName());
     }
 
     //==================================================================================================================
@@ -95,6 +96,15 @@ public class CirrusAgent implements ICirrusAgent {
             this.bundle.stop();
         } catch (final BundleException e) {
             throw new StopCirrusAgentException(e);
+        }
+    }
+
+    @Override
+    public void uninstall() throws UninstallCirrusAgentException {
+        try {
+            this.bundle.uninstall();
+        } catch (final BundleException e) {
+            throw new UninstallCirrusAgentException(e);
         }
     }
 
@@ -149,11 +159,7 @@ public class CirrusAgent implements ICirrusAgent {
             loadClass = bundle.loadClass(serviceClazz);
             return (ICirrusStorageService) loadClass.newInstance();
 
-        } catch (final ClassNotFoundException e) {
-            throw new CirrusAgentInstallationException(e);
-        } catch (final InstantiationException e) {
-            throw new CirrusAgentInstallationException(e);
-        } catch (final IllegalAccessException e) {
+        } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             throw new CirrusAgentInstallationException(e);
         }
     }

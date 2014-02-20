@@ -49,7 +49,7 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     //==================================================================================================================
     public OSGIBasedCirrusServer() throws IOException {
         super();
-        this.cirrusAgents = new ArrayList<ICirrusAgent>();
+        this.cirrusAgents = new ArrayList<>();
         this.framework = this.createFramework();
     }
 
@@ -65,9 +65,7 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
             this.framework.start();
             this.framework.waitForStop(10);
 
-        } catch (final BundleException e) {
-            throw new StartCirrusServerException(e);
-        } catch (final InterruptedException e) {
+        } catch (final BundleException | InterruptedException e) {
             throw new StartCirrusServerException(e);
         }
 
@@ -87,19 +85,22 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     }
 
     @Override
-    public void installCirrusAgent(final String cirrusAgentPath) throws CirrusAgentInstallationException, StartCirrusAgentException {
+    public void installCirrusAgent(final String cirrusAgentPath) throws CirrusAgentInstallationException, StartCirrusAgentException, CirrusAgentAlreadyExistException {
         System.out.println("Try to install bundle '" + cirrusAgentPath + "'");
         final BundleContext bundleContext = this.framework.getBundleContext();
         try {
             final Bundle bundle = bundleContext.installBundle(cirrusAgentPath);
 
             final CirrusAgent cirrusAgent = new CirrusAgent(bundle);
-            this.cirrusAgents.add(cirrusAgent);
+            if (this.cirrusAgents.contains(cirrusAgent)) {
+                throw new CirrusAgentAlreadyExistException(cirrusAgent.getIdentifier());
+            } else {
+                this.cirrusAgents.add(cirrusAgent);
 
-            System.out.println("New bundle available: "  + cirrusAgent);
-            cirrusAgent.start();
-            System.out.println("Bundle " + cirrusAgent + " successfully started");
-
+                System.out.println("New bundle available: "  + cirrusAgent);
+                cirrusAgent.start();
+                System.out.println("Bundle " + cirrusAgent + " successfully started");
+            }
 
         } catch (final BundleException e) {
             throw new CirrusAgentInstallationException(e);
@@ -107,12 +108,15 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     }
 
     @Override
-    public void uninstallCirrusAgent(final ICirrusAgentIdentifier cirrusAgentIdentifier) throws StopCirrusAgentException, CirrusAgentNotExistException {
+    public void uninstallCirrusAgent(final ICirrusAgentIdentifier cirrusAgentIdentifier) throws StopCirrusAgentException, CirrusAgentNotExistException, UninstallCirrusAgentException {
         final ICirrusAgent cirrusAgentById = this.getCirrusAgentById(cirrusAgentIdentifier);
         if (cirrusAgentById == null) {
             throw new CirrusAgentNotExistException(cirrusAgentIdentifier);
         } else {
             cirrusAgentById.stop();
+            cirrusAgentById.uninstall();
+
+            this.cirrusAgents.remove(cirrusAgentById);
         }
     }
 
@@ -124,7 +128,7 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     //==================================================================================================================
     // Main
     //==================================================================================================================
-    public static void main(final String[] args) throws StartCirrusServerException, CirrusAgentInstallationException, IOException, StartCirrusAgentException {
+    public static void main(final String[] args) throws StartCirrusServerException, CirrusAgentInstallationException, IOException, StartCirrusAgentException, CirrusAgentAlreadyExistException {
         final OSGIBasedCirrusServer osgiBasedCirrusServer = new OSGIBasedCirrusServer();
         osgiBasedCirrusServer.start();
 

@@ -5,6 +5,7 @@ import com.cirrus.agent.impl.UUIDBasedCirrusAgentIdentifier;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotSame;
 import static junit.framework.TestCase.assertNotNull;
 
 public class CirrusAgentTest {
@@ -12,11 +13,6 @@ public class CirrusAgentTest {
     //==================================================================================================================
     // Public
     //==================================================================================================================
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldHaveErrorWhenCreateCirrusAgentIdentifierFromBadExternalRepresentation() {
-        new UUIDBasedCirrusAgentIdentifier("Bad Representation");
-    }
 
     @Test
     public void shouldCreateSuccessfullyDefaultCirrusAgentIdentifier() {
@@ -30,7 +26,7 @@ public class CirrusAgentTest {
                 new UUIDBasedCirrusAgentIdentifier("1f553132-43e0-4fd3-9e50-fcf1d0adc978");
         final String externalRepresentation = cirrusAgentIdentifier.toExternal();
         assertNotNull(externalRepresentation);
-        assertEquals("1f553132-43e0-4fd3-9e50-fcf1d0adc978", externalRepresentation);
+        assertNotSame("1f553132-43e0-4fd3-9e50-fcf1d0adc978", externalRepresentation);
     }
 
     @Test

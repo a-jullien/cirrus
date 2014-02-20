@@ -21,6 +21,7 @@ package com.cirrus.agent;
 import com.cirrus.osgi.extension.ICirrusStorageService;
 import com.cirrus.server.exception.StartCirrusAgentException;
 import com.cirrus.server.exception.StopCirrusAgentException;
+import com.cirrus.server.exception.UninstallCirrusAgentException;
 
 public interface ICirrusAgent {
 
@@ -55,4 +56,9 @@ public interface ICirrusAgent {
      * stop cirrus agent
      */
     void stop() throws StopCirrusAgentException;
+
+    /**
+     * uninstall cirrus agent
+     */
+    void uninstall() throws UninstallCirrusAgentException;
 }

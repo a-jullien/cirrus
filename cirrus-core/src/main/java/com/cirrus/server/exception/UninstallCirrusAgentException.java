@@ -16,47 +16,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.cirrus.server.impl;
+package com.cirrus.server.exception;
 
-import com.cirrus.server.exception.StartCirrusServerException;
-
-public class StartResult {
+public class UninstallCirrusAgentException extends Exception {
 
     //==================================================================================================================
-    // Attributes
+    // Constants
     //==================================================================================================================
-    private final boolean success;
-    private final StartCirrusServerException reason;
+    private static final long serialVersionUID = 8824159394455604635L;
 
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
-    private StartResult(final boolean success, final StartCirrusServerException reason) {
-        this.success = success;
-        this.reason = reason;
-    }
-
-    //==================================================================================================================
-    // Getters
-    //==================================================================================================================
-    public boolean isSuccess() {
-        return success;
-    }
-
-    public StartCirrusServerException getReason() {
-        return reason;
-    }
-
-    //==================================================================================================================
-    // Builders
-    //==================================================================================================================
-    static StartResult success() {
-        return new StartResult(true, null);
-    }
-
-    static StartResult failure(final Exception e) {
-        return new StartResult(true, new StartCirrusServerException(e));
+    public UninstallCirrusAgentException(final Throwable cause) {
+        super(cause);
     }
 }
-
-

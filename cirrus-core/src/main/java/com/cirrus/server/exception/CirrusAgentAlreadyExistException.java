@@ -16,38 +16,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.cirrus.server;
+package com.cirrus.server.exception;
 
-import com.cirrus.agent.ICirrusAgent;
 import com.cirrus.agent.ICirrusAgentIdentifier;
-import com.cirrus.server.exception.*;
 
-import java.util.List;
+public class CirrusAgentAlreadyExistException extends Exception {
 
-public interface ICirrusServer {
+    //==================================================================================================================
+    // Constants
+    //==================================================================================================================
+    private static final long serialVersionUID = -1392844796809290064L;
 
-    /**
-     * start cirrus server
-     */
-    void start() throws StartCirrusServerException;
-
-    /**
-     * stop cirrus server
-     */
-    void stop() throws StopCirrusServerException;
-
-    /**
-     * install new cirrus agent as a new bundle in the current osgi platform
-     */
-    void installCirrusAgent(final String cirrusAgentPath) throws CirrusAgentInstallationException, StartCirrusAgentException, CirrusAgentAlreadyExistException;
-
-    /**
-     * uninstall existing cirrus agent from current osgi platform
-     */
-    void uninstallCirrusAgent(final ICirrusAgentIdentifier cirrusAgentIdentifier) throws StopCirrusAgentException, CirrusAgentNotExistException, UninstallCirrusAgentException;
-
-    /**
-     * Returns all available installed cirrus agents
-     */
-    List<ICirrusAgent> listCirrusAgents();
+    //==================================================================================================================
+    // Constructors
+    //==================================================================================================================
+    public CirrusAgentAlreadyExistException(final ICirrusAgentIdentifier cirrusAgentIdentifier) {
+        super("The cirrus agent <" + cirrusAgentIdentifier.toExternal() + "> doesn't exist");
+    }
 }

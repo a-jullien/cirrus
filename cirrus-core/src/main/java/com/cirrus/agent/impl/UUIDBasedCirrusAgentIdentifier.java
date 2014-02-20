@@ -41,8 +41,8 @@ public class UUIDBasedCirrusAgentIdentifier implements ICirrusAgentIdentifier {
         this.uuid = UUID.randomUUID();
     }
 
-    public UUIDBasedCirrusAgentIdentifier(final String externalUUID) {
-        this.uuid = UUID.fromString(externalUUID);
+    public UUIDBasedCirrusAgentIdentifier(final String externalRepresentation) {
+        this.uuid = UUID.nameUUIDFromBytes(externalRepresentation.getBytes());
     }
 
     //==================================================================================================================
