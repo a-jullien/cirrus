@@ -18,6 +18,10 @@
 
 package com.cirrus.osgi.extension;
 
+import com.cirrus.data.ICirrusData;
+
+import java.util.List;
+
 @SuppressWarnings("UnusedDeclaration")
 public interface ICirrusStorageService {
 
@@ -37,7 +41,22 @@ public interface ICirrusStorageService {
     void setAuthenticationToken(final String token);
 
     /**
-     * Returns the account information of the storage service
+     * Returns the account name of the storage service
      */
-    String getAccountInformation() throws AuthenticationException, ServiceRequestFailedException;
+    String getAccountName() throws AuthenticationException, ServiceRequestFailedException;
+
+    /**
+     * Returns the total space
+     */
+    long getTotalSpace() throws ServiceRequestFailedException;
+
+    /**
+     * Returns the used space
+     */
+    long getUsedSpace() throws ServiceRequestFailedException;
+
+    /**
+     * list data from specified path
+     */
+    List<ICirrusData> list(final String path) throws ServiceRequestFailedException;
 }

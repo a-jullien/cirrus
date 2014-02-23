@@ -19,8 +19,11 @@
 package com.cirrus.server.impl;
 
 import com.cirrus.agent.ICirrusAgent;
+import com.cirrus.agent.ICirrusAgentBundleDescription;
 import com.cirrus.agent.ICirrusAgentIdentifier;
 import com.cirrus.agent.impl.CirrusAgent;
+import com.cirrus.data.ICirrusData;
+import com.cirrus.osgi.extension.ICirrusStorageService;
 import com.cirrus.server.ICirrusServer;
 import com.cirrus.server.exception.*;
 import com.cirrus.server.utils.ConfigUtil;
@@ -128,13 +131,42 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     //==================================================================================================================
     // Main
     //==================================================================================================================
-    public static void main(final String[] args) throws StartCirrusServerException, CirrusAgentInstallationException, IOException, StartCirrusAgentException, CirrusAgentAlreadyExistException {
+    public static void main(final String[] args) throws Exception {
         final OSGIBasedCirrusServer osgiBasedCirrusServer = new OSGIBasedCirrusServer();
         osgiBasedCirrusServer.start();
 
-        for (final String bundlePath : args) {
-            osgiBasedCirrusServer.installCirrusAgent(bundlePath);
+        final String trustedToken = args[0];
+
+        for (int i = 1; i < args.length; i++) {
+            final String arg = args[i];
+            osgiBasedCirrusServer.installCirrusAgent(arg);
+
         }
+
+        final StringBuilder stringBuilder = new StringBuilder();
+        final List<ICirrusAgent> existingAgents = osgiBasedCirrusServer.listCirrusAgents();
+        for (final ICirrusAgent existingAgent : existingAgents) {
+            final ICirrusAgentBundleDescription bundleDescription = existingAgent.getCirrusAgentBundleDescription();
+            final ICirrusStorageService storageService = existingAgent.getStorageService();
+            storageService.setAuthenticationToken(trustedToken);
+
+            final String accountName = storageService.getAccountName();
+            final long totalSpace = storageService.getTotalSpace();
+            final long usedSpace = storageService.getUsedSpace();
+
+            stringBuilder.append(bundleDescription).append('\n')
+            .append("Account name: ").append(accountName).append('\n')
+            .append("Total space: ").append(totalSpace).append('\n')
+            .append("Used space: ").append(usedSpace).append('\n');
+
+            final List<ICirrusData> rootData = storageService.list("/");
+            stringBuilder.append("Children data on /:");
+            for (final ICirrusData cirrusData : rootData) {
+                stringBuilder.append(cirrusData);
+            }
+        }
+
+        System.out.println(stringBuilder.toString());
     }
 
     //==================================================================================================================
