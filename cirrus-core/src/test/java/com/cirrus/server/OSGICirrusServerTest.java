@@ -26,13 +26,15 @@ public class OSGICirrusServerTest {
         final ICirrusServer cirrusServer = new OSGIBasedCirrusServer();
         cirrusServer.start();
 
+        assertTrue(cirrusServer.isStarted());
+
         final List<ICirrusAgent> cirrusAgents = cirrusServer.listCirrusAgents();
         assertNotNull(cirrusAgents);
         assertTrue(cirrusAgents.isEmpty());
     }
 
     @Test(expected = CirrusAgentInstallationException.class)
-    public void shouldErrorForInstallationOfBadBundle() throws CirrusAgentAlreadyExistException, CirrusAgentInstallationException, StartCirrusAgentException, IOException, StartCirrusServerException {
+    public void shouldErrorForInstallationOfBadBundle() throws Exception {
         final ICirrusServer cirrusServer = new OSGIBasedCirrusServer();
         cirrusServer.start();
 
@@ -42,7 +44,7 @@ public class OSGICirrusServerTest {
     }
 
     @Test(expected = CirrusAgentAlreadyExistException.class)
-    public void shouldErrorForInstallationOfExistingBundle() throws CirrusAgentInstallationException, StartCirrusAgentException, IOException, StartCirrusServerException, CirrusAgentAlreadyExistException {
+    public void shouldErrorForInstallationOfExistingBundle() throws Exception {
         final ICirrusServer cirrusServer = new OSGIBasedCirrusServer();
         cirrusServer.start();
 
@@ -54,7 +56,7 @@ public class OSGICirrusServerTest {
     }
 
     @Test
-    public void shouldInstallSuccessfullyANewBundle() throws IOException, StartCirrusServerException, CirrusAgentInstallationException, StartCirrusAgentException, CirrusAgentAlreadyExistException {
+    public void shouldInstallSuccessfullyANewBundle() throws Exception {
         final ICirrusServer cirrusServer = new OSGIBasedCirrusServer();
         cirrusServer.start();
 
@@ -87,7 +89,7 @@ public class OSGICirrusServerTest {
     }
 
     @Test(expected = CirrusAgentNotExistException.class)
-    public void shouldErrorWhenUninstallNonExistingBundle() throws IOException, StartCirrusServerException, StopCirrusAgentException, CirrusAgentNotExistException, UninstallCirrusAgentException {
+    public void shouldErrorWhenUninstallNonExistingBundle() throws Exception {
         final ICirrusServer cirrusServer = new OSGIBasedCirrusServer();
         cirrusServer.start();
 
@@ -95,7 +97,7 @@ public class OSGICirrusServerTest {
     }
 
     @Test
-    public void shouldSuccessWhenUninstallExistingBundle() throws IOException, StartCirrusServerException, StopCirrusAgentException, CirrusAgentNotExistException, CirrusAgentAlreadyExistException, CirrusAgentInstallationException, StartCirrusAgentException, UninstallCirrusAgentException {
+    public void shouldSuccessWhenUninstallExistingBundle() throws Exception {
         final ICirrusServer cirrusServer = new OSGIBasedCirrusServer();
         cirrusServer.start();
 
@@ -108,5 +110,32 @@ public class OSGICirrusServerTest {
 
         final List<ICirrusAgent> newList = cirrusServer.listCirrusAgents();
         assertTrue(newList.isEmpty());
+    }
+
+    @Test
+    public void shouldHaveCorrectStatusAfterStoppingServer() throws Exception {
+        final ICirrusServer cirrusServer = new OSGIBasedCirrusServer();
+        cirrusServer.start();
+
+        assertTrue(cirrusServer.isStarted());
+        cirrusServer.stop();
+        Thread.sleep(100);
+        assertFalse(cirrusServer.isStarted());
+    }
+
+    @Test(expected = ServerNotStartedException.class)
+    public void shouldHaveErrorWhenInstallBundleWithNotStartedServer() throws Exception {
+        final ICirrusServer cirrusServer = new OSGIBasedCirrusServer();
+
+        final URL bundleURL = this.getClass().getResource("/bundle.jar");
+
+        cirrusServer.installCirrusAgent(bundleURL.toExternalForm());
+    }
+
+    @Test(expected = ServerNotStartedException.class)
+    public void shouldHaveErrorWhenUninstallBundleWithNotStartedServer() throws Exception {
+        final ICirrusServer cirrusServer = new OSGIBasedCirrusServer();
+
+        cirrusServer.uninstallCirrusAgent(new UUIDBasedCirrusAgentIdentifier());
     }
 }

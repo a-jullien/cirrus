@@ -1,6 +1,7 @@
 package com.cirrus.data.impl;
 
 import com.cirrus.data.ICirrusData;
+import com.cirrus.utils.DataUtils;
 
 public abstract class AbstractCirrusData implements ICirrusData {
 
@@ -22,12 +23,7 @@ public abstract class AbstractCirrusData implements ICirrusData {
     protected AbstractCirrusData(final String localPath) {
         this.localPath = localPath;
         this.creationTime = System.currentTimeMillis();
-        final int lastIndex = this.localPath.lastIndexOf('/');
-        if (lastIndex == -1) {
-            throw new IllegalArgumentException("The specified path '" + localPath + "' doesn't contain '/'");
-        } else {
-            this.name = localPath.substring(lastIndex + 1, localPath.length());
-        }
+        this.name = DataUtils.extractFileNameFromPath(localPath);
     }
 
     //==================================================================================================================

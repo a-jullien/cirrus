@@ -88,7 +88,14 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     }
 
     @Override
-    public void installCirrusAgent(final String cirrusAgentPath) throws CirrusAgentInstallationException, StartCirrusAgentException, CirrusAgentAlreadyExistException {
+    public boolean isStarted() {
+        return this.framework.getState() == Framework.ACTIVE;
+    }
+
+    @Override
+    public void installCirrusAgent(final String cirrusAgentPath) throws CirrusAgentInstallationException, StartCirrusAgentException, CirrusAgentAlreadyExistException, ServerNotStartedException {
+        this.checkServerIdStarted();
+
         System.out.println("Try to install bundle '" + cirrusAgentPath + "'");
         final BundleContext bundleContext = this.framework.getBundleContext();
         try {
@@ -100,7 +107,7 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
             } else {
                 this.cirrusAgents.add(cirrusAgent);
 
-                System.out.println("New bundle available: "  + cirrusAgent);
+                System.out.println("New bundle available: " + cirrusAgent);
                 cirrusAgent.start();
                 System.out.println("Bundle " + cirrusAgent + " successfully started");
             }
@@ -111,7 +118,9 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     }
 
     @Override
-    public void uninstallCirrusAgent(final ICirrusAgentIdentifier cirrusAgentIdentifier) throws StopCirrusAgentException, CirrusAgentNotExistException, UninstallCirrusAgentException {
+    public void uninstallCirrusAgent(final ICirrusAgentIdentifier cirrusAgentIdentifier) throws StopCirrusAgentException, CirrusAgentNotExistException, UninstallCirrusAgentException, ServerNotStartedException {
+        this.checkServerIdStarted();
+
         final ICirrusAgent cirrusAgentById = this.getCirrusAgentById(cirrusAgentIdentifier);
         if (cirrusAgentById == null) {
             throw new CirrusAgentNotExistException(cirrusAgentIdentifier);
@@ -155,9 +164,9 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
             final long usedSpace = storageService.getUsedSpace();
 
             stringBuilder.append(bundleDescription).append('\n')
-            .append("Account name: ").append(accountName).append('\n')
-            .append("Total space: ").append(totalSpace).append('\n')
-            .append("Used space: ").append(usedSpace).append('\n');
+                    .append("Account name: ").append(accountName).append('\n')
+                    .append("Total space: ").append(totalSpace).append('\n')
+                    .append("Used space: ").append(usedSpace).append('\n');
 
             final List<ICirrusData> rootData = storageService.list("/");
             stringBuilder.append("Children data on /:");
@@ -167,6 +176,8 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
         }
 
         System.out.println(stringBuilder.toString());
+
+        osgiBasedCirrusServer.stop();
     }
 
     //==================================================================================================================
@@ -188,5 +199,11 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
         }
 
         return null;
+    }
+
+    private void checkServerIdStarted() throws ServerNotStartedException {
+        if (!this.isStarted()) {
+            throw new ServerNotStartedException();
+        }
     }
 }

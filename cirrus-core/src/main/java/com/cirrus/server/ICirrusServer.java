@@ -37,14 +37,19 @@ public interface ICirrusServer {
     void stop() throws StopCirrusServerException;
 
     /**
+     * Returns true is the server is up and running, false otherwise
+     */
+    boolean isStarted();
+
+    /**
      * install new cirrus agent as a new bundle in the current osgi platform
      */
-    void installCirrusAgent(final String cirrusAgentPath) throws CirrusAgentInstallationException, StartCirrusAgentException, CirrusAgentAlreadyExistException;
+    void installCirrusAgent(final String cirrusAgentPath) throws CirrusAgentInstallationException, StartCirrusAgentException, CirrusAgentAlreadyExistException, ServerNotStartedException;
 
     /**
      * uninstall existing cirrus agent from current osgi platform
      */
-    void uninstallCirrusAgent(final ICirrusAgentIdentifier cirrusAgentIdentifier) throws StopCirrusAgentException, CirrusAgentNotExistException, UninstallCirrusAgentException;
+    void uninstallCirrusAgent(final ICirrusAgentIdentifier cirrusAgentIdentifier) throws StopCirrusAgentException, CirrusAgentNotExistException, UninstallCirrusAgentException, ServerNotStartedException;
 
     /**
      * Returns all available installed cirrus agents

@@ -49,4 +49,9 @@ public class CirrusAgentBundleDescription implements ICirrusAgentBundleDescripti
     public String getVendor() {
         return this.vendor;
     }
+
+    @Override
+    public String toString() {
+        return "Bundle <" + this.name + ", " + this.version + ", " + this.description + ", " + this.vendor + ">";
+    }
 }

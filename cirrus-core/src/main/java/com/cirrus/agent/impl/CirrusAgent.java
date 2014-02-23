@@ -130,11 +130,7 @@ public class CirrusAgent implements ICirrusAgent {
 
     @Override
     public String toString() {
-        final String bundleName = this.bundleDescription.getName();
-        final String description = this.bundleDescription.getDescription();
-        final String version = this.bundleDescription.getVersion();
-        final String vendor = this.bundleDescription.getVendor();
-        return "<" + bundleName + "> (version:" + version + "|description:" + description + "|vendor:" + vendor + ")";
+        return this.bundleDescription.toString();
     }
 
     //==================================================================================================================

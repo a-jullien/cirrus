@@ -68,7 +68,9 @@ public class DropBoxStorageService implements ICirrusStorageService {
     public long getUsedSpace() throws ServiceRequestFailedException {
         try {
             final DbxAccountInfo dbxAccountInfo = this.client.getAccountInfo();
-            return dbxAccountInfo.quota.normal;
+            final long shared = dbxAccountInfo.quota.shared;
+            final long normal = dbxAccountInfo.quota.normal;
+            return shared + normal;
         } catch (final DbxException e) {
             throw new ServiceRequestFailedException(e);
         }
