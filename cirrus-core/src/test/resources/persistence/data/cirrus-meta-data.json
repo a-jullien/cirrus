@@ -1,0 +1,9 @@
+{
+    "name": "myFile.txt",
+    "mediaType": "text/plain",
+    "creationDate": 1393367761472,
+    "cirrusAgentType": "dropbox",
+    "cirrusAgentId": "1f553132-43e0-4fd3-9e50-fcf1d0adc978",
+    "localPath": "/",
+    "virtualPath": "/home/virtual/myProject"
+}
