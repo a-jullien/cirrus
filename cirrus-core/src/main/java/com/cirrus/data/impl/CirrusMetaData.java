@@ -17,12 +17,17 @@
 package com.cirrus.data.impl;
 
 import com.cirrus.data.ICirrusMetaData;
+import org.jongo.marshall.jackson.oid.Id;
+import org.jongo.marshall.jackson.oid.ObjectId;
 
 public class CirrusMetaData implements ICirrusMetaData {
 
     //==================================================================================================================
     // Attributes
     //==================================================================================================================
+    @Id
+    @ObjectId // auto
+    private String id;
     private String name;
     private String mediaType;
     private long creationDate;
@@ -41,6 +46,11 @@ public class CirrusMetaData implements ICirrusMetaData {
     //==================================================================================================================
     // Getters
     //==================================================================================================================
+    @Override
+    public String getId() {
+        return this.id;
+    }
+
     public String getName() {
         return name;
     }
@@ -98,5 +108,9 @@ public class CirrusMetaData implements ICirrusMetaData {
 
     public void setVirtualPath(final String virtualPath) {
         this.virtualPath = virtualPath;
+    }
+
+    public void setId(final String id) {
+        this.id = id;
     }
 }

@@ -1,6 +1,7 @@
 package com.cirrus.persistence;
 
-import com.cirrus.persistence.impl.MongoDBService;
+import com.cirrus.persistence.service.MongoDBService;
+import com.cirrus.persistence.service.IMongoDBService;
 import com.mongodb.DB;
 import org.junit.Test;
 
@@ -11,14 +12,9 @@ import static junit.framework.Assert.assertNotNull;
 
 public class TestMongoDBService {
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldErrorWhenBadURIIsProvided() throws UnknownHostException {
-        new MongoDBService("badAddress");
-    }
-
     @Test
     public void shouldSuccessWhenGoodURIIsProvided() throws UnknownHostException {
-        final IMongoDBService mongoDBService = new MongoDBService("mongodb://127.0.0.1:33333/cirrus");
+        final IMongoDBService mongoDBService = new MongoDBService("127.0.0.1", 33333);
         final DB database = mongoDBService.getDatabase();
         assertNotNull(database);
         assertEquals(IMongoDBService.CIRRUS_DATABASE_NAME, database.getName());

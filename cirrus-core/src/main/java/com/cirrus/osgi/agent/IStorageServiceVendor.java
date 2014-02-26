@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-package com.cirrus.data;
+package com.cirrus.osgi.agent;
 
-public interface ICirrusMetaData {
+import java.io.Serializable;
 
-    String getId();
+public interface IStorageServiceVendor extends Serializable {
 
+    /**
+     * Returns the name of the service
+     */
     String getName();
 
-    String getMediaType();
+    /**
+     * Returns the version of the service
+     */
+    String getVersion();
 
-    long getCreationDate();
-
-    String getCirrusAgentType();
-
-    String getCirrusAgentId();
-
-    String getLocalPath();
-
-    String getVirtualPath();
+    /**
+     * Returns the service vendor
+     */
+    String getVendor();
 }

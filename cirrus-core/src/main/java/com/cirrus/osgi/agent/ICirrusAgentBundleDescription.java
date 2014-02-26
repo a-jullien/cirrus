@@ -14,23 +14,29 @@
  * limitations under the License.
  */
 
-package com.cirrus.data;
+package com.cirrus.osgi.agent;
 
-public interface ICirrusMetaData {
+import java.io.Serializable;
 
-    String getId();
+public interface ICirrusAgentBundleDescription extends Serializable {
 
+    /**
+     * Returns the name of the bundle
+     */
     String getName();
 
-    String getMediaType();
+    /**
+     * Returns the textual description of the bundle
+     */
+    String getDescription();
 
-    long getCreationDate();
+    /**
+     * Returns the bundle version
+     */
+    String getVersion();
 
-    String getCirrusAgentType();
-
-    String getCirrusAgentId();
-
-    String getLocalPath();
-
-    String getVirtualPath();
+    /**
+     * Returns the bundle vendor
+     */
+    String getVendor();
 }

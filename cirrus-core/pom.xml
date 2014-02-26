@@ -20,11 +20,13 @@
             <version>2.11.4</version>
         </dependency>
 
+        <!-- mongo db pojo wrapper -->
         <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>1.9.13</version>
+            <groupId>org.jongo</groupId>
+            <artifactId>jongo</artifactId>
+            <version>1.0</version>
         </dependency>
+
 
         <dependency>
             <groupId>org.mockito</groupId>
@@ -55,7 +57,7 @@
                         <Import-Package>
                             !android.*,!dalvik.*,org.osgi.framework,org.osgi.service.packageadmin,org.osgi.service.url,org.osgi.service.startlevel,org.osgi.util.tracker,javax.*,*
                         </Import-Package>
-                        <Main-Class>com.cirrus.server.impl.OSGIBasedCirrusServer</Main-Class>
+                        <Main-Class>com.cirrus.osgi.server.impl.OSGIBasedCirrusServer</Main-Class>
                         <Export-Package>com.cirrus.osgi.extension.*</Export-Package>
                         <Embed-Dependency>*;artifactId=org.apache.felix.framework;inline=true</Embed-Dependency>
                         <Bundle-Vendor>Antoine Jullien</Bundle-Vendor>
