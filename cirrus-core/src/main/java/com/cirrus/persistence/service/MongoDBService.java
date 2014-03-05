@@ -25,7 +25,12 @@ public class MongoDBService implements IMongoDBService {
     // Constructors
     //==================================================================================================================
     public MongoDBService(final String host, final int port) throws UnknownHostException {
-        final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://" + host + ":" + port));
+        this("mongodb://" + host + ":" + port);
+    }
+
+    public MongoDBService(final String databaseURI) throws UnknownHostException {
+        final MongoClientURI mongoClientURI = new MongoClientURI(databaseURI);
+        final MongoClient mongoClient = new MongoClient(mongoClientURI);
         this.database = mongoClient.getDB(CIRRUS_DATABASE_NAME);
         final Jongo jongo = new Jongo(this.database);
 

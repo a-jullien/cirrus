@@ -16,42 +16,46 @@
 
 package com.cirrus.osgi.server.impl;
 
+import com.cirrus.data.ICirrusData;
 import com.cirrus.osgi.agent.ICirrusAgent;
 import com.cirrus.osgi.agent.ICirrusAgentBundleDescription;
-import com.cirrus.osgi.agent.ICirrusAgentIdentifier;
-import com.cirrus.osgi.agent.impl.CirrusAgent;
-import com.cirrus.data.ICirrusData;
 import com.cirrus.osgi.extension.ICirrusStorageService;
+import com.cirrus.osgi.server.ICirrusAgentAdministration;
 import com.cirrus.osgi.server.ICirrusServer;
-import com.cirrus.osgi.server.exception.*;
-import com.cirrus.osgi.server.utils.ConfigUtil;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
-import org.osgi.framework.launch.Framework;
-import org.osgi.framework.launch.FrameworkFactory;
+import com.cirrus.osgi.server.IUserDataService;
+import com.cirrus.osgi.server.configuration.CirrusProperties;
+import com.cirrus.osgi.server.exception.StartCirrusServerException;
+import com.cirrus.osgi.server.exception.StopCirrusServerException;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ServiceLoader;
 
 public class OSGIBasedCirrusServer implements ICirrusServer {
 
     //==================================================================================================================
+    // Constants
+    //==================================================================================================================
+    private static final String LOGGER_NAME = "<cirrus-server>";
+
+    //==================================================================================================================
     // Attributes
     //==================================================================================================================
-    private final Framework framework;
-    private final List<ICirrusAgent> cirrusAgents;
+    public static final Logger LOGGER = Logger.getLogger(LOGGER_NAME);
+
+    private final ICirrusAgentAdministration cirrusAgentAdministration;
+    private final IUserDataService userDataService;
+
 
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
     public OSGIBasedCirrusServer() throws IOException {
         super();
-        this.cirrusAgents = new ArrayList<>();
-        this.framework = this.createFramework();
+        // global properties of the cirrus server
+        final CirrusProperties cirrusProperties = new CirrusProperties();
+        this.cirrusAgentAdministration = new CirrusAgentAdministration();
+        this.userDataService = new UserDataService(cirrusProperties.getProperty(CirrusProperties.MONGODB_URL));
     }
 
     //==================================================================================================================
@@ -60,79 +64,24 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
 
     @Override
     public void start() throws StartCirrusServerException {
-
-        try {
-            this.framework.init();
-            this.framework.start();
-            this.framework.waitForStop(10);
-
-        } catch (final BundleException | InterruptedException e) {
-            throw new StartCirrusServerException(e);
-        }
-
-        System.out.println("Cirrus server started...");
+        // start cirrus agent manager
+        this.cirrusAgentAdministration.start();
     }
 
     @Override
     public void stop() throws StopCirrusServerException {
-        try {
-            // stop osgi framework
-            this.framework.stop();
-        } catch (final BundleException e) {
-            throw new StopCirrusServerException(e);
-        }
-
-        System.out.println("Cirrus server stopped...");
+        // stop cirrus agent manager
+        this.cirrusAgentAdministration.stop();
     }
 
     @Override
-    public boolean isStarted() {
-        return this.framework.getState() == Framework.ACTIVE;
+    public ICirrusAgentAdministration getCirrusAgentAdministration() {
+        return this.cirrusAgentAdministration;
     }
 
     @Override
-    public void installCirrusAgent(final String cirrusAgentPath) throws CirrusAgentInstallationException, StartCirrusAgentException, CirrusAgentAlreadyExistException, ServerNotStartedException {
-        this.checkServerIdStarted();
-
-        System.out.println("Try to install bundle '" + cirrusAgentPath + "'");
-        final BundleContext bundleContext = this.framework.getBundleContext();
-        try {
-            final Bundle bundle = bundleContext.installBundle(cirrusAgentPath);
-
-            final CirrusAgent cirrusAgent = new CirrusAgent(bundle);
-            if (this.cirrusAgents.contains(cirrusAgent)) {
-                throw new CirrusAgentAlreadyExistException(cirrusAgent.getIdentifier());
-            } else {
-                this.cirrusAgents.add(cirrusAgent);
-
-                System.out.println("New bundle available: " + cirrusAgent);
-                cirrusAgent.start();
-                System.out.println("Bundle " + cirrusAgent + " successfully started");
-            }
-
-        } catch (final BundleException e) {
-            throw new CirrusAgentInstallationException(e);
-        }
-    }
-
-    @Override
-    public void uninstallCirrusAgent(final ICirrusAgentIdentifier cirrusAgentIdentifier) throws StopCirrusAgentException, CirrusAgentNotExistException, UninstallCirrusAgentException, ServerNotStartedException {
-        this.checkServerIdStarted();
-
-        final ICirrusAgent cirrusAgentById = this.getCirrusAgentById(cirrusAgentIdentifier);
-        if (cirrusAgentById == null) {
-            throw new CirrusAgentNotExistException(cirrusAgentIdentifier);
-        } else {
-            cirrusAgentById.stop();
-            cirrusAgentById.uninstall();
-
-            this.cirrusAgents.remove(cirrusAgentById);
-        }
-    }
-
-    @Override
-    public List<ICirrusAgent> listCirrusAgents() {
-        return this.cirrusAgents;
+    public IUserDataService getUserDataService() {
+        return this.userDataService;
     }
 
     //==================================================================================================================
@@ -142,16 +91,17 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
         final OSGIBasedCirrusServer osgiBasedCirrusServer = new OSGIBasedCirrusServer();
         osgiBasedCirrusServer.start();
 
+        final ICirrusAgentAdministration agentAdministration = osgiBasedCirrusServer.getCirrusAgentAdministration();
+
         final String trustedToken = args[0];
 
         for (int i = 1; i < args.length; i++) {
             final String arg = args[i];
-            osgiBasedCirrusServer.installCirrusAgent(arg);
-
+            agentAdministration.installCirrusAgent(arg);
         }
 
         final StringBuilder stringBuilder = new StringBuilder();
-        final List<ICirrusAgent> existingAgents = osgiBasedCirrusServer.listCirrusAgents();
+        final List<ICirrusAgent> existingAgents = agentAdministration.listCirrusAgents();
         for (final ICirrusAgent existingAgent : existingAgents) {
             final ICirrusAgentBundleDescription bundleDescription = existingAgent.getCirrusAgentBundleDescription();
             final ICirrusStorageService storageService = existingAgent.getStorageService();
@@ -173,7 +123,7 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
             }
         }
 
-        System.out.println(stringBuilder.toString());
+        LOGGER.info(stringBuilder.toString());
 
         osgiBasedCirrusServer.stop();
     }
@@ -182,26 +132,4 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     // Private
     //==================================================================================================================
 
-    private Framework createFramework() throws IOException {
-        final ServiceLoader<FrameworkFactory> factoryLoader = ServiceLoader.load(FrameworkFactory.class);
-        final Iterator<FrameworkFactory> iterator = factoryLoader.iterator();
-        final FrameworkFactory next = iterator.next();
-        return next.newFramework(ConfigUtil.createFrameworkConfiguration());
-    }
-
-    private ICirrusAgent getCirrusAgentById(final ICirrusAgentIdentifier cirrusAgentId) {
-        for (final ICirrusAgent cirrusAgent : this.cirrusAgents) {
-            if (cirrusAgent.getIdentifier().equals(cirrusAgentId)) {
-                return cirrusAgent;
-            }
-        }
-
-        return null;
-    }
-
-    private void checkServerIdStarted() throws ServerNotStartedException {
-        if (!this.isStarted()) {
-            throw new ServerNotStartedException();
-        }
-    }
 }

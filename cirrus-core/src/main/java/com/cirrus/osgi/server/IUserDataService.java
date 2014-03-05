@@ -16,27 +16,12 @@
 
 package com.cirrus.osgi.server;
 
-import com.cirrus.osgi.server.exception.*;
+import com.cirrus.persistence.dao.IMetaDataDAO;
 
-public interface ICirrusServer {
-
-    /**
-     * start cirrus server
-     */
-    void start() throws StartCirrusServerException;
+public interface IUserDataService {
 
     /**
-     * stop cirrus server
+     * Returns the DAO in order to manage meta data
      */
-    void stop() throws StopCirrusServerException;
-
-    /**
-     * Returns the administration part of the server
-     */
-    ICirrusAgentAdministration getCirrusAgentAdministration();
-
-    /**
-     * Returns the service responsible for the user data management
-     */
-    IUserDataService getUserDataService();
+    IMetaDataDAO getMetaDataDAO();
 }
