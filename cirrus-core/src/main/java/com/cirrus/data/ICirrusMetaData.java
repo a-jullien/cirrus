@@ -18,19 +18,43 @@ package com.cirrus.data;
 
 public interface ICirrusMetaData {
 
+    /**
+     * Returns the unique identifier of the meta data
+     */
     String getId();
 
+    /**
+     * Returns the name of the meta data
+     */
     String getName();
 
+    /**
+     * Returns the media type of the meta data
+     */
     String getMediaType();
 
+    /**
+     * Returns the creation date
+     */
     long getCreationDate();
 
+    /**
+     * Returns the cirrus agent type
+     */
     String getCirrusAgentType();
 
+    /**
+     * Returns the cirrus agent identifier where the data is stored
+     */
     String getCirrusAgentId();
 
+    /**
+     * Returns the real local path of the data
+     */
     String getLocalPath();
 
+    /**
+     * Returns the virtual path of the data
+     */
     String getVirtualPath();
 }

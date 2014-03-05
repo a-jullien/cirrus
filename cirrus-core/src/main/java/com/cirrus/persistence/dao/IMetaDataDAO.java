@@ -18,6 +18,7 @@ package com.cirrus.persistence.dao;
 
 import com.cirrus.osgi.agent.ICirrusAgentIdentifier;
 import com.cirrus.data.ICirrusMetaData;
+import com.cirrus.persistence.exception.CirrusMetaDataNotFoundException;
 
 import java.util.List;
 
@@ -47,10 +48,10 @@ public interface IMetaDataDAO {
     /**
      * Update existing meta data
      */
-    void update(final ICirrusMetaData metaData);
+    void update(final ICirrusMetaData metaData) throws CirrusMetaDataNotFoundException;
 
     /**
      * Deletes existing meta data
      */
-    void delete(final ICirrusMetaData metaData);
+    void delete(final String metaDataId) throws CirrusMetaDataNotFoundException;
 }

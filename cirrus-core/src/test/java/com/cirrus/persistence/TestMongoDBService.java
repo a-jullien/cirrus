@@ -14,7 +14,7 @@ public class TestMongoDBService {
 
     @Test
     public void shouldSuccessWhenGoodURIIsProvided() throws UnknownHostException {
-        final IMongoDBService mongoDBService = new MongoDBService("127.0.0.1", 33333);
+        final IMongoDBService mongoDBService = new MongoDBService("127.0.0.1", 22222);
         final DB database = mongoDBService.getDatabase();
         assertNotNull(database);
         assertEquals(IMongoDBService.CIRRUS_DATABASE_NAME, database.getName());

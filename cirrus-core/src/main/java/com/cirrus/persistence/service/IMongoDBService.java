@@ -1,5 +1,6 @@
 package com.cirrus.persistence.service;
 
+import com.cirrus.persistence.dao.IMetaDataDAO;
 import com.mongodb.DB;
 import org.jongo.MongoCollection;
 
@@ -18,7 +19,7 @@ public interface IMongoDBService {
     DB getDatabase();
 
     /**
-     * Returns the collection reference associated to cirrus metadata
+     * Returns the dao for cirrus meta data
      */
-    MongoCollection getMetaDataCollection();
+    IMetaDataDAO getMetaDataDAO();
 }

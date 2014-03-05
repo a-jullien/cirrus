@@ -1,9 +1,11 @@
 package com.cirrus.persistence.service;
 
-import com.cirrus.persistence.service.IMongoDBService;
-import com.mongodb.*;
+import com.cirrus.persistence.dao.IMetaDataDAO;
+import com.cirrus.persistence.dao.MetaDataDAO;
+import com.mongodb.DB;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
 import org.jongo.Jongo;
-import org.jongo.MongoCollection;
 
 import java.net.UnknownHostException;
 
@@ -17,7 +19,7 @@ public class MongoDBService implements IMongoDBService {
     // Private
     //==================================================================================================================
     private final DB database;
-    private final MongoCollection cirrusMetaDataCollection;
+    private final IMetaDataDAO metaDataDAO;
 
     //==================================================================================================================
     // Constructors
@@ -25,9 +27,10 @@ public class MongoDBService implements IMongoDBService {
     public MongoDBService(final String host, final int port) throws UnknownHostException {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://" + host + ":" + port));
         this.database = mongoClient.getDB(CIRRUS_DATABASE_NAME);
+        final Jongo jongo = new Jongo(this.database);
 
-        final Jongo jongo = new Jongo(database);
-        this.cirrusMetaDataCollection = jongo.getCollection(CIRRUS_META_DATA_COLLECTION);
+        // dao creation
+        this.metaDataDAO = new MetaDataDAO(jongo.getCollection(CIRRUS_META_DATA_COLLECTION));
     }
 
     //==================================================================================================================
@@ -39,7 +42,7 @@ public class MongoDBService implements IMongoDBService {
     }
 
     @Override
-    public MongoCollection getMetaDataCollection() {
-        return this.cirrusMetaDataCollection;
+    public IMetaDataDAO getMetaDataDAO() {
+        return this.metaDataDAO;
     }
 }

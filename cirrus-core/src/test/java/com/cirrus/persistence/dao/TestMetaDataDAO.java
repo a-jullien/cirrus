@@ -16,10 +16,11 @@
 
 package com.cirrus.persistence.dao;
 
-import com.cirrus.osgi.agent.impl.NameBasedCirrusAgentIdentifier;
-import com.cirrus.osgi.agent.impl.UUIDBasedCirrusAgentIdentifier;
 import com.cirrus.data.ICirrusMetaData;
 import com.cirrus.data.impl.CirrusMetaData;
+import com.cirrus.osgi.agent.impl.NameBasedCirrusAgentIdentifier;
+import com.cirrus.osgi.agent.impl.UUIDBasedCirrusAgentIdentifier;
+import com.cirrus.persistence.exception.CirrusMetaDataNotFoundException;
 import com.cirrus.persistence.service.MongoDBService;
 import org.junit.After;
 import org.junit.Before;
@@ -41,7 +42,7 @@ public class TestMetaDataDAO {
     @Before
     public void setUp() throws UnknownHostException {
         final MongoDBService mongoDBService = new MongoDBService("localhost", 22222);
-        this.metaDataDAO = new MetaDataDAO(mongoDBService.getMetaDataCollection());
+        this.metaDataDAO = mongoDBService.getMetaDataDAO();
     }
 
     @After
@@ -70,17 +71,17 @@ public class TestMetaDataDAO {
     }
 
     @Test
-    public void shouldSuccessfullyRemoveExistingMetaData() {
+    public void shouldSuccessfullyRemoveExistingMetaData() throws CirrusMetaDataNotFoundException {
         final ICirrusMetaData cirrusMetaData = this.createCirrusMetaData();
         this.metaDataDAO.save(cirrusMetaData);
-        this.metaDataDAO.delete(cirrusMetaData);
+        this.metaDataDAO.delete(cirrusMetaData.getId());
 
         final String uuid = "1f553132-43e0-4fd3-9e50-fcf1d0adc978";
         assertEquals(0, this.metaDataDAO.listMetaDataByCirrusAgentId(new NameBasedCirrusAgentIdentifier(uuid)).size());
     }
 
     @Test
-    public void shouldSuccessfullyUpdateExistingMetaData() {
+    public void shouldSuccessfullyUpdateExistingMetaData() throws CirrusMetaDataNotFoundException {
         final CirrusMetaData cirrusMetaData = this.createCirrusMetaData();
         this.metaDataDAO.save(cirrusMetaData);
 
@@ -103,6 +104,18 @@ public class TestMetaDataDAO {
         assertNotNull(dataById);
 
         checkData(dataById);
+    }
+
+    @Test(expected = CirrusMetaDataNotFoundException.class)
+    public void shouldHaveErrorWhenTryToUpdateNonExistingMetaData() throws CirrusMetaDataNotFoundException {
+        final CirrusMetaData cirrusMetaData = this.createCirrusMetaData();
+        cirrusMetaData.setId("5317109c58126fa0941fb57f");
+        this.metaDataDAO.update(cirrusMetaData);
+    }
+
+    @Test(expected = CirrusMetaDataNotFoundException.class)
+    public void shouldHaveErrorWhenTryToRemoveNonExistingMetaData() throws CirrusMetaDataNotFoundException {
+        this.metaDataDAO.delete("5317109c58126fa0941fb57f");
     }
 
     //==================================================================================================================

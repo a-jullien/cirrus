@@ -16,9 +16,10 @@
 
 package com.cirrus.persistence.dao;
 
-import com.cirrus.osgi.agent.ICirrusAgentIdentifier;
 import com.cirrus.data.ICirrusMetaData;
 import com.cirrus.data.impl.CirrusMetaData;
+import com.cirrus.osgi.agent.ICirrusAgentIdentifier;
+import com.cirrus.persistence.exception.CirrusMetaDataNotFoundException;
 import org.bson.types.ObjectId;
 import org.jongo.MongoCollection;
 
@@ -37,6 +38,7 @@ public class MetaDataDAO implements IMetaDataDAO {
     //==================================================================================================================
     public MetaDataDAO(final MongoCollection metaDataCollection) {
         this.metaDataCollection = metaDataCollection;
+        this.metaDataCollection.ensureIndex("{name: 1}");
     }
 
     //==================================================================================================================
@@ -70,12 +72,30 @@ public class MetaDataDAO implements IMetaDataDAO {
     }
 
     @Override
-    public void update(final ICirrusMetaData metaData) {
-        this.metaDataCollection.update(new ObjectId(metaData.getId())).with(metaData);
+    public void update(final ICirrusMetaData metaData) throws CirrusMetaDataNotFoundException {
+        final String metaDataId = metaData.getId();
+        if (!this.exists(metaDataId)) {
+            throw new CirrusMetaDataNotFoundException(metaDataId);
+        }
+
+        this.metaDataCollection.update(new ObjectId(metaDataId)).with(metaData);
     }
 
     @Override
-    public void delete(final ICirrusMetaData metaData) {
-        this.metaDataCollection.remove(new ObjectId(metaData.getId()));
+    public void delete(final String metaDataId) throws CirrusMetaDataNotFoundException {
+        if (!this.exists(metaDataId)) {
+            throw new CirrusMetaDataNotFoundException(metaDataId);
+        } else {
+            this.metaDataCollection.remove(new ObjectId(metaDataId));
+        }
+    }
+
+    //==================================================================================================================
+    // Private
+    //==================================================================================================================
+
+    private boolean exists(final String metaDataId) {
+        final CirrusMetaData cirrusMetaData = this.metaDataCollection.findOne(new ObjectId(metaDataId)).as(CirrusMetaData.class);
+        return cirrusMetaData != null;
     }
 }
