@@ -20,6 +20,7 @@ import com.cirrus.data.ICirrusMetaData;
 import com.cirrus.data.impl.CirrusMetaData;
 import com.cirrus.osgi.agent.impl.NameBasedCirrusAgentIdentifier;
 import com.cirrus.osgi.agent.impl.UUIDBasedCirrusAgentIdentifier;
+import com.cirrus.persistence.dao.meta.IMetaDataDAO;
 import com.cirrus.persistence.exception.CirrusMetaDataNotFoundException;
 import com.cirrus.persistence.service.MongoDBService;
 import org.junit.After;

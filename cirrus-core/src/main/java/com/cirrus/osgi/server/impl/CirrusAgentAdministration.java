@@ -37,6 +37,11 @@ import java.util.ServiceLoader;
 public class CirrusAgentAdministration implements ICirrusAgentAdministration {
 
     //==================================================================================================================
+    // Constants
+    //==================================================================================================================
+    private static final String COMPONENT_NAME = "<cirrus-osgi-manager>";
+
+    //==================================================================================================================
     // Attributes
     //==================================================================================================================
     private final Framework framework;
@@ -66,7 +71,7 @@ public class CirrusAgentAdministration implements ICirrusAgentAdministration {
             throw new StartCirrusServerException(e);
         }
 
-        OSGIBasedCirrusServer.LOGGER.info("Cirrus server started...");
+        OSGIBasedCirrusServer.LOGGER.info(COMPONENT_NAME + " started.");
     }
 
     @Override
@@ -78,7 +83,7 @@ public class CirrusAgentAdministration implements ICirrusAgentAdministration {
             throw new StopCirrusServerException(e);
         }
 
-        OSGIBasedCirrusServer.LOGGER.info("Cirrus server stopped...");
+        OSGIBasedCirrusServer.LOGGER.info(COMPONENT_NAME + " stopped.");
     }
 
     @Override
@@ -90,7 +95,7 @@ public class CirrusAgentAdministration implements ICirrusAgentAdministration {
     public void installCirrusAgent(final String cirrusAgentPath) throws CirrusAgentInstallationException, StartCirrusAgentException, CirrusAgentAlreadyExistException, ServerNotStartedException {
         this.checkServerIdStarted();
 
-        OSGIBasedCirrusServer.LOGGER.info("Try to install bundle '" + cirrusAgentPath + "'");
+        OSGIBasedCirrusServer.LOGGER.info(COMPONENT_NAME + " Try to install bundle '" + cirrusAgentPath + "'");
         final BundleContext bundleContext = this.framework.getBundleContext();
         try {
             final Bundle bundle = bundleContext.installBundle(cirrusAgentPath);
@@ -101,9 +106,9 @@ public class CirrusAgentAdministration implements ICirrusAgentAdministration {
             } else {
                 this.cirrusAgents.add(cirrusAgent);
 
-                OSGIBasedCirrusServer.LOGGER.info("New bundle available: " + cirrusAgent);
+                OSGIBasedCirrusServer.LOGGER.info(COMPONENT_NAME + " New bundle available: " + cirrusAgent);
                 cirrusAgent.start();
-                OSGIBasedCirrusServer.LOGGER.info("Bundle " + cirrusAgent + " successfully started");
+                OSGIBasedCirrusServer.LOGGER.info(COMPONENT_NAME + " Bundle " + cirrusAgent + " successfully started");
             }
 
         } catch (final BundleException e) {

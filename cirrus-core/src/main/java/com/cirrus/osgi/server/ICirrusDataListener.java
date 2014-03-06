@@ -16,12 +16,12 @@
 
 package com.cirrus.osgi.server;
 
-import com.cirrus.persistence.dao.IMetaDataDAO;
+import com.cirrus.distribution.event.data.ICirrusDataEvent;
 
-public interface IUserDataService {
+public interface ICirrusDataListener {
 
     /**
-     * Returns the DAO in order to manage meta data
+     * Method called when a new cirrus data event is available
      */
-    IMetaDataDAO getMetaDataDAO();
+    void handleCirrusDataEvent(final ICirrusDataEvent cirrusDataEvent);
 }

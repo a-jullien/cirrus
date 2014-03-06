@@ -14,29 +14,22 @@
  * limitations under the License.
  */
 
-package com.cirrus.osgi.server;
+package com.cirrus.distribution.event.data;
 
-import com.cirrus.osgi.server.exception.*;
+import com.cirrus.distribution.event.IVisitableEvent;
+import com.cirrus.osgi.agent.ICirrusAgentIdentifier;
 
-public interface ICirrusServer {
-
-    /**
-     * start cirrus server
-     */
-    void start() throws StartCirrusServerException;
+public interface ICirrusDataEvent extends IVisitableEvent<ICirrusDataEventVisitor> {
 
     /**
-     * stop cirrus server
+     * Returns the event time stamp
+     * Never <code>null</code>
      */
-    void stop() throws StopCirrusServerException;
+    long getEventTimeStamp();
 
     /**
-     * Returns the administration part of the server
+     * Returns the identifier of the cirrus agent source of this event
+     * Never <code>null</code>
      */
-    ICirrusAgentAdministration getCirrusAgentAdministration();
-
-    /**
-     * Returns the service responsible for the meta data management
-     */
-    IMetaDataProvider getMetaDataProvider();
+    ICirrusAgentIdentifier getSourceCirrusAgentId();
 }

@@ -17,6 +17,7 @@
 package com.cirrus.osgi.extension;
 
 import com.cirrus.data.ICirrusData;
+import com.cirrus.osgi.server.ICirrusDataListener;
 
 import java.util.List;
 
@@ -54,7 +55,17 @@ public interface ICirrusStorageService {
     long getUsedSpace() throws ServiceRequestFailedException;
 
     /**
-     * list data from specified path
+     * List data from specified path
      */
     List<ICirrusData> list(final String path) throws ServiceRequestFailedException;
+
+    /**
+     * Register specified listener in order to notify changes in data management
+     */
+    void registerListener(final ICirrusDataListener listener);
+
+    /**
+     * Unregister specified listener
+     */
+    void unregisterListener(final ICirrusDataListener listener);
 }

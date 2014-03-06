@@ -14,36 +14,43 @@
  * limitations under the License.
  */
 
-package com.cirrus.osgi.server.impl;
+package com.cirrus.distribution.event.data.impl;
 
-import com.cirrus.osgi.server.IUserDataService;
-import com.cirrus.persistence.dao.IMetaDataDAO;
-import com.cirrus.persistence.service.MongoDBService;
+import com.cirrus.distribution.event.data.ICirrusDataEvent;
+import com.cirrus.osgi.agent.ICirrusAgentIdentifier;
 
-import java.net.UnknownHostException;
+public abstract class AbstractCirrusDataEvent implements ICirrusDataEvent{
 
-public class UserDataService implements IUserDataService {
+    //==================================================================================================================
+    // Constants
+    //==================================================================================================================
+    private static final long serialVersionUID = 7537082033994660851L;
 
     //==================================================================================================================
     // Attributes
     //==================================================================================================================
-    private final MongoDBService mongoDBService;
+    private final long eventTimeStamp;
+    private final ICirrusAgentIdentifier sourceAgentIdentifier;
 
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
-    public UserDataService(final String databaseURI) throws UnknownHostException {
+    protected AbstractCirrusDataEvent(final ICirrusAgentIdentifier sourceAgentIdentifier) {
         super();
-
-        // create mongo service
-        this.mongoDBService = new MongoDBService(databaseURI);
+        this.sourceAgentIdentifier = sourceAgentIdentifier;
+        this.eventTimeStamp = System.currentTimeMillis();
     }
 
     //==================================================================================================================
     // Public
     //==================================================================================================================
     @Override
-    public IMetaDataDAO getMetaDataDAO() {
-        return this.mongoDBService.getMetaDataDAO();
+    public long getEventTimeStamp() {
+        return this.eventTimeStamp;
+    }
+
+    @Override
+    public ICirrusAgentIdentifier getSourceCirrusAgentId() {
+        return this.sourceAgentIdentifier;
     }
 }

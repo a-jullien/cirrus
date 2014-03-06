@@ -22,10 +22,11 @@ import com.cirrus.osgi.agent.ICirrusAgentBundleDescription;
 import com.cirrus.osgi.extension.ICirrusStorageService;
 import com.cirrus.osgi.server.ICirrusAgentAdministration;
 import com.cirrus.osgi.server.ICirrusServer;
-import com.cirrus.osgi.server.IUserDataService;
+import com.cirrus.osgi.server.IMetaDataProvider;
 import com.cirrus.osgi.server.configuration.CirrusProperties;
 import com.cirrus.osgi.server.exception.StartCirrusServerException;
 import com.cirrus.osgi.server.exception.StopCirrusServerException;
+import com.cirrus.persistence.service.MongoDBService;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -44,7 +45,7 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     public static final Logger LOGGER = Logger.getLogger(LOGGER_NAME);
 
     private final ICirrusAgentAdministration cirrusAgentAdministration;
-    private final IUserDataService userDataService;
+    private final IMetaDataProvider metaDataProvider;
 
 
     //==================================================================================================================
@@ -55,7 +56,9 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
         // global properties of the cirrus server
         final CirrusProperties cirrusProperties = new CirrusProperties();
         this.cirrusAgentAdministration = new CirrusAgentAdministration();
-        this.userDataService = new UserDataService(cirrusProperties.getProperty(CirrusProperties.MONGODB_URL));
+        // create mongodb service
+        final MongoDBService mongoDBService = new MongoDBService(cirrusProperties.getProperty(CirrusProperties.MONGODB_URL));
+        this.metaDataProvider = new MetaDataProvider(mongoDBService.getMetaDataDAO());
     }
 
     //==================================================================================================================
@@ -80,8 +83,8 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     }
 
     @Override
-    public IUserDataService getUserDataService() {
-        return this.userDataService;
+    public IMetaDataProvider getMetaDataProvider() {
+        return this.metaDataProvider;
     }
 
     //==================================================================================================================

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.cirrus.persistence.dao;
+package com.cirrus.persistence.dao.meta;
 
 import com.cirrus.osgi.agent.ICirrusAgentIdentifier;
 import com.cirrus.data.ICirrusMetaData;

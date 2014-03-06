@@ -14,29 +14,14 @@
  * limitations under the License.
  */
 
-package com.cirrus.osgi.server;
+package com.cirrus.distribution.event.data;
 
-import com.cirrus.osgi.server.exception.*;
+import com.cirrus.distribution.event.data.impl.ICirrusDataCreatedEvent;
 
-public interface ICirrusServer {
-
-    /**
-     * start cirrus server
-     */
-    void start() throws StartCirrusServerException;
+public interface ICirrusDataEventVisitor {
 
     /**
-     * stop cirrus server
+     * Visits an event when a new data has been created
      */
-    void stop() throws StopCirrusServerException;
-
-    /**
-     * Returns the administration part of the server
-     */
-    ICirrusAgentAdministration getCirrusAgentAdministration();
-
-    /**
-     * Returns the service responsible for the meta data management
-     */
-    IMetaDataProvider getMetaDataProvider();
+    void visit(ICirrusDataCreatedEvent createdEvent);
 }

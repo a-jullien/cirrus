@@ -1,8 +1,7 @@
 package com.cirrus.persistence.service;
 
-import com.cirrus.persistence.dao.IMetaDataDAO;
+import com.cirrus.persistence.dao.meta.IMetaDataDAO;
 import com.mongodb.DB;
-import org.jongo.MongoCollection;
 
 public interface IMongoDBService {
 

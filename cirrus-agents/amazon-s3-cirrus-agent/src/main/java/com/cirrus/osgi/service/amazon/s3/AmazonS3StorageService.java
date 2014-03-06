@@ -21,14 +21,14 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.Owner;
 import com.cirrus.data.ICirrusData;
+import com.cirrus.osgi.extension.AbstractStorageService;
 import com.cirrus.osgi.extension.AuthenticationException;
-import com.cirrus.osgi.extension.ICirrusStorageService;
 import com.cirrus.osgi.extension.ServiceRequestFailedException;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AmazonS3StorageService implements ICirrusStorageService {
+public class AmazonS3StorageService extends AbstractStorageService {
 
     //==================================================================================================================
     // Private

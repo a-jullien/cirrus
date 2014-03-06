@@ -19,8 +19,8 @@ package com.cirrus.osgi.service.dropbox;
 import com.cirrus.data.ICirrusData;
 import com.cirrus.data.impl.CirrusFileData;
 import com.cirrus.data.impl.CirrusFolderData;
+import com.cirrus.osgi.extension.AbstractStorageService;
 import com.cirrus.osgi.extension.AuthenticationException;
-import com.cirrus.osgi.extension.ICirrusStorageService;
 import com.cirrus.osgi.extension.ServiceRequestFailedException;
 import com.dropbox.core.*;
 
@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class DropBoxStorageService implements ICirrusStorageService {
+public class DropBoxStorageService extends AbstractStorageService {
 
     //==================================================================================================================
     // Attributes

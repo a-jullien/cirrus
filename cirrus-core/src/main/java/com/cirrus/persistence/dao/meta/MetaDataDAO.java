@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.cirrus.persistence.dao;
+package com.cirrus.persistence.dao.meta;
 
 import com.cirrus.data.ICirrusMetaData;
 import com.cirrus.data.impl.CirrusMetaData;
@@ -95,7 +95,7 @@ public class MetaDataDAO implements IMetaDataDAO {
     //==================================================================================================================
 
     private boolean exists(final String metaDataId) {
-        final CirrusMetaData cirrusMetaData = this.metaDataCollection.findOne(new ObjectId(metaDataId)).as(CirrusMetaData.class);
+        final ICirrusMetaData cirrusMetaData = this.getMetaDataById(metaDataId);
         return cirrusMetaData != null;
     }
 }

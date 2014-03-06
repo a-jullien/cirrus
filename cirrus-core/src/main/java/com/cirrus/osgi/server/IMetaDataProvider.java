@@ -16,27 +16,5 @@
 
 package com.cirrus.osgi.server;
 
-import com.cirrus.osgi.server.exception.*;
-
-public interface ICirrusServer {
-
-    /**
-     * start cirrus server
-     */
-    void start() throws StartCirrusServerException;
-
-    /**
-     * stop cirrus server
-     */
-    void stop() throws StopCirrusServerException;
-
-    /**
-     * Returns the administration part of the server
-     */
-    ICirrusAgentAdministration getCirrusAgentAdministration();
-
-    /**
-     * Returns the service responsible for the meta data management
-     */
-    IMetaDataProvider getMetaDataProvider();
+public interface IMetaDataProvider {
 }

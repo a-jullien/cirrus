@@ -14,29 +14,14 @@
  * limitations under the License.
  */
 
-package com.cirrus.osgi.server;
+package com.cirrus.distribution.event;
 
-import com.cirrus.osgi.server.exception.*;
+import java.io.Serializable;
 
-public interface ICirrusServer {
-
-    /**
-     * start cirrus server
-     */
-    void start() throws StartCirrusServerException;
+public interface IVisitableEvent<T> extends Serializable {
 
     /**
-     * stop cirrus server
+     * accept a visitor in order to introspect the object
      */
-    void stop() throws StopCirrusServerException;
-
-    /**
-     * Returns the administration part of the server
-     */
-    ICirrusAgentAdministration getCirrusAgentAdministration();
-
-    /**
-     * Returns the service responsible for the meta data management
-     */
-    IMetaDataProvider getMetaDataProvider();
+    void accept(T visitor);
 }
