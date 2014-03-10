@@ -17,11 +17,18 @@
 package com.cirrus.distribution.event.data;
 
 import com.cirrus.distribution.event.data.impl.ICirrusDataCreatedEvent;
+import com.cirrus.distribution.event.data.impl.ICirrusDataRemovedEvent;
+import com.cirrus.osgi.server.exception.IllegalOperationException;
 
 public interface ICirrusDataEventVisitor {
 
     /**
      * Visits an event when a new data has been created
      */
-    void visit(ICirrusDataCreatedEvent createdEvent);
+    void visit(ICirrusDataCreatedEvent createdEvent) throws IllegalOperationException;
+
+    /**
+     * Visits an event when an existing data has been removed
+     */
+    void visit(ICirrusDataRemovedEvent removedEvent) throws IllegalOperationException;
 }

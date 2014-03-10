@@ -17,11 +17,12 @@
 package com.cirrus.osgi.server;
 
 import com.cirrus.distribution.event.data.ICirrusDataEvent;
+import com.cirrus.osgi.server.exception.IllegalOperationException;
 
 public interface ICirrusDataListener {
 
     /**
      * Method called when a new cirrus data event is available
      */
-    void handleCirrusDataEvent(final ICirrusDataEvent cirrusDataEvent);
+    void handleCirrusDataEvent(final ICirrusDataEvent cirrusDataEvent) throws IllegalOperationException;
 }

@@ -22,10 +22,13 @@ import com.cirrus.data.impl.CirrusMetaData;
 import com.cirrus.distribution.event.data.ICirrusDataEvent;
 import com.cirrus.distribution.event.data.ICirrusDataEventVisitor;
 import com.cirrus.distribution.event.data.impl.ICirrusDataCreatedEvent;
+import com.cirrus.distribution.event.data.impl.ICirrusDataRemovedEvent;
 import com.cirrus.osgi.agent.ICirrusAgentIdentifier;
 import com.cirrus.osgi.server.ICirrusDataListener;
 import com.cirrus.osgi.server.IMetaDataProvider;
+import com.cirrus.osgi.server.exception.IllegalOperationException;
 import com.cirrus.persistence.dao.meta.IMetaDataDAO;
+import com.cirrus.persistence.exception.CirrusMetaDataNotFoundException;
 
 import java.net.UnknownHostException;
 
@@ -49,18 +52,16 @@ public class MetaDataProvider implements IMetaDataProvider, ICirrusDataListener 
     //==================================================================================================================
 
     @Override
-    public void handleCirrusDataEvent(final ICirrusDataEvent cirrusDataEvent) {
-        final long eventTimeStamp = cirrusDataEvent.getEventTimeStamp();
-        final ICirrusAgentIdentifier sourceCirrusAgentId = cirrusDataEvent.getSourceCirrusAgentId();
+    public void handleCirrusDataEvent(final ICirrusDataEvent cirrusDataEvent) throws IllegalOperationException {
         cirrusDataEvent.accept(new ICirrusDataEventVisitor() {
             @Override
             public void visit(final ICirrusDataCreatedEvent createdEvent) {
-                final String virtualPath = createdEvent.getVirtualPath();
-                final ICirrusData createdCirrusData = createdEvent.getCirrusData();
-                // create meta data from created data
-                final ICirrusMetaData metaData = createMetaDataFrom(eventTimeStamp, sourceCirrusAgentId, virtualPath, createdCirrusData);
-                // save meta information
-                metaDataDAO.save(metaData);
+                performCirrusDataCreatedEvent(createdEvent);
+            }
+
+            @Override
+            public void visit(final ICirrusDataRemovedEvent removedEvent) throws IllegalOperationException {
+                performCirrusDataRemovedEvent(removedEvent);
             }
         });
     }
@@ -68,6 +69,39 @@ public class MetaDataProvider implements IMetaDataProvider, ICirrusDataListener 
     //==================================================================================================================
     // Private
     //==================================================================================================================
+    private void performCirrusDataRemovedEvent(final ICirrusDataRemovedEvent removedEvent) throws IllegalOperationException {
+        final ICirrusAgentIdentifier sourceCirrusAgentId = removedEvent.getSourceCirrusAgentId();
+        final String virtualPath = removedEvent.getVirtualPath();
+        final ICirrusData cirrusData = removedEvent.getCirrusData();
+        final String name = cirrusData.getName();
+        final String realPath = cirrusData.getPath();
+
+        final ICirrusMetaData metaData = this.metaDataDAO.findMetaData(sourceCirrusAgentId, name, realPath, virtualPath);
+        if (metaData == null) {
+            final String criteria = "cirrusAgentId:" + sourceCirrusAgentId + '\n' +
+                    "name:" + name + '\n' + "localPath:" + realPath + '\n' + "virtualPath:" + virtualPath;
+            throw new IllegalOperationException("Could not retrieve meta data for criteria <" + criteria + ">");
+        } else {
+            try {
+                this.metaDataDAO.delete(metaData.getId());
+            } catch (final CirrusMetaDataNotFoundException e) {
+                throw new IllegalOperationException(e);
+            }
+        }
+    }
+
+    private void performCirrusDataCreatedEvent(final ICirrusDataCreatedEvent createdEvent) {
+        final long eventTimeStamp = createdEvent.getEventTimeStamp();
+        final ICirrusAgentIdentifier sourceCirrusAgentId = createdEvent.getSourceCirrusAgentId();
+        final String virtualPath = createdEvent.getVirtualPath();
+        final ICirrusData createdCirrusData = createdEvent.getCirrusData();
+        // create meta data from created data
+        final ICirrusMetaData metaData = createMetaDataFrom(eventTimeStamp, sourceCirrusAgentId, virtualPath, createdCirrusData);
+        // save meta information
+        this.metaDataDAO.save(metaData);
+    }
+
+
     private static ICirrusMetaData createMetaDataFrom(final long creationTime, final ICirrusAgentIdentifier sourceId, final String virtualPath, final ICirrusData cirrusData) {
         final CirrusMetaData cirrusMetaData = new CirrusMetaData();
         cirrusMetaData.setName(cirrusData.getName());

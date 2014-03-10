@@ -32,26 +32,33 @@ public interface IMetaDataDAO {
     /**
      * Returns the cirrus meta data from identifier
      */
-    ICirrusMetaData getMetaDataById(final String id);
+    ICirrusMetaData getMetaDataById(String id);
 
     /**
      * Returns all meta data stored for a specified cirrus agent
+     *
      * @return list of all cirrus meta data associated to the cirrus agent. Never <code>null</code>
      */
-    List<ICirrusMetaData> listMetaDataByCirrusAgentId(final ICirrusAgentIdentifier cirrusAgentId);
+    List<ICirrusMetaData> listMetaDataByCirrusAgentId(ICirrusAgentIdentifier cirrusAgentId);
 
     /**
      * Saves a new meta data
      */
-    void save(final ICirrusMetaData metaData);
+    void save(ICirrusMetaData metaData);
 
     /**
      * Update existing meta data
      */
-    void update(final ICirrusMetaData metaData) throws CirrusMetaDataNotFoundException;
+    void update(ICirrusMetaData metaData) throws CirrusMetaDataNotFoundException;
 
     /**
      * Deletes existing meta data
      */
-    void delete(final String metaDataId) throws CirrusMetaDataNotFoundException;
+    void delete(String metaDataId) throws CirrusMetaDataNotFoundException;
+
+    /**
+     * find a meta data from specified cirrus agent with the name and the real path
+     * // TODO query builder
+     */
+    ICirrusMetaData findMetaData(ICirrusAgentIdentifier sourceCirrusAgentId, String name, String realPath, String virtualPath);
 }

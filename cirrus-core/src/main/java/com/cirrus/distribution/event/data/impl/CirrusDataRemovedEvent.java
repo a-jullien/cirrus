@@ -21,36 +21,31 @@ import com.cirrus.distribution.event.data.ICirrusDataEventVisitor;
 import com.cirrus.osgi.agent.ICirrusAgentIdentifier;
 import com.cirrus.osgi.server.exception.IllegalOperationException;
 
-public class CirrusDataCreatedEvent extends AbstractCirrusDataEvent implements ICirrusDataCreatedEvent {
+public class CirrusDataRemovedEvent extends AbstractCirrusDataEvent implements ICirrusDataRemovedEvent {
 
     //==================================================================================================================
     // Constants
     //==================================================================================================================
-    private static final long serialVersionUID = -3242620049985639823L;
+    private static final long serialVersionUID = 4728291016167276070L;
 
     //==================================================================================================================
     // Attributes
     //==================================================================================================================
-    private final ICirrusData cirrusData;
     private final String virtualPath;
+    private final ICirrusData cirrusData;
 
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
-    public CirrusDataCreatedEvent(final ICirrusAgentIdentifier sourceAgentIdentifier, final String virtualPath, final ICirrusData cirrusData) {
+    public CirrusDataRemovedEvent(final ICirrusAgentIdentifier sourceAgentIdentifier, final String virtualPath, final ICirrusData cirrusData) {
         super(sourceAgentIdentifier);
-        this.cirrusData = cirrusData;
         this.virtualPath = virtualPath;
+        this.cirrusData = cirrusData;
     }
 
     //==================================================================================================================
     // Public
     //==================================================================================================================
-    @Override
-    public void accept(final ICirrusDataEventVisitor visitor) throws IllegalOperationException {
-        visitor.visit(this);
-    }
-
     @Override
     public ICirrusData getCirrusData() {
         return this.cirrusData;
@@ -59,5 +54,10 @@ public class CirrusDataCreatedEvent extends AbstractCirrusDataEvent implements I
     @Override
     public String getVirtualPath() {
         return this.virtualPath;
+    }
+
+    @Override
+    public void accept(final ICirrusDataEventVisitor visitor) throws IllegalOperationException {
+        visitor.visit(this);
     }
 }

@@ -32,6 +32,7 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class TestMetaDataDAO {
 
@@ -119,6 +120,25 @@ public class TestMetaDataDAO {
         this.metaDataDAO.delete("5317109c58126fa0941fb57f");
     }
 
+    @Test
+    public void shouldRetrieveSuccessfullyExistingMetaDataWithOtherCriteria() {
+        final CirrusMetaData cirrusMetaData = this.createCirrusMetaData();
+        this.metaDataDAO.save(cirrusMetaData);
+
+        final NameBasedCirrusAgentIdentifier sourceCirrusAgentId = new NameBasedCirrusAgentIdentifier("1f553132-43e0-4fd3-9e50-fcf1d0adc978");
+        final ICirrusMetaData metaData = this.metaDataDAO.findMetaData(sourceCirrusAgentId, "myFile.txt", "/tmp/cirrus", "/home/test");
+        assertNotNull(metaData);
+    }
+
+    @Test
+    public void shouldFailOnNonExistingMetaDataWithOtherCriteria() {
+        final CirrusMetaData cirrusMetaData = this.createCirrusMetaData();
+        this.metaDataDAO.save(cirrusMetaData);
+
+        final UUIDBasedCirrusAgentIdentifier sourceCirrusAgentId = new UUIDBasedCirrusAgentIdentifier();
+        final ICirrusMetaData metaData = this.metaDataDAO.findMetaData(sourceCirrusAgentId, "NonExistingFile", "/NonExistingPath", "/home/test");
+        assertNull(metaData);
+    }
     //==================================================================================================================
     // Private
     //==================================================================================================================

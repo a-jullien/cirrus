@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-package com.cirrus.distribution.event;
+package com.cirrus.distribution.event.data.impl;
 
-import com.cirrus.osgi.server.exception.IllegalOperationException;
+import com.cirrus.data.ICirrusData;
+import com.cirrus.distribution.event.data.ICirrusDataEvent;
 
-import java.io.Serializable;
-
-public interface IVisitableEvent<T> extends Serializable {
+public interface ICirrusDataRemovedEvent extends ICirrusDataEvent {
 
     /**
-     * accept a visitor in order to introspect the object
+     * Returns the removed cirrus data. Never <code>null</code>
      */
-    void accept(T visitor) throws IllegalOperationException;
+    ICirrusData getCirrusData();
+
+    /**
+     * Returns the virtual path where the cirrus data is 'virtually' removed
+     */
+    String getVirtualPath();
 }

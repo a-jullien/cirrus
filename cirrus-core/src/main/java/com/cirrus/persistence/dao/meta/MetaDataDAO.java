@@ -68,7 +68,7 @@ public class MetaDataDAO implements IMetaDataDAO {
 
     @Override
     public void save(final ICirrusMetaData metaData) {
-        this.metaDataCollection.save(metaData);
+        this.metaDataCollection.save(metaData); // TODO check error on save
     }
 
     @Override
@@ -88,6 +88,16 @@ public class MetaDataDAO implements IMetaDataDAO {
         } else {
             this.metaDataCollection.remove(new ObjectId(metaDataId));
         }
+    }
+
+    @Override
+    public ICirrusMetaData findMetaData(final ICirrusAgentIdentifier sourceCirrusAgentId, final String name, final String realPath, final String virtualPath) {
+        final String query = "{cirrusAgentId: '" + sourceCirrusAgentId.toExternal() +
+                "', name: '" + name +
+                "', localPath: '" + realPath +
+                "', virtualPath: '" + virtualPath +
+                "'}";
+        return this.metaDataCollection.findOne(query).as(CirrusMetaData.class);
     }
 
     //==================================================================================================================
