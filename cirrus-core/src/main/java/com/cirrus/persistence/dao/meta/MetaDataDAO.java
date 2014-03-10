@@ -19,6 +19,7 @@ package com.cirrus.persistence.dao.meta;
 import com.cirrus.data.ICirrusMetaData;
 import com.cirrus.data.impl.CirrusMetaData;
 import com.cirrus.osgi.agent.ICirrusAgentIdentifier;
+import com.cirrus.persistence.IQuery;
 import com.cirrus.persistence.exception.CirrusMetaDataNotFoundException;
 import org.bson.types.ObjectId;
 import org.jongo.MongoCollection;
@@ -91,13 +92,8 @@ public class MetaDataDAO implements IMetaDataDAO {
     }
 
     @Override
-    public ICirrusMetaData findMetaData(final ICirrusAgentIdentifier sourceCirrusAgentId, final String name, final String realPath, final String virtualPath) {
-        final String query = "{cirrusAgentId: '" + sourceCirrusAgentId.toExternal() +
-                "', name: '" + name +
-                "', localPath: '" + realPath +
-                "', virtualPath: '" + virtualPath +
-                "'}";
-        return this.metaDataCollection.findOne(query).as(CirrusMetaData.class);
+    public ICirrusMetaData findMetaData(final IQuery query) {
+        return this.metaDataCollection.findOne(query.toExternal()).as(CirrusMetaData.class);
     }
 
     //==================================================================================================================

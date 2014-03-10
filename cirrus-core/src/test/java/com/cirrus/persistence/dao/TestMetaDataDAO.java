@@ -18,8 +18,11 @@ package com.cirrus.persistence.dao;
 
 import com.cirrus.data.ICirrusMetaData;
 import com.cirrus.data.impl.CirrusMetaData;
+import com.cirrus.osgi.agent.ICirrusAgentIdentifier;
 import com.cirrus.osgi.agent.impl.NameBasedCirrusAgentIdentifier;
 import com.cirrus.osgi.agent.impl.UUIDBasedCirrusAgentIdentifier;
+import com.cirrus.persistence.IQuery;
+import com.cirrus.persistence.QueryBuilder;
 import com.cirrus.persistence.dao.meta.IMetaDataDAO;
 import com.cirrus.persistence.exception.CirrusMetaDataNotFoundException;
 import com.cirrus.persistence.service.MongoDBService;
@@ -126,7 +129,8 @@ public class TestMetaDataDAO {
         this.metaDataDAO.save(cirrusMetaData);
 
         final NameBasedCirrusAgentIdentifier sourceCirrusAgentId = new NameBasedCirrusAgentIdentifier("1f553132-43e0-4fd3-9e50-fcf1d0adc978");
-        final ICirrusMetaData metaData = this.metaDataDAO.findMetaData(sourceCirrusAgentId, "myFile.txt", "/tmp/cirrus", "/home/test");
+        final IQuery query = this.createQuery(sourceCirrusAgentId);
+        final ICirrusMetaData metaData = this.metaDataDAO.findMetaData(query);
         assertNotNull(metaData);
     }
 
@@ -136,7 +140,8 @@ public class TestMetaDataDAO {
         this.metaDataDAO.save(cirrusMetaData);
 
         final UUIDBasedCirrusAgentIdentifier sourceCirrusAgentId = new UUIDBasedCirrusAgentIdentifier();
-        final ICirrusMetaData metaData = this.metaDataDAO.findMetaData(sourceCirrusAgentId, "NonExistingFile", "/NonExistingPath", "/home/test");
+        final IQuery query = this.createQuery(sourceCirrusAgentId);
+        final ICirrusMetaData metaData = this.metaDataDAO.findMetaData(query);
         assertNull(metaData);
     }
     //==================================================================================================================
@@ -162,5 +167,15 @@ public class TestMetaDataDAO {
         assertEquals("1f553132-43e0-4fd3-9e50-fcf1d0adc978", cirrusMetaData.getCirrusAgentId());
         assertEquals("dropbox", cirrusMetaData.getCirrusAgentType());
         assertEquals("text/plain", cirrusMetaData.getMediaType());
+    }
+
+    private IQuery createQuery(final ICirrusAgentIdentifier sourceCirrusAgentId) {
+        final QueryBuilder queryBuilder = new QueryBuilder();
+        queryBuilder.appendCriteria("cirrusAgentId", sourceCirrusAgentId.toExternal())
+                .appendCriteria("name", "myFile.txt")
+                .appendCriteria("localPath", "/tmp/cirrus")
+                .appendCriteria("virtualPath", "/home/test");
+
+        return queryBuilder.buildQuery();
     }
 }

@@ -27,6 +27,8 @@ import com.cirrus.osgi.agent.ICirrusAgentIdentifier;
 import com.cirrus.osgi.server.ICirrusDataListener;
 import com.cirrus.osgi.server.IMetaDataProvider;
 import com.cirrus.osgi.server.exception.IllegalOperationException;
+import com.cirrus.persistence.IQuery;
+import com.cirrus.persistence.QueryBuilder;
 import com.cirrus.persistence.dao.meta.IMetaDataDAO;
 import com.cirrus.persistence.exception.CirrusMetaDataNotFoundException;
 
@@ -76,11 +78,16 @@ public class MetaDataProvider implements IMetaDataProvider, ICirrusDataListener 
         final String name = cirrusData.getName();
         final String realPath = cirrusData.getPath();
 
-        final ICirrusMetaData metaData = this.metaDataDAO.findMetaData(sourceCirrusAgentId, name, realPath, virtualPath);
+        final QueryBuilder queryBuilder = new QueryBuilder();
+        queryBuilder.appendCriteria("cirrusAgentId", sourceCirrusAgentId.toExternal())
+                .appendCriteria("name", name)
+                .appendCriteria("localPath", realPath)
+                .appendCriteria("virtualPath", virtualPath);
+
+        final IQuery query = queryBuilder.buildQuery();
+        final ICirrusMetaData metaData = this.metaDataDAO.findMetaData(query);
         if (metaData == null) {
-            final String criteria = "cirrusAgentId:" + sourceCirrusAgentId + '\n' +
-                    "name:" + name + '\n' + "localPath:" + realPath + '\n' + "virtualPath:" + virtualPath;
-            throw new IllegalOperationException("Could not retrieve meta data for criteria <" + criteria + ">");
+            throw new IllegalOperationException("Could not retrieve meta data for query <" + query + ">");
         } else {
             try {
                 this.metaDataDAO.delete(metaData.getId());

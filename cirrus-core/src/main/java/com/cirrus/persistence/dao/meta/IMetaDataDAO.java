@@ -18,6 +18,7 @@ package com.cirrus.persistence.dao.meta;
 
 import com.cirrus.osgi.agent.ICirrusAgentIdentifier;
 import com.cirrus.data.ICirrusMetaData;
+import com.cirrus.persistence.IQuery;
 import com.cirrus.persistence.exception.CirrusMetaDataNotFoundException;
 
 import java.util.List;
@@ -58,7 +59,6 @@ public interface IMetaDataDAO {
 
     /**
      * find a meta data from specified cirrus agent with the name and the real path
-     * // TODO query builder
      */
-    ICirrusMetaData findMetaData(ICirrusAgentIdentifier sourceCirrusAgentId, String name, String realPath, String virtualPath);
+    ICirrusMetaData findMetaData(IQuery query);
 }
