@@ -15,5 +15,6 @@
     <modules>
         <module>dropbox-cirrus-agent</module>
         <module>amazon-s3-cirrus-agent</module>
+        <module>local-cirrus-agent</module>
   </modules>
 </project>
