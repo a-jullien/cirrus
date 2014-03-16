@@ -110,7 +110,7 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
         for (final ICirrusAgent existingAgent : existingAgents) {
             final ICirrusAgentBundleDescription bundleDescription = existingAgent.getCirrusAgentBundleDescription();
             final ICirrusStorageService<AccessKeyTrustedToken> storageService = existingAgent.getStorageService();
-            storageService.authenticateFrom(new AccessKeyTrustedToken(trustedToken));
+            storageService.authenticate(new AccessKeyTrustedToken(trustedToken));
 
             final String accountName = storageService.getAccountName();
             final long totalSpace = storageService.getTotalSpace();

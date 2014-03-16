@@ -25,25 +25,25 @@ public class AccessKeyPasswordTrustedToken implements IStorageServiceTrustedToke
     //==================================================================================================================
     // Attributes
     //==================================================================================================================
-    private final String login;
-    private final String password;
+    private final String accessKey;
+    private final String accessPassword;
 
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
-    public AccessKeyPasswordTrustedToken(final String login, final String password) {
-        this.login = login;
-        this.password = password;
+    public AccessKeyPasswordTrustedToken(final String accessKey, final String accessPassword) {
+        this.accessKey = accessKey;
+        this.accessPassword = accessPassword;
     }
 
     //==================================================================================================================
     // Getters
     //==================================================================================================================
-    public String getLogin() {
-        return login;
+    public String getAccessKey() {
+        return accessKey;
     }
 
-    public String getPassword() {
-        return password;
+    public String getAccessPassword() {
+        return accessPassword;
     }
 }

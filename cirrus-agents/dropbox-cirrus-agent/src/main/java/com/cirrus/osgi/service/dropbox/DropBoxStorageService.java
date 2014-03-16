@@ -25,6 +25,8 @@ import com.cirrus.osgi.extension.AuthenticationException;
 import com.cirrus.osgi.extension.ServiceRequestFailedException;
 import com.dropbox.core.*;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -48,21 +50,21 @@ public class DropBoxStorageService extends AbstractStorageService<AccessKeyTrust
     //==================================================================================================================
 
     @Override
-    public void authenticateFrom(final AccessKeyTrustedToken authenticationMechanism) {
-        final DbxAuthInfo authInfo = new DbxAuthInfo(authenticationMechanism.getAccessKey(), DbxHost.Default);
+    public void authenticate(final AccessKeyTrustedToken trustedToken) {
+        final DbxAuthInfo authInfo = new DbxAuthInfo(trustedToken.getAccessKey(), DbxHost.Default);
         final String userLocale = Locale.getDefault().toString();
         final DbxRequestConfig requestConfig = new DbxRequestConfig(SERVICE_NAME_PROPERTY, userLocale);
         this.client = new DbxClient(requestConfig, authInfo.accessToken, authInfo.host);
     }
 
     @Override
-    public String getAccountName() throws AuthenticationException, ServiceRequestFailedException {
-        this.checkAuthenticationToken();
+    public String getAccountName() throws ServiceRequestFailedException {
         try {
+            this.checkAuthenticationToken();
+
             final DbxAccountInfo dbxAccountInfo = this.client.getAccountInfo();
             return dbxAccountInfo.displayName;
-
-        } catch (final DbxException e) {
+        } catch (final AuthenticationException | DbxException e) {
             throw new ServiceRequestFailedException(e);
         }
     }
@@ -112,6 +114,48 @@ public class DropBoxStorageService extends AbstractStorageService<AccessKeyTrust
         }
 
         return result;
+    }
+
+    @Override
+    public CirrusFolderData createDirectory(final String path) throws ServiceRequestFailedException {
+        try {
+            this.checkAuthenticationToken();
+
+            final DbxEntry.Folder folder = this.client.createFolder(path);
+            return new CirrusFolderData(folder.path);
+        } catch (final AuthenticationException | DbxException e) {
+            throw new ServiceRequestFailedException(e);
+        }
+    }
+
+    @Override
+    public ICirrusData delete(final String path) throws ServiceRequestFailedException {
+        try {
+            this.checkAuthenticationToken();
+
+            final DbxEntry metadata = this.client.getMetadata(path);
+            this.client.delete(path);
+            if (metadata.isFile()) {
+                return new CirrusFileData(metadata.path);
+            } else {
+                return new CirrusFolderData(metadata.path);
+            }
+        } catch (final AuthenticationException | DbxException e) {
+            throw new ServiceRequestFailedException(e);
+        }
+    }
+
+    @Override
+    public CirrusFileData transferFile(final String filePath, final long fileSize, final InputStream inputStream) throws ServiceRequestFailedException {
+        try {
+            this.checkAuthenticationToken();
+
+            final DbxEntry.File uploadedFile = this.client.uploadFile(filePath, DbxWriteMode.add(), fileSize, inputStream);
+            return new CirrusFileData(uploadedFile.path);
+
+        } catch (final AuthenticationException | DbxException | IOException e) {
+            throw new ServiceRequestFailedException(e);
+        }
     }
 
     //==================================================================================================================

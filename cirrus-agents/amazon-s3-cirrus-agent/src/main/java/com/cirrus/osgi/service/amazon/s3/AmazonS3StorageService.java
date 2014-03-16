@@ -21,11 +21,13 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.Owner;
 import com.cirrus.data.ICirrusData;
+import com.cirrus.data.impl.CirrusFileData;
+import com.cirrus.data.impl.CirrusFolderData;
 import com.cirrus.osgi.agent.authentication.impl.AccessKeyPasswordTrustedToken;
 import com.cirrus.osgi.extension.AbstractStorageService;
-import com.cirrus.osgi.extension.AuthenticationException;
 import com.cirrus.osgi.extension.ServiceRequestFailedException;
 
+import java.io.InputStream;
 import java.util.List;
 
 public class AmazonS3StorageService extends AbstractStorageService<AccessKeyPasswordTrustedToken> {
@@ -47,15 +49,15 @@ public class AmazonS3StorageService extends AbstractStorageService<AccessKeyPass
     //==================================================================================================================
 
     @Override
-    public void authenticateFrom(final AccessKeyPasswordTrustedToken authenticationMechanism) {
-        final String accessKey = authenticationMechanism.getLogin();
-        final String accessSecret = authenticationMechanism.getPassword();
+    public void authenticate(final AccessKeyPasswordTrustedToken trustedToken) {
+        final String accessKey = trustedToken.getAccessKey();
+        final String accessSecret = trustedToken.getAccessPassword();
         final AWSCredentials credentials = new BasicAWSCredentials(accessKey, accessSecret);
         this.amazonS3Client = new AmazonS3Client(credentials);
     }
 
     @Override
-    public String getAccountName() throws AuthenticationException, ServiceRequestFailedException {
+    public String getAccountName() throws ServiceRequestFailedException {
         final Owner s3AccountOwner = this.amazonS3Client.getS3AccountOwner();
         return s3AccountOwner.getDisplayName();
     }
@@ -72,6 +74,21 @@ public class AmazonS3StorageService extends AbstractStorageService<AccessKeyPass
 
     @Override
     public List<ICirrusData> list(final String path) throws ServiceRequestFailedException {
+        throw new ServiceRequestFailedException("Not Yet Implemented");
+    }
+
+    @Override
+    public CirrusFolderData createDirectory(final String path) throws ServiceRequestFailedException {
+        throw new ServiceRequestFailedException("Not Yet Implemented");
+    }
+
+    @Override
+    public ICirrusData delete(final String path) throws ServiceRequestFailedException {
+        throw new ServiceRequestFailedException("Not Yet Implemented");
+    }
+
+    @Override
+    public CirrusFileData transferFile(final String filePath, final long fileSize, final InputStream inputStream) throws ServiceRequestFailedException {
         throw new ServiceRequestFailedException("Not Yet Implemented");
     }
 }

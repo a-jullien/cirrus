@@ -16,10 +16,13 @@
 
 package com.cirrus.osgi.extension;
 
+import com.cirrus.data.impl.CirrusFileData;
+import com.cirrus.data.impl.CirrusFolderData;
 import com.cirrus.osgi.agent.authentication.IStorageServiceTrustedToken;
 import com.cirrus.data.ICirrusData;
 import com.cirrus.osgi.server.ICirrusDataListener;
 
+import java.io.InputStream;
 import java.util.List;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -46,12 +49,12 @@ public interface ICirrusStorageService<TrustedToken extends IStorageServiceTrust
     /**
      * Authenticates from specified authentication mechanism
      */
-    void authenticateFrom(final TrustedToken authenticationMechanism);
+    void authenticate(final TrustedToken trustedToken);
 
     /**
      * Returns the account name of the storage service
      */
-    String getAccountName() throws AuthenticationException, ServiceRequestFailedException;
+    String getAccountName() throws ServiceRequestFailedException;
 
     /**
      * Returns the total space
@@ -68,4 +71,18 @@ public interface ICirrusStorageService<TrustedToken extends IStorageServiceTrust
      */
     List<ICirrusData> list(final String path) throws ServiceRequestFailedException;
 
+    /**
+     * Creates a new directory
+     */
+    CirrusFolderData createDirectory(final String path) throws ServiceRequestFailedException;
+
+    /**
+     * Delete a data from the path
+     */
+    ICirrusData delete(final String path) throws ServiceRequestFailedException;
+
+    /**
+     * Transfer a file
+     */
+    CirrusFileData transferFile(final String filePath, final long fileSize, final InputStream inputStream) throws ServiceRequestFailedException;
 }
