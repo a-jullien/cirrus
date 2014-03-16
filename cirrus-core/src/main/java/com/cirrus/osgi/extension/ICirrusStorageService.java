@@ -16,13 +16,14 @@
 
 package com.cirrus.osgi.extension;
 
+import com.cirrus.osgi.agent.authentication.IStorageServiceTrustedToken;
 import com.cirrus.data.ICirrusData;
 import com.cirrus.osgi.server.ICirrusDataListener;
 
 import java.util.List;
 
 @SuppressWarnings("UnusedDeclaration")
-public interface ICirrusStorageService {
+public interface ICirrusStorageService<TrustedToken extends IStorageServiceTrustedToken> {
 
     //==================================================================================================================
     // Constants
@@ -33,11 +34,19 @@ public interface ICirrusStorageService {
     String SERVICE_CLASS_PROPERTY = "Storage-Service-Class";
 
     /**
-     * Setter for the trusted token mandatory for a successfully authentication to the storage service
-     *
-     * @param token the trusted token provided by the service
+     * Register specified listener in order to notify changes in data management
      */
-    void setAuthenticationToken(final String token);
+    void registerListener(final ICirrusDataListener listener);
+
+    /**
+     * Unregister specified listener
+     */
+    void unregisterListener(final ICirrusDataListener listener);
+
+    /**
+     * Authenticates from specified authentication mechanism
+     */
+    void authenticateFrom(final TrustedToken authenticationMechanism);
 
     /**
      * Returns the account name of the storage service
@@ -59,13 +68,4 @@ public interface ICirrusStorageService {
      */
     List<ICirrusData> list(final String path) throws ServiceRequestFailedException;
 
-    /**
-     * Register specified listener in order to notify changes in data management
-     */
-    void registerListener(final ICirrusDataListener listener);
-
-    /**
-     * Unregister specified listener
-     */
-    void unregisterListener(final ICirrusDataListener listener);
 }

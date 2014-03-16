@@ -21,14 +21,14 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.Owner;
 import com.cirrus.data.ICirrusData;
+import com.cirrus.osgi.agent.authentication.impl.AccessKeyPasswordTrustedToken;
 import com.cirrus.osgi.extension.AbstractStorageService;
 import com.cirrus.osgi.extension.AuthenticationException;
 import com.cirrus.osgi.extension.ServiceRequestFailedException;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class AmazonS3StorageService extends AbstractStorageService {
+public class AmazonS3StorageService extends AbstractStorageService<AccessKeyPasswordTrustedToken> {
 
     //==================================================================================================================
     // Private
@@ -42,11 +42,14 @@ public class AmazonS3StorageService extends AbstractStorageService {
         super();
     }
 
+    //==================================================================================================================
+    // Public
+    //==================================================================================================================
+
     @Override
-    public void setAuthenticationToken(final String token) {
-        final int indexOf = token.indexOf(" ");
-        final String accessKey = token.substring(0, indexOf);
-        final String accessSecret = token.substring(indexOf + 1, token.length());
+    public void authenticateFrom(final AccessKeyPasswordTrustedToken authenticationMechanism) {
+        final String accessKey = authenticationMechanism.getLogin();
+        final String accessSecret = authenticationMechanism.getPassword();
         final AWSCredentials credentials = new BasicAWSCredentials(accessKey, accessSecret);
         this.amazonS3Client = new AmazonS3Client(credentials);
     }
@@ -59,19 +62,16 @@ public class AmazonS3StorageService extends AbstractStorageService {
 
     @Override
     public long getTotalSpace() throws ServiceRequestFailedException {
-        // TODO
-        return 0;
+        throw new ServiceRequestFailedException("Not Yet Implemented");
     }
 
     @Override
     public long getUsedSpace() throws ServiceRequestFailedException {
-        // TODO
-        return 0;
+        throw new ServiceRequestFailedException("Not Yet Implemented");
     }
 
     @Override
     public List<ICirrusData> list(final String path) throws ServiceRequestFailedException {
-        // TODO
-        return new ArrayList<>();
+        throw new ServiceRequestFailedException("Not Yet Implemented");
     }
 }

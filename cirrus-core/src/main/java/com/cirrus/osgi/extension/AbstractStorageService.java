@@ -16,12 +16,13 @@
 
 package com.cirrus.osgi.extension;
 
+import com.cirrus.osgi.agent.authentication.IStorageServiceTrustedToken;
 import com.cirrus.osgi.server.ICirrusDataListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractStorageService implements ICirrusStorageService {
+public abstract class AbstractStorageService<TrustedToken extends IStorageServiceTrustedToken> implements ICirrusStorageService<TrustedToken> {
 
     //==================================================================================================================
     // Private

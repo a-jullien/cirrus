@@ -19,6 +19,7 @@ package com.cirrus.osgi.server.impl;
 import com.cirrus.data.ICirrusData;
 import com.cirrus.osgi.agent.ICirrusAgent;
 import com.cirrus.osgi.agent.ICirrusAgentBundleDescription;
+import com.cirrus.osgi.agent.authentication.impl.AccessKeyTrustedToken;
 import com.cirrus.osgi.extension.ICirrusStorageService;
 import com.cirrus.osgi.server.ICirrusAgentAdministration;
 import com.cirrus.osgi.server.ICirrusServer;
@@ -90,6 +91,7 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     //==================================================================================================================
     // Main
     //==================================================================================================================
+    @SuppressWarnings("unchecked")
     public static void main(final String[] args) throws Exception {
         final OSGIBasedCirrusServer osgiBasedCirrusServer = new OSGIBasedCirrusServer();
         osgiBasedCirrusServer.start();
@@ -107,8 +109,8 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
         final List<ICirrusAgent> existingAgents = agentAdministration.listCirrusAgents();
         for (final ICirrusAgent existingAgent : existingAgents) {
             final ICirrusAgentBundleDescription bundleDescription = existingAgent.getCirrusAgentBundleDescription();
-            final ICirrusStorageService storageService = existingAgent.getStorageService();
-            storageService.setAuthenticationToken(trustedToken);
+            final ICirrusStorageService<AccessKeyTrustedToken> storageService = existingAgent.getStorageService();
+            storageService.authenticateFrom(new AccessKeyTrustedToken(trustedToken));
 
             final String accountName = storageService.getAccountName();
             final long totalSpace = storageService.getTotalSpace();

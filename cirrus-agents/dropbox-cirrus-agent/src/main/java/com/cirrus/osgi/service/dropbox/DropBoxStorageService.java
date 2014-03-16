@@ -19,6 +19,7 @@ package com.cirrus.osgi.service.dropbox;
 import com.cirrus.data.ICirrusData;
 import com.cirrus.data.impl.CirrusFileData;
 import com.cirrus.data.impl.CirrusFolderData;
+import com.cirrus.osgi.agent.authentication.impl.AccessKeyTrustedToken;
 import com.cirrus.osgi.extension.AbstractStorageService;
 import com.cirrus.osgi.extension.AuthenticationException;
 import com.cirrus.osgi.extension.ServiceRequestFailedException;
@@ -28,12 +29,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class DropBoxStorageService extends AbstractStorageService {
+public class DropBoxStorageService extends AbstractStorageService<AccessKeyTrustedToken> {
 
     //==================================================================================================================
     // Attributes
     //==================================================================================================================
-    private String token;
     private DbxClient client;
 
     //==================================================================================================================
@@ -48,12 +48,10 @@ public class DropBoxStorageService extends AbstractStorageService {
     //==================================================================================================================
 
     @Override
-    public void setAuthenticationToken(final String token) {
-        this.token = token;
-
-        final DbxAuthInfo authInfo = new DbxAuthInfo(this.token, DbxHost.Default);
+    public void authenticateFrom(final AccessKeyTrustedToken authenticationMechanism) {
+        final DbxAuthInfo authInfo = new DbxAuthInfo(authenticationMechanism.getAccessKey(), DbxHost.Default);
         final String userLocale = Locale.getDefault().toString();
-        final DbxRequestConfig requestConfig = new DbxRequestConfig("dropbox-bundle-configuration", userLocale);
+        final DbxRequestConfig requestConfig = new DbxRequestConfig(SERVICE_NAME_PROPERTY, userLocale);
         this.client = new DbxClient(requestConfig, authInfo.accessToken, authInfo.host);
     }
 
@@ -62,7 +60,6 @@ public class DropBoxStorageService extends AbstractStorageService {
         this.checkAuthenticationToken();
         try {
             final DbxAccountInfo dbxAccountInfo = this.client.getAccountInfo();
-
             return dbxAccountInfo.displayName;
 
         } catch (final DbxException e) {
@@ -122,7 +119,7 @@ public class DropBoxStorageService extends AbstractStorageService {
     //==================================================================================================================
 
     private void checkAuthenticationToken() throws AuthenticationException {
-        if (this.token == null) {
+        if (this.client == null) {
             throw new AuthenticationException("The authentication token is not valid");
         }
     }

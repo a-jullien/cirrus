@@ -63,7 +63,7 @@
                         <Storage-Service-Class>com.cirrus.osgi.service.amazon.s3.AmazonS3StorageService
                         </Storage-Service-Class>
                         <Storage-Service-Vendor>Amazon</Storage-Service-Vendor>
-                        <Import-Package>com.cirrus.osgi.extension.*, com.cirrus.data.*</Import-Package>
+                        <Import-Package>com.cirrus.osgi.extension.*, com.cirrus.data.*, com.cirrus.osgi.agent.authentication.*</Import-Package>
                         <Export-Package>com.amazonaws.*, org.apache.*, org.w3c.dom.*, org.xml.sax.*</Export-Package>
                         <Embed-Dependency>*;scope=runtime;inline=true</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>

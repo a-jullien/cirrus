@@ -24,6 +24,14 @@ import static junit.framework.Assert.assertNotNull;
 public class QueryBuilderTest {
 
     @Test
+    public void shouldHaveCorrectQueryWithNoCriteria() {
+        final QueryBuilder queryBuilder = new QueryBuilder();
+        final IQuery query = queryBuilder.buildQuery();
+        assertNotNull(query);
+        assertEquals("{}", query);
+    }
+
+    @Test
     public void shouldHaveSuccessfullyBuildQueryWithSimpleCriteria() {
         final QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.appendCriteria("property1", "value1").appendCriteria("property2", "value2");

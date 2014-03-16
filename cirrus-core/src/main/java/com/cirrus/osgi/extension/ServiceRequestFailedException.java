@@ -28,4 +28,8 @@ public class ServiceRequestFailedException extends Exception {
     public ServiceRequestFailedException(final Throwable cause) {
         super(cause);
     }
+
+    public ServiceRequestFailedException(final String message) {
+        super(message);
+    }
 }
