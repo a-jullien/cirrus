@@ -19,6 +19,7 @@ package com.cirrus.server.impl;
 import com.cirrus.agent.ICirrusAgent;
 import com.cirrus.agent.ICirrusAgentIdentifier;
 import com.cirrus.agent.impl.CirrusAgent;
+import com.cirrus.persistence.dao.meta.IMetaDataDAO;
 import com.cirrus.server.ICirrusAgentAdministration;
 import com.cirrus.server.exception.*;
 import com.cirrus.server.utils.ConfigUtil;
@@ -46,14 +47,18 @@ public class CirrusAgentAdministration implements ICirrusAgentAdministration {
     //==================================================================================================================
     private final Framework framework;
     private final List<ICirrusAgent> cirrusAgents;
+    private final MetaDataProvider metaDataProvider;
+
 
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
-    public CirrusAgentAdministration() throws IOException {
+    public CirrusAgentAdministration(final IMetaDataDAO metaDataDAO) throws IOException {
         super();
         this.cirrusAgents = new ArrayList<>();
         this.framework = this.createFramework();
+
+        this.metaDataProvider = new MetaDataProvider(metaDataDAO);
     }
 
     //==================================================================================================================
@@ -108,7 +113,9 @@ public class CirrusAgentAdministration implements ICirrusAgentAdministration {
 
                 OSGIBasedCirrusServer.LOGGER.info(COMPONENT_NAME + " New bundle available: " + cirrusAgent);
                 cirrusAgent.start();
+                cirrusAgent.getStorageService().registerListener(this.metaDataProvider);
                 OSGIBasedCirrusServer.LOGGER.info(COMPONENT_NAME + " Bundle " + cirrusAgent + " successfully started");
+
             }
 
         } catch (final BundleException e) {
@@ -126,7 +133,7 @@ public class CirrusAgentAdministration implements ICirrusAgentAdministration {
         } else {
             cirrusAgentById.stop();
             cirrusAgentById.uninstall();
-
+            cirrusAgentById.getStorageService().unregisterListener(this.metaDataProvider);
             this.cirrusAgents.remove(cirrusAgentById);
         }
     }

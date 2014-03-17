@@ -31,12 +31,12 @@ public interface ICirrusServer {
     void stop() throws StopCirrusServerException;
 
     /**
-     * Returns the administration part of the server
+     * Returns the administration part responsible for the bundle management
      */
     ICirrusAgentAdministration getCirrusAgentAdministration();
 
     /**
-     * Returns the service responsible for the meta data management
+     * Returns the user operations
      */
-    IMetaDataProvider getMetaDataProvider();
+    ICirrusUserOperations getCirrusUserOperations();
 }

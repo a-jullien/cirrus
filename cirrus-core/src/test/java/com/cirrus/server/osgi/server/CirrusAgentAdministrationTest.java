@@ -5,10 +5,15 @@ import com.cirrus.agent.ICirrusAgentBundleDescription;
 import com.cirrus.agent.ICirrusAgentIdentifier;
 import com.cirrus.agent.IStorageServiceVendor;
 import com.cirrus.agent.impl.UUIDBasedCirrusAgentIdentifier;
+import com.cirrus.persistence.dao.meta.IMetaDataDAO;
+import com.cirrus.persistence.service.MongoDBService;
 import com.cirrus.server.ICirrusAgentAdministration;
-import com.cirrus.server.osgi.extension.ICirrusStorageService;
+import com.cirrus.server.configuration.CirrusProperties;
 import com.cirrus.server.exception.*;
 import com.cirrus.server.impl.CirrusAgentAdministration;
+import com.cirrus.server.osgi.extension.ICirrusStorageService;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -20,11 +25,30 @@ import static junit.framework.Assert.*;
 public class CirrusAgentAdministrationTest {
 
     //==================================================================================================================
+    // Attributes
+    //==================================================================================================================
+    private IMetaDataDAO metaDataDAO;
+
+    @Before
+    public void setUp() throws IOException {
+        // global properties of the cirrus server
+        final CirrusProperties cirrusProperties = new CirrusProperties();
+        // create mongodb service
+        final MongoDBService mongoDBService = new MongoDBService(cirrusProperties.getProperty(CirrusProperties.MONGODB_URL));
+        this.metaDataDAO = mongoDBService.getMetaDataDAO();
+    }
+
+    @After
+    public void tearDown() {
+        this.metaDataDAO.dropCollection();
+    }
+
+    //==================================================================================================================
     // Public
     //==================================================================================================================
     @Test
     public void shouldSuccessfullyCreateAndStartCirrusServer() throws StartCirrusServerException, StopCirrusServerException, IOException {
-        final ICirrusAgentAdministration cirrusAgentAdministration = new CirrusAgentAdministration();
+        final ICirrusAgentAdministration cirrusAgentAdministration = new CirrusAgentAdministration(this.metaDataDAO);
         cirrusAgentAdministration.start();
 
         assertTrue(cirrusAgentAdministration.isStarted());
@@ -36,7 +60,7 @@ public class CirrusAgentAdministrationTest {
 
     @Test(expected = CirrusAgentInstallationException.class)
     public void shouldErrorForInstallationOfBadBundle() throws Exception {
-        final ICirrusAgentAdministration cirrusAgentAdministration = new CirrusAgentAdministration();
+        final ICirrusAgentAdministration cirrusAgentAdministration = new CirrusAgentAdministration(this.metaDataDAO);
         cirrusAgentAdministration.start();
 
         final URL bundleURL = this.getClass().getResource("/badBundle.jar");
@@ -46,7 +70,7 @@ public class CirrusAgentAdministrationTest {
 
     @Test(expected = CirrusAgentAlreadyExistException.class)
     public void shouldErrorForInstallationOfExistingBundle() throws Exception {
-        final ICirrusAgentAdministration cirrusAgentAdministration = new CirrusAgentAdministration();
+        final ICirrusAgentAdministration cirrusAgentAdministration = new CirrusAgentAdministration(this.metaDataDAO);
         cirrusAgentAdministration.start();
 
         final URL bundleURL = this.getClass().getResource("/bundle.jar");
@@ -58,7 +82,7 @@ public class CirrusAgentAdministrationTest {
 
     @Test
     public void shouldInstallSuccessfullyANewBundle() throws Exception {
-        final ICirrusAgentAdministration cirrusAgentAdministration = new CirrusAgentAdministration();
+        final ICirrusAgentAdministration cirrusAgentAdministration = new CirrusAgentAdministration(this.metaDataDAO);
         cirrusAgentAdministration.start();
 
         final URL bundleURL = this.getClass().getResource("/bundle.jar");
@@ -91,7 +115,7 @@ public class CirrusAgentAdministrationTest {
 
     @Test(expected = CirrusAgentNotExistException.class)
     public void shouldErrorWhenUninstallNonExistingBundle() throws Exception {
-        final ICirrusAgentAdministration cirrusAgentAdministration = new CirrusAgentAdministration();
+        final ICirrusAgentAdministration cirrusAgentAdministration = new CirrusAgentAdministration(this.metaDataDAO);
         cirrusAgentAdministration.start();
 
         cirrusAgentAdministration.uninstallCirrusAgent(new UUIDBasedCirrusAgentIdentifier());
@@ -99,7 +123,7 @@ public class CirrusAgentAdministrationTest {
 
     @Test
     public void shouldSuccessWhenUninstallExistingBundle() throws Exception {
-        final ICirrusAgentAdministration cirrusAgentAdministration = new CirrusAgentAdministration();
+        final ICirrusAgentAdministration cirrusAgentAdministration = new CirrusAgentAdministration(this.metaDataDAO);
         cirrusAgentAdministration.start();
 
         final URL bundleURL = this.getClass().getResource("/bundle.jar");
@@ -115,7 +139,7 @@ public class CirrusAgentAdministrationTest {
 
     @Test
     public void shouldHaveCorrectStatusAfterStoppingServer() throws Exception {
-        final ICirrusAgentAdministration cirrusAgentAdministration = new CirrusAgentAdministration();
+        final ICirrusAgentAdministration cirrusAgentAdministration = new CirrusAgentAdministration(this.metaDataDAO);
         cirrusAgentAdministration.start();
 
         assertTrue(cirrusAgentAdministration.isStarted());
@@ -126,7 +150,7 @@ public class CirrusAgentAdministrationTest {
 
     @Test(expected = ServerNotStartedException.class)
     public void shouldHaveErrorWhenInstallBundleWithNotStartedServer() throws Exception {
-        final ICirrusAgentAdministration cirrusAgentAdministration = new CirrusAgentAdministration();
+        final ICirrusAgentAdministration cirrusAgentAdministration = new CirrusAgentAdministration(this.metaDataDAO);
 
 
         final URL bundleURL = this.getClass().getResource("/bundle.jar");
@@ -136,7 +160,7 @@ public class CirrusAgentAdministrationTest {
 
     @Test(expected = ServerNotStartedException.class)
     public void shouldHaveErrorWhenUninstallBundleWithNotStartedServer() throws Exception {
-        final ICirrusAgentAdministration cirrusAgentAdministration = new CirrusAgentAdministration();
+        final ICirrusAgentAdministration cirrusAgentAdministration = new CirrusAgentAdministration(this.metaDataDAO);
 
         cirrusAgentAdministration.uninstallCirrusAgent(new UUIDBasedCirrusAgentIdentifier());
     }

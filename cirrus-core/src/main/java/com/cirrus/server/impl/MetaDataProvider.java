@@ -16,6 +16,7 @@
 
 package com.cirrus.server.impl;
 
+import com.cirrus.agent.ICirrusAgentIdentifier;
 import com.cirrus.data.ICirrusData;
 import com.cirrus.data.ICirrusMetaData;
 import com.cirrus.data.impl.CirrusMetaData;
@@ -23,18 +24,16 @@ import com.cirrus.distribution.event.data.ICirrusDataEvent;
 import com.cirrus.distribution.event.data.ICirrusDataEventVisitor;
 import com.cirrus.distribution.event.data.impl.ICirrusDataCreatedEvent;
 import com.cirrus.distribution.event.data.impl.ICirrusDataRemovedEvent;
-import com.cirrus.agent.ICirrusAgentIdentifier;
-import com.cirrus.server.ICirrusDataListener;
-import com.cirrus.server.IMetaDataProvider;
-import com.cirrus.server.exception.IllegalOperationException;
 import com.cirrus.persistence.IQuery;
 import com.cirrus.persistence.QueryBuilder;
 import com.cirrus.persistence.dao.meta.IMetaDataDAO;
 import com.cirrus.persistence.exception.CirrusMetaDataNotFoundException;
+import com.cirrus.server.ICirrusDataListener;
+import com.cirrus.server.exception.IllegalOperationException;
 
 import java.net.UnknownHostException;
 
-public class MetaDataProvider implements IMetaDataProvider, ICirrusDataListener {
+public class MetaDataProvider implements ICirrusDataListener {
 
     //==================================================================================================================
     // Attributes

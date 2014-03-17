@@ -42,28 +42,25 @@ public class LocalStorageServiceTest {
     //==================================================================================================================
     // Attributes
     //==================================================================================================================
-    private File cirrusRootFile;
+    private File tmpDirectory;
 
     @Before
     public void setUp() {
-        final File tmpDir = IOFileUtils.getTmpDirectory();
-        this.cirrusRootFile = new File(tmpDir, "cirrus");
-        if (this.cirrusRootFile.exists()) {
-            assertTrue(IOFileUtils.deleteDirectory(this.cirrusRootFile));
-        }
-        assertTrue(this.cirrusRootFile.mkdir());
+        this.tmpDirectory = IOFileUtils.getTmpDirectory();
+        assertTrue(this.tmpDirectory.exists());
     }
 
     @After
     public void tearDown() {
-        IOFileUtils.deleteDirectory(this.cirrusRootFile);
+        assertTrue(IOFileUtils.deleteDirectory(this.tmpDirectory));
+        assertFalse(this.tmpDirectory.exists());
     }
 
     @Test
     public void shouldCreateSuccessfullyANewDirectory() throws ServiceRequestFailedException {
         final LocalStorageService localStorageService = createLocalStorageService();
 
-        final File directory = new File(this.cirrusRootFile, "testDirectory");
+        final File directory = new File(this.tmpDirectory, "testDirectory");
         final CirrusFolderData createdCirrusFolder = localStorageService.createDirectory(directory.getPath());
         assertNotNull(createdCirrusFolder);
         assertEquals(createdCirrusFolder.getName(), "testDirectory");
@@ -74,7 +71,7 @@ public class LocalStorageServiceTest {
     public void shouldDeleteSuccessfullyExistingDirectory() throws ServiceRequestFailedException {
         final LocalStorageService localStorageService = createLocalStorageService();
 
-        final File directory = new File(this.cirrusRootFile, "testDirectory");
+        final File directory = new File(this.tmpDirectory, "testDirectory");
         assertTrue(directory.mkdir());
         final ICirrusData delete = localStorageService.delete(directory.getPath());
         assertNotNull(delete);
@@ -87,7 +84,7 @@ public class LocalStorageServiceTest {
     public void shouldDeleteSuccessfullyExistingFile() throws ServiceRequestFailedException, IOException {
         final LocalStorageService localStorageService = createLocalStorageService();
 
-        final File file = new File(this.cirrusRootFile, "testFile");
+        final File file = new File(this.tmpDirectory, "testFile");
         assertTrue(file.createNewFile());
         final ICirrusData delete = localStorageService.delete(file.getPath());
         assertNotNull(delete);
@@ -100,7 +97,7 @@ public class LocalStorageServiceTest {
     public void shouldHaveErrorWhenDeleteNonExistingDirectory() throws ServiceRequestFailedException {
         final LocalStorageService localStorageService = createLocalStorageService();
 
-        final File directory = new File(this.cirrusRootFile, "nonExistingDirectory");
+        final File directory = new File(this.tmpDirectory, "nonExistingDirectory");
         localStorageService.delete(directory.getPath());
     }
 
@@ -108,17 +105,17 @@ public class LocalStorageServiceTest {
     public void shouldHaveErrorWhenDeleteNonExistingFile() throws ServiceRequestFailedException {
         final LocalStorageService localStorageService = createLocalStorageService();
 
-        final File directory = new File(this.cirrusRootFile, "nonExistingFile");
+        final File directory = new File(this.tmpDirectory, "nonExistingFile");
         localStorageService.delete(directory.getPath());
     }
 
     @Test
     public void shouldSuccessfullyTransferFile() throws IOException, ServiceRequestFailedException {
         final LocalStorageService localStorageService = createLocalStorageService();
-        final File sourceFile = new File(this.cirrusRootFile, "sourceFile");
+        final File sourceFile = new File(this.tmpDirectory, "sourceFile");
         assertTrue(sourceFile.createNewFile());
 
-        final File destinationFile = new File(this.cirrusRootFile, "destinationFile");
+        final File destinationFile = new File(this.tmpDirectory, "destinationFile");
         assertFalse(destinationFile.exists());
 
         try (FileInputStream inputStream = new FileInputStream(sourceFile)) {

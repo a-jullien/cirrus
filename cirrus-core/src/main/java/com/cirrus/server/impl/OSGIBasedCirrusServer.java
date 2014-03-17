@@ -16,18 +16,19 @@
 
 package com.cirrus.server.impl;
 
-import com.cirrus.data.ICirrusData;
 import com.cirrus.agent.ICirrusAgent;
 import com.cirrus.agent.ICirrusAgentBundleDescription;
 import com.cirrus.agent.authentication.impl.AccessKeyTrustedToken;
-import com.cirrus.server.osgi.extension.ICirrusStorageService;
+import com.cirrus.data.ICirrusData;
+import com.cirrus.persistence.dao.meta.IMetaDataDAO;
+import com.cirrus.persistence.service.MongoDBService;
 import com.cirrus.server.ICirrusAgentAdministration;
 import com.cirrus.server.ICirrusServer;
-import com.cirrus.server.IMetaDataProvider;
+import com.cirrus.server.ICirrusUserOperations;
 import com.cirrus.server.configuration.CirrusProperties;
 import com.cirrus.server.exception.StartCirrusServerException;
 import com.cirrus.server.exception.StopCirrusServerException;
-import com.cirrus.persistence.service.MongoDBService;
+import com.cirrus.server.osgi.extension.ICirrusStorageService;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -46,8 +47,7 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     public static final Logger LOGGER = Logger.getLogger(LOGGER_NAME);
 
     private final ICirrusAgentAdministration cirrusAgentAdministration;
-    private final IMetaDataProvider metaDataProvider;
-
+    private final ICirrusUserOperations cirrusUserOperations;
 
     //==================================================================================================================
     // Constructors
@@ -56,10 +56,13 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
         super();
         // global properties of the cirrus server
         final CirrusProperties cirrusProperties = new CirrusProperties();
-        this.cirrusAgentAdministration = new CirrusAgentAdministration();
         // create mongodb service
         final MongoDBService mongoDBService = new MongoDBService(cirrusProperties.getProperty(CirrusProperties.MONGODB_URL));
-        this.metaDataProvider = new MetaDataProvider(mongoDBService.getMetaDataDAO());
+        final IMetaDataDAO metaDataDAO = mongoDBService.getMetaDataDAO();
+        // administration for cirrus bundles
+        this.cirrusAgentAdministration = new CirrusAgentAdministration(metaDataDAO);
+        // user operations
+        this.cirrusUserOperations = new CirrusUserOperations();
     }
 
     //==================================================================================================================
@@ -84,8 +87,8 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     }
 
     @Override
-    public IMetaDataProvider getMetaDataProvider() {
-        return this.metaDataProvider;
+    public ICirrusUserOperations getCirrusUserOperations() {
+        return this.cirrusUserOperations;
     }
 
     //==================================================================================================================
