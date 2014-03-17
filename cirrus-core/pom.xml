@@ -63,8 +63,8 @@
                         <Import-Package>
                             !android.*,!dalvik.*,org.osgi.framework,org.osgi.service.packageadmin,org.osgi.service.url,org.osgi.service.startlevel,org.osgi.util.tracker,javax.*,*
                         </Import-Package>
-                        <Main-Class>com.cirrus.osgi.server.impl.OSGIBasedCirrusServer</Main-Class>
-                        <Export-Package>com.cirrus.osgi.extension.*</Export-Package>
+                        <Main-Class>com.cirrus.server.impl.OSGIBasedCirrusServer</Main-Class>
+                        <Export-Package>com.cirrus.server.osgi.extension.*</Export-Package>
                         <Embed-Dependency>*;artifactId=org.apache.felix.framework;inline=true</Embed-Dependency>
                         <Bundle-Vendor>Antoine Jullien</Bundle-Vendor>
                     </instructions>

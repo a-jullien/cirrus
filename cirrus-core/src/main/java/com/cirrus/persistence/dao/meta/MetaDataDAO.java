@@ -18,7 +18,7 @@ package com.cirrus.persistence.dao.meta;
 
 import com.cirrus.data.ICirrusMetaData;
 import com.cirrus.data.impl.CirrusMetaData;
-import com.cirrus.osgi.agent.ICirrusAgentIdentifier;
+import com.cirrus.agent.ICirrusAgentIdentifier;
 import com.cirrus.persistence.IQuery;
 import com.cirrus.persistence.exception.CirrusMetaDataNotFoundException;
 import org.bson.types.ObjectId;

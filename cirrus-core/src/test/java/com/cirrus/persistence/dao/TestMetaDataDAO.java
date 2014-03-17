@@ -18,9 +18,9 @@ package com.cirrus.persistence.dao;
 
 import com.cirrus.data.ICirrusMetaData;
 import com.cirrus.data.impl.CirrusMetaData;
-import com.cirrus.osgi.agent.ICirrusAgentIdentifier;
-import com.cirrus.osgi.agent.impl.NameBasedCirrusAgentIdentifier;
-import com.cirrus.osgi.agent.impl.UUIDBasedCirrusAgentIdentifier;
+import com.cirrus.agent.ICirrusAgentIdentifier;
+import com.cirrus.agent.impl.NameBasedCirrusAgentIdentifier;
+import com.cirrus.agent.impl.UUIDBasedCirrusAgentIdentifier;
 import com.cirrus.persistence.IQuery;
 import com.cirrus.persistence.QueryBuilder;
 import com.cirrus.persistence.dao.meta.IMetaDataDAO;

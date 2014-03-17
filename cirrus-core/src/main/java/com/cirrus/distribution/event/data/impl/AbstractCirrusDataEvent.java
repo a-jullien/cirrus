@@ -17,7 +17,7 @@
 package com.cirrus.distribution.event.data.impl;
 
 import com.cirrus.distribution.event.data.ICirrusDataEvent;
-import com.cirrus.osgi.agent.ICirrusAgentIdentifier;
+import com.cirrus.agent.ICirrusAgentIdentifier;
 
 public abstract class AbstractCirrusDataEvent implements ICirrusDataEvent{
 

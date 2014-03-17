@@ -22,9 +22,9 @@ import java.io.File;
 
 public class IOFileUtils {
 
-    public static File getTmpDir() {
+    public static File getTmpDirectory() {
         final String tmpPath = System.getProperty("java.io.tmpdir", "/tmp");
-        final File file = new File(tmpPath + File.separatorChar + "tmp-test-directory");
+        final File file = new File(tmpPath + File.separatorChar + "cirrus-test-directory");
         if (file.isFile()) {
             throw new RuntimeException("The tmp folder <" + file.getAbsolutePath() + "> should not be a file !");
         }

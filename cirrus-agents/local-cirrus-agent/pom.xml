@@ -42,9 +42,10 @@
                         <Bundle-Vendor>Antoine Jullien</Bundle-Vendor>
                         <Storage-Service-Name>${artifactId}</Storage-Service-Name>
                         <Storage-Service-Version>1.0.0</Storage-Service-Version>
-                        <Storage-Service-Class>com.cirrus.osgi.service.local.LocalStorageService</Storage-Service-Class>
+                        <Storage-Service-Class>com.cirrus.server.osgi.service.local.LocalStorageService</Storage-Service-Class>
                         <Storage-Service-Vendor>Local</Storage-Service-Vendor>
-                        <Import-Package>com.cirrus.osgi.extension.*, com.cirrus.data.*, com.cirrus.osgi.agent.authentication.*</Import-Package>
+                        <Import-Package>com.cirrus.server.osgi.extension.*, com.cirrus.data.*,
+                            com.cirrus.agent.authentication.*</Import-Package>
                         <Export-Package>org.apache.commons.io.*</Export-Package>
                         <Embed-Dependency>*;scope=runtime;inline=true</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>

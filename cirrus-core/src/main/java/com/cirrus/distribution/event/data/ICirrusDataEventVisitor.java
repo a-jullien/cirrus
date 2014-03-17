@@ -18,7 +18,7 @@ package com.cirrus.distribution.event.data;
 
 import com.cirrus.distribution.event.data.impl.ICirrusDataCreatedEvent;
 import com.cirrus.distribution.event.data.impl.ICirrusDataRemovedEvent;
-import com.cirrus.osgi.server.exception.IllegalOperationException;
+import com.cirrus.server.exception.IllegalOperationException;
 
 public interface ICirrusDataEventVisitor {
 

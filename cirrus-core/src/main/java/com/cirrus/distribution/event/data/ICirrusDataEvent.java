@@ -17,7 +17,7 @@
 package com.cirrus.distribution.event.data;
 
 import com.cirrus.distribution.event.IVisitableEvent;
-import com.cirrus.osgi.agent.ICirrusAgentIdentifier;
+import com.cirrus.agent.ICirrusAgentIdentifier;
 
 public interface ICirrusDataEvent extends IVisitableEvent<ICirrusDataEventVisitor> {
 
