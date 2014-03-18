@@ -27,8 +27,12 @@ public class CirrusFolderData extends AbstractCirrusData {
     // Constructors
     //==================================================================================================================
     public CirrusFolderData(final String localPath) {
-        super(localPath);
+        super(localPath, DataType.DIRECTORY);
     }
+
+    //==================================================================================================================
+    // Public
+    //==================================================================================================================
 
     @Override
     public String toString() {

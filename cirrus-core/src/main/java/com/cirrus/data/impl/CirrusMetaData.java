@@ -29,12 +29,13 @@ public class CirrusMetaData implements ICirrusMetaData {
     @ObjectId // auto
     private String id;
     private String name;
-    private String mediaType;
     private long creationDate;
     private String cirrusAgentType;
     private String cirrusAgentId;
     private String localPath;
     private String virtualPath;
+    private DataType dataType;
+    private String mediaType;
 
     //==================================================================================================================
     // Constructors
@@ -46,17 +47,18 @@ public class CirrusMetaData implements ICirrusMetaData {
     //==================================================================================================================
     // Getters
     //==================================================================================================================
+
     @Override
     public String getId() {
         return this.id;
     }
 
-    public String getName() {
-        return name;
+    public DataType getDataType() {
+        return dataType;
     }
 
-    public String getMediaType() {
-        return mediaType;
+    public String getName() {
+        return name;
     }
 
     public long getCreationDate() {
@@ -79,15 +81,23 @@ public class CirrusMetaData implements ICirrusMetaData {
         return virtualPath;
     }
 
+    public String getMediaType() {
+        return mediaType;
+    }
+
     //==================================================================================================================
     // Setters
     //==================================================================================================================
-    public void setName(final String name) {
-        this.name = name;
+    public void setId(final String id) {
+        this.id = id;
     }
 
-    public void setMediaType(final String mediaType) {
-        this.mediaType = mediaType;
+    public void setDataType(final DataType dataType) {
+        this.dataType = dataType;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
     }
 
     public void setCreationDate(final long creationDate) {
@@ -110,7 +120,7 @@ public class CirrusMetaData implements ICirrusMetaData {
         this.virtualPath = virtualPath;
     }
 
-    public void setId(final String id) {
-        this.id = id;
+    public void setMediaType(final String mediaType) {
+        this.mediaType = mediaType;
     }
 }

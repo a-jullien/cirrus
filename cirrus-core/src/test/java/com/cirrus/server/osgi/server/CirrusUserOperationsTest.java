@@ -18,17 +18,75 @@
 
 package com.cirrus.server.osgi.server;
 
-import com.cirrus.server.ICirrusUserOperations;
-import com.cirrus.server.impl.CirrusUserOperations;
+import com.cirrus.data.ICirrusMetaData;
+import com.cirrus.data.impl.DataType;
+import com.cirrus.persistence.dao.meta.IMetaDataDAO;
+import com.cirrus.persistence.service.MongoDBService;
+import com.cirrus.server.configuration.CirrusProperties;
+import com.cirrus.server.impl.CirrusAgentManager;
+import com.cirrus.server.impl.CirrusUserOperationManager;
+import com.cirrus.utils.IOFileUtils;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import static com.mongodb.util.MyAsserts.assertEquals;
+import static com.mongodb.util.MyAsserts.assertTrue;
+import static junit.framework.Assert.assertNotNull;
 
 public class CirrusUserOperationsTest {
 
-    @Test(expected = Error.class)
-    public void shouldCreateSuccessfullyANonExistingDirectory() {
-        final ICirrusUserOperations userOperations = new CirrusUserOperations();
-        userOperations.createDirectory("/A");
+    //==================================================================================================================
+    // Attributes
+    //==================================================================================================================
+    private CirrusUserOperationManager cirrusOperations;
+    private IMetaDataDAO metaDataDAO;
 
-        // TODO
+    @Before
+    public void setUp() throws Exception {
+        this.metaDataDAO = this.createMetadataDAO();
+
+        final URL bundleURL = this.getClass().getResource("/bundle.jar");
+        assertNotNull(bundleURL);
+
+        final CirrusAgentManager cirrusAgentManager = new CirrusAgentManager();
+        cirrusAgentManager.start();
+        cirrusAgentManager.installCirrusAgent(bundleURL.toExternalForm());
+        this.cirrusOperations = new CirrusUserOperationManager(cirrusAgentManager, this.metaDataDAO);
+    }
+
+    @After
+    public void tearDown() {
+        this.metaDataDAO.dropCollection();
+    }
+
+    @Test
+    public void shouldCreateSuccessfullyANonExistingDirectory() throws ExecutionException {
+        this.cirrusOperations.createDirectory("/A");
+        final List<ICirrusMetaData> result = this.cirrusOperations.listCirrusData("/");
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        final ICirrusMetaData metaData = result.get(0);
+        assertEquals("A", metaData.getName());
+        assertEquals(DataType.DIRECTORY, metaData.getDataType());
+        assertEquals("/", metaData.getVirtualPath());
+        assertEquals("/cirrus/A", metaData.getLocalPath());
+    }
+
+    //==================================================================================================================
+    // Private
+    //==================================================================================================================
+    private IMetaDataDAO createMetadataDAO() throws IOException {
+        // global properties of the cirrus server
+        final CirrusProperties cirrusProperties = new CirrusProperties();
+        // create mongodb service
+        final MongoDBService mongoDBService = new MongoDBService(cirrusProperties.getProperty(CirrusProperties.MONGODB_URL));
+        return mongoDBService.getMetaDataDAO();
     }
 }

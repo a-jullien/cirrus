@@ -31,20 +31,11 @@ public interface ICirrusStorageService<TrustedToken extends IStorageServiceTrust
     //==================================================================================================================
     // Constants
     //==================================================================================================================
+    String ROOT_DIRECTORY_NAME = "cirrus";
     String SERVICE_NAME_PROPERTY = "Storage-Service-Name";
     String SERVICE_VERSION_PROPERTY = "Storage-Service-Version";
     String SERVICE_VENDOR_PROPERTY = "Storage-Service-Vendor";
     String SERVICE_CLASS_PROPERTY = "Storage-Service-Class";
-
-    /**
-     * Register specified listener in order to notify changes in data management
-     */
-    void registerListener(final ICirrusDataListener listener);
-
-    /**
-     * Unregister specified listener
-     */
-    void unregisterListener(final ICirrusDataListener listener);
 
     /**
      * Authenticates from specified authentication mechanism

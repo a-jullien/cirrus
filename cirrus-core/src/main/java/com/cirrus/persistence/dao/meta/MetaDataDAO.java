@@ -16,9 +16,9 @@
 
 package com.cirrus.persistence.dao.meta;
 
+import com.cirrus.agent.ICirrusAgentIdentifier;
 import com.cirrus.data.ICirrusMetaData;
 import com.cirrus.data.impl.CirrusMetaData;
-import com.cirrus.agent.ICirrusAgentIdentifier;
 import com.cirrus.persistence.IQuery;
 import com.cirrus.persistence.exception.CirrusMetaDataNotFoundException;
 import org.bson.types.ObjectId;
@@ -92,8 +92,14 @@ public class MetaDataDAO implements IMetaDataDAO {
     }
 
     @Override
-    public ICirrusMetaData findMetaData(final IQuery query) {
-        return this.metaDataCollection.findOne(query.toExternal()).as(CirrusMetaData.class);
+    public List<ICirrusMetaData> findMetaData(final IQuery query) {
+        final List<ICirrusMetaData> result = new ArrayList<>();
+        final Iterable<CirrusMetaData> cirrusMetaDatas = this.metaDataCollection.find(query.toExternal()).as(CirrusMetaData.class);
+        for (final CirrusMetaData cirrusMetaData : cirrusMetaDatas) {
+            result.add(cirrusMetaData);
+        }
+
+        return result;
     }
 
     //==================================================================================================================

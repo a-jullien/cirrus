@@ -45,6 +45,11 @@ public class DropBoxStorageService extends AbstractStorageService<AccessKeyTrust
         super();
     }
 
+    @Override
+    public void initializeCirrusRootDirectory() {
+        // TODO root directory
+    }
+
     //==================================================================================================================
     // Public
     //==================================================================================================================
@@ -96,7 +101,8 @@ public class DropBoxStorageService extends AbstractStorageService<AccessKeyTrust
         final List<ICirrusData> result = new ArrayList<>();
 
         try {
-            final DbxEntry.WithChildren listing = this.client.getMetadataWithChildren("/");
+            final String rootDirectory = this.getRootDirectoryPath();
+            final DbxEntry.WithChildren listing = this.client.getMetadataWithChildren(rootDirectory);
             for (final DbxEntry child : listing.children) {
                 final ICirrusData cirrusData;
                 final boolean isFile = child.isFile();
@@ -121,7 +127,7 @@ public class DropBoxStorageService extends AbstractStorageService<AccessKeyTrust
         try {
             this.checkAuthenticationToken();
 
-            final DbxEntry.Folder folder = this.client.createFolder(path);
+            final DbxEntry.Folder folder = this.client.createFolder(this.getRootDirectoryPath() + '/' + path);
             return new CirrusFolderData(folder.path);
         } catch (final AuthenticationException | DbxException e) {
             throw new ServiceRequestFailedException(e);
@@ -133,8 +139,9 @@ public class DropBoxStorageService extends AbstractStorageService<AccessKeyTrust
         try {
             this.checkAuthenticationToken();
 
-            final DbxEntry metadata = this.client.getMetadata(path);
-            this.client.delete(path);
+            final String newPath = this.getRootDirectoryPath() + '/' + path;
+            final DbxEntry metadata = this.client.getMetadata(newPath);
+            this.client.delete(newPath);
             if (metadata.isFile()) {
                 return new CirrusFileData(metadata.path);
             } else {
@@ -150,7 +157,7 @@ public class DropBoxStorageService extends AbstractStorageService<AccessKeyTrust
         try {
             this.checkAuthenticationToken();
 
-            final DbxEntry.File uploadedFile = this.client.uploadFile(filePath, DbxWriteMode.add(), fileSize, inputStream);
+            final DbxEntry.File uploadedFile = this.client.uploadFile(this.getRootDirectoryPath() + '/' + filePath, DbxWriteMode.add(), fileSize, inputStream);
             return new CirrusFileData(uploadedFile.path);
 
         } catch (final AuthenticationException | DbxException | IOException e) {
@@ -166,5 +173,9 @@ public class DropBoxStorageService extends AbstractStorageService<AccessKeyTrust
         if (this.client == null) {
             throw new AuthenticationException("The authentication token is not valid");
         }
+    }
+
+    private String getRootDirectoryPath() {
+        return "/" + ROOT_DIRECTORY_NAME;
     }
 }

@@ -17,40 +17,20 @@
 package com.cirrus.server.osgi.extension;
 
 import com.cirrus.agent.authentication.IStorageServiceTrustedToken;
-import com.cirrus.server.ICirrusDataListener;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public abstract class AbstractStorageService<TrustedToken extends IStorageServiceTrustedToken> implements ICirrusStorageService<TrustedToken> {
 
     //==================================================================================================================
     // Private
     //==================================================================================================================
-    protected List<ICirrusDataListener> listeners;
 
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
     protected AbstractStorageService() {
         super();
-        this.listeners = new ArrayList<>();
+        this.initializeCirrusRootDirectory();
     }
 
-    //==================================================================================================================
-    // Public
-    //==================================================================================================================
-    @Override
-    public void registerListener(final ICirrusDataListener listener) {
-        if (!this.listeners.contains(listener)) {
-            this.listeners.add(listener);
-        }
-    }
-
-    @Override
-    public void unregisterListener(final ICirrusDataListener listener) {
-        if (this.listeners.contains(listener)) {
-            this.listeners.remove(listener);
-        }
-    }
+    public abstract void initializeCirrusRootDirectory();
 }

@@ -16,15 +16,16 @@
 
 package com.cirrus.server.osgi.server;
 
+import com.cirrus.agent.impl.NameBasedCirrusAgentIdentifier;
 import com.cirrus.data.ICirrusMetaData;
 import com.cirrus.data.impl.CirrusFileData;
+import com.cirrus.data.impl.DataType;
 import com.cirrus.distribution.event.data.impl.CirrusDataCreatedEvent;
 import com.cirrus.distribution.event.data.impl.CirrusDataRemovedEvent;
-import com.cirrus.agent.impl.NameBasedCirrusAgentIdentifier;
-import com.cirrus.server.exception.IllegalOperationException;
-import com.cirrus.server.impl.MetaDataProvider;
 import com.cirrus.persistence.dao.meta.IMetaDataDAO;
 import com.cirrus.persistence.service.MongoDBService;
+import com.cirrus.server.exception.IllegalOperationException;
+import com.cirrus.server.impl.MetaDataNotifier;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,11 +60,11 @@ public class TestMetaDataProvider {
 
     @Test
     public void shouldHaveSuccessfullyStoredMetaDataAfterReceiveCreatedEvent() throws UnknownHostException, IllegalOperationException {
-        final MetaDataProvider metaDataProvider = new MetaDataProvider(this.metaDataDAO);
+        final MetaDataNotifier metaDataNotifier = new MetaDataNotifier(this.metaDataDAO);
         final NameBasedCirrusAgentIdentifier cirrusAgentId = new NameBasedCirrusAgentIdentifier("myCirrusAgent");
         final CirrusFileData cirrusData = new CirrusFileData("/tmp/flunny");
         final CirrusDataCreatedEvent createdEvent = new CirrusDataCreatedEvent(cirrusAgentId, "/cirrus/project/A", cirrusData);
-        metaDataProvider.handleCirrusDataEvent(createdEvent);
+        metaDataNotifier.handleCirrusDataEvent(createdEvent);
 
         final List<ICirrusMetaData> metaDataList = this.metaDataDAO.listMetaDataByCirrusAgentId(cirrusAgentId);
         assertNotNull(metaDataList);
@@ -74,7 +75,7 @@ public class TestMetaDataProvider {
         assertEquals("myCirrusAgent", storedMetaData.getCirrusAgentId());
         assertEquals("/tmp/flunny", storedMetaData.getLocalPath());
         assertEquals("", storedMetaData.getCirrusAgentType());
-        assertEquals("", storedMetaData.getMediaType());
+        assertEquals(DataType.FILE, storedMetaData.getDataType());
         assertEquals("/cirrus/project/A", storedMetaData.getVirtualPath());
         assertTrue(storedMetaData.getCreationDate() > 1);
     }
@@ -82,18 +83,18 @@ public class TestMetaDataProvider {
     @Test
     public void shouldHaveSuccessfullyRemovedMetaDataAfterReceiveRemovedEvent() throws UnknownHostException, IllegalOperationException {
 
-        final MetaDataProvider metaDataProvider = new MetaDataProvider(this.metaDataDAO);
+        final MetaDataNotifier metaDataNotifier = new MetaDataNotifier(this.metaDataDAO);
         final NameBasedCirrusAgentIdentifier cirrusAgentId = new NameBasedCirrusAgentIdentifier("myCirrusAgent");
         final CirrusFileData cirrusData = new CirrusFileData("/tmp/flunny");
         final CirrusDataCreatedEvent createdEvent = new CirrusDataCreatedEvent(cirrusAgentId, "/cirrus/project/A", cirrusData);
-        metaDataProvider.handleCirrusDataEvent(createdEvent);
+        metaDataNotifier.handleCirrusDataEvent(createdEvent);
 
         final List<ICirrusMetaData> metaDataListAfterCreatedEvent = this.metaDataDAO.listMetaDataByCirrusAgentId(cirrusAgentId);
         assertNotNull(metaDataListAfterCreatedEvent);
         assertEquals(1, metaDataListAfterCreatedEvent.size());
 
         final CirrusDataRemovedEvent cirrusDataRemovedEvent = new CirrusDataRemovedEvent(cirrusAgentId, "/cirrus/project/A", cirrusData);
-        metaDataProvider.handleCirrusDataEvent(cirrusDataRemovedEvent);
+        metaDataNotifier.handleCirrusDataEvent(cirrusDataRemovedEvent);
 
         final List<ICirrusMetaData> metaDataListAfterRemovedEvent = this.metaDataDAO.listMetaDataByCirrusAgentId(cirrusAgentId);
         assertNotNull(metaDataListAfterRemovedEvent);

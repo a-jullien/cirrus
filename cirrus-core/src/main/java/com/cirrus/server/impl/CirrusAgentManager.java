@@ -19,8 +19,7 @@ package com.cirrus.server.impl;
 import com.cirrus.agent.ICirrusAgent;
 import com.cirrus.agent.ICirrusAgentIdentifier;
 import com.cirrus.agent.impl.CirrusAgent;
-import com.cirrus.persistence.dao.meta.IMetaDataDAO;
-import com.cirrus.server.ICirrusAgentAdministration;
+import com.cirrus.server.ICirrusAgentManager;
 import com.cirrus.server.exception.*;
 import com.cirrus.server.utils.ConfigUtil;
 import org.osgi.framework.Bundle;
@@ -35,7 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
 
-public class CirrusAgentAdministration implements ICirrusAgentAdministration {
+public class CirrusAgentManager implements ICirrusAgentManager {
 
     //==================================================================================================================
     // Constants
@@ -47,18 +46,14 @@ public class CirrusAgentAdministration implements ICirrusAgentAdministration {
     //==================================================================================================================
     private final Framework framework;
     private final List<ICirrusAgent> cirrusAgents;
-    private final MetaDataProvider metaDataProvider;
-
 
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
-    public CirrusAgentAdministration(final IMetaDataDAO metaDataDAO) throws IOException {
+    public CirrusAgentManager() throws IOException {
         super();
         this.cirrusAgents = new ArrayList<>();
         this.framework = this.createFramework();
-
-        this.metaDataProvider = new MetaDataProvider(metaDataDAO);
     }
 
     //==================================================================================================================
@@ -100,7 +95,7 @@ public class CirrusAgentAdministration implements ICirrusAgentAdministration {
     public void installCirrusAgent(final String cirrusAgentPath) throws CirrusAgentInstallationException, StartCirrusAgentException, CirrusAgentAlreadyExistException, ServerNotStartedException {
         this.checkServerIdStarted();
 
-        OSGIBasedCirrusServer.LOGGER.info(COMPONENT_NAME + " Try to install bundle '" + cirrusAgentPath + "'");
+        OSGIBasedCirrusServer.LOGGER.info(COMPONENT_NAME + " Install bundle '" + cirrusAgentPath + "'");
         final BundleContext bundleContext = this.framework.getBundleContext();
         try {
             final Bundle bundle = bundleContext.installBundle(cirrusAgentPath);
@@ -113,7 +108,6 @@ public class CirrusAgentAdministration implements ICirrusAgentAdministration {
 
                 OSGIBasedCirrusServer.LOGGER.info(COMPONENT_NAME + " New bundle available: " + cirrusAgent);
                 cirrusAgent.start();
-                cirrusAgent.getStorageService().registerListener(this.metaDataProvider);
                 OSGIBasedCirrusServer.LOGGER.info(COMPONENT_NAME + " Bundle " + cirrusAgent + " successfully started");
 
             }
@@ -133,7 +127,6 @@ public class CirrusAgentAdministration implements ICirrusAgentAdministration {
         } else {
             cirrusAgentById.stop();
             cirrusAgentById.uninstall();
-            cirrusAgentById.getStorageService().unregisterListener(this.metaDataProvider);
             this.cirrusAgents.remove(cirrusAgentById);
         }
     }

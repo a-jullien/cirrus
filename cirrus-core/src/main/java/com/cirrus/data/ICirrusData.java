@@ -16,9 +16,16 @@
 
 package com.cirrus.data;
 
+import com.cirrus.data.impl.DataType;
+
 import java.io.Serializable;
 
 public interface ICirrusData extends Serializable {
+
+    /**
+     * Returns the type of the data (file or directory)
+     */
+    DataType getDataType();
 
     /**
      * Returns the creation time of the data. Never <code>null</code>

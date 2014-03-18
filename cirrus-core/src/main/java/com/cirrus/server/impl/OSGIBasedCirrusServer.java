@@ -22,9 +22,9 @@ import com.cirrus.agent.authentication.impl.AccessKeyTrustedToken;
 import com.cirrus.data.ICirrusData;
 import com.cirrus.persistence.dao.meta.IMetaDataDAO;
 import com.cirrus.persistence.service.MongoDBService;
-import com.cirrus.server.ICirrusAgentAdministration;
+import com.cirrus.server.ICirrusAgentManager;
 import com.cirrus.server.ICirrusServer;
-import com.cirrus.server.ICirrusUserOperations;
+import com.cirrus.server.ICirrusUserOperationManager;
 import com.cirrus.server.configuration.CirrusProperties;
 import com.cirrus.server.exception.StartCirrusServerException;
 import com.cirrus.server.exception.StopCirrusServerException;
@@ -46,8 +46,8 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     //==================================================================================================================
     public static final Logger LOGGER = Logger.getLogger(LOGGER_NAME);
 
-    private final ICirrusAgentAdministration cirrusAgentAdministration;
-    private final ICirrusUserOperations cirrusUserOperations;
+    private final ICirrusAgentManager cirrusAgentManager;
+    private final ICirrusUserOperationManager cirrusUserOperations;
 
     //==================================================================================================================
     // Constructors
@@ -60,9 +60,9 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
         final MongoDBService mongoDBService = new MongoDBService(cirrusProperties.getProperty(CirrusProperties.MONGODB_URL));
         final IMetaDataDAO metaDataDAO = mongoDBService.getMetaDataDAO();
         // administration for cirrus bundles
-        this.cirrusAgentAdministration = new CirrusAgentAdministration(metaDataDAO);
+        this.cirrusAgentManager = new CirrusAgentManager();
         // user operations
-        this.cirrusUserOperations = new CirrusUserOperations();
+        this.cirrusUserOperations = new CirrusUserOperationManager(this.cirrusAgentManager, metaDataDAO);
     }
 
     //==================================================================================================================
@@ -72,22 +72,22 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     @Override
     public void start() throws StartCirrusServerException {
         // start cirrus agent manager
-        this.cirrusAgentAdministration.start();
+        this.cirrusAgentManager.start();
     }
 
     @Override
     public void stop() throws StopCirrusServerException {
         // stop cirrus agent manager
-        this.cirrusAgentAdministration.stop();
+        this.cirrusAgentManager.stop();
     }
 
     @Override
-    public ICirrusAgentAdministration getCirrusAgentAdministration() {
-        return this.cirrusAgentAdministration;
+    public ICirrusAgentManager getCirrusAgentManager() {
+        return this.cirrusAgentManager;
     }
 
     @Override
-    public ICirrusUserOperations getCirrusUserOperations() {
+    public ICirrusUserOperationManager getCirrusUserOperations() {
         return this.cirrusUserOperations;
     }
 
@@ -99,7 +99,7 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
         final OSGIBasedCirrusServer osgiBasedCirrusServer = new OSGIBasedCirrusServer();
         osgiBasedCirrusServer.start();
 
-        final ICirrusAgentAdministration agentAdministration = osgiBasedCirrusServer.getCirrusAgentAdministration();
+        final ICirrusAgentManager agentAdministration = osgiBasedCirrusServer.getCirrusAgentManager();
 
         final String trustedToken = args[0];
 

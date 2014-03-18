@@ -16,11 +16,12 @@
 
 package com.cirrus.persistence.dao;
 
-import com.cirrus.data.ICirrusMetaData;
-import com.cirrus.data.impl.CirrusMetaData;
 import com.cirrus.agent.ICirrusAgentIdentifier;
 import com.cirrus.agent.impl.NameBasedCirrusAgentIdentifier;
 import com.cirrus.agent.impl.UUIDBasedCirrusAgentIdentifier;
+import com.cirrus.data.ICirrusMetaData;
+import com.cirrus.data.impl.CirrusMetaData;
+import com.cirrus.data.impl.DataType;
 import com.cirrus.persistence.IQuery;
 import com.cirrus.persistence.QueryBuilder;
 import com.cirrus.persistence.dao.meta.IMetaDataDAO;
@@ -35,7 +36,6 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 public class TestMetaDataDAO {
 
@@ -64,7 +64,7 @@ public class TestMetaDataDAO {
 
     @Test
     public void shouldSuccessfullySaveMetaData() {
-        this.metaDataDAO.save(this.createCirrusMetaData());
+        this.metaDataDAO.save(this.createCirrusFileMetaData());
         final String uuid = "1f553132-43e0-4fd3-9e50-fcf1d0adc978";
         final List<ICirrusMetaData> metaDataFromDatabase =
                 this.metaDataDAO.listMetaDataByCirrusAgentId(new NameBasedCirrusAgentIdentifier(uuid));
@@ -77,7 +77,7 @@ public class TestMetaDataDAO {
 
     @Test
     public void shouldSuccessfullyRemoveExistingMetaData() throws CirrusMetaDataNotFoundException {
-        final ICirrusMetaData cirrusMetaData = this.createCirrusMetaData();
+        final ICirrusMetaData cirrusMetaData = this.createCirrusFileMetaData();
         this.metaDataDAO.save(cirrusMetaData);
         this.metaDataDAO.delete(cirrusMetaData.getId());
 
@@ -87,7 +87,7 @@ public class TestMetaDataDAO {
 
     @Test
     public void shouldSuccessfullyUpdateExistingMetaData() throws CirrusMetaDataNotFoundException {
-        final CirrusMetaData cirrusMetaData = this.createCirrusMetaData();
+        final CirrusMetaData cirrusMetaData = this.createCirrusFileMetaData();
         this.metaDataDAO.save(cirrusMetaData);
 
         cirrusMetaData.setName("myFile.txt.copy");
@@ -102,7 +102,7 @@ public class TestMetaDataDAO {
 
     @Test
     public void shouldRetrieveSuccessfullyMetaDataFromIdentifier() {
-        final CirrusMetaData cirrusMetaData = this.createCirrusMetaData();
+        final CirrusMetaData cirrusMetaData = this.createCirrusFileMetaData();
         this.metaDataDAO.save(cirrusMetaData);
 
         final ICirrusMetaData dataById = this.metaDataDAO.getMetaDataById(cirrusMetaData.getId());
@@ -113,9 +113,9 @@ public class TestMetaDataDAO {
 
     @Test(expected = CirrusMetaDataNotFoundException.class)
     public void shouldHaveErrorWhenTryToUpdateNonExistingMetaData() throws CirrusMetaDataNotFoundException {
-        final CirrusMetaData cirrusMetaData = this.createCirrusMetaData();
-        cirrusMetaData.setId("5317109c58126fa0941fb57f");
-        this.metaDataDAO.update(cirrusMetaData);
+        final CirrusMetaData cirrusFileMetaData = this.createCirrusFileMetaData();
+        cirrusFileMetaData.setId("5317109c58126fa0941fb57f");
+        this.metaDataDAO.update(cirrusFileMetaData);
     }
 
     @Test(expected = CirrusMetaDataNotFoundException.class)
@@ -125,31 +125,34 @@ public class TestMetaDataDAO {
 
     @Test
     public void shouldRetrieveSuccessfullyExistingMetaDataWithOtherCriteria() {
-        final CirrusMetaData cirrusMetaData = this.createCirrusMetaData();
+        final CirrusMetaData cirrusMetaData = this.createCirrusFileMetaData();
         this.metaDataDAO.save(cirrusMetaData);
 
         final NameBasedCirrusAgentIdentifier sourceCirrusAgentId = new NameBasedCirrusAgentIdentifier("1f553132-43e0-4fd3-9e50-fcf1d0adc978");
         final IQuery query = this.createQuery(sourceCirrusAgentId);
-        final ICirrusMetaData metaData = this.metaDataDAO.findMetaData(query);
-        assertNotNull(metaData);
+        final List<ICirrusMetaData> metaDataList = this.metaDataDAO.findMetaData(query);
+        assertNotNull(metaDataList);
+        assertEquals(1, metaDataList.size());
     }
 
     @Test
     public void shouldFailOnNonExistingMetaDataWithOtherCriteria() {
-        final CirrusMetaData cirrusMetaData = this.createCirrusMetaData();
+        final CirrusMetaData cirrusMetaData = this.createCirrusFileMetaData();
         this.metaDataDAO.save(cirrusMetaData);
 
         final UUIDBasedCirrusAgentIdentifier sourceCirrusAgentId = new UUIDBasedCirrusAgentIdentifier();
         final IQuery query = this.createQuery(sourceCirrusAgentId);
-        final ICirrusMetaData metaData = this.metaDataDAO.findMetaData(query);
-        assertNull(metaData);
+        final List<ICirrusMetaData> cirrusMetaDataList = this.metaDataDAO.findMetaData(query);
+        assertNotNull(cirrusMetaDataList);
+        assertEquals(0, cirrusMetaDataList.size());
     }
     //==================================================================================================================
     // Private
     //==================================================================================================================
-    private CirrusMetaData createCirrusMetaData() {
+    private CirrusMetaData createCirrusFileMetaData() {
         final CirrusMetaData cirrusMetaData = new CirrusMetaData();
         cirrusMetaData.setName("myFile.txt");
+        cirrusMetaData.setDataType(DataType.FILE);
         cirrusMetaData.setCirrusAgentId("1f553132-43e0-4fd3-9e50-fcf1d0adc978");
         cirrusMetaData.setCirrusAgentType("dropbox");
         cirrusMetaData.setCreationDate(1393367761472L);
@@ -166,6 +169,7 @@ public class TestMetaDataDAO {
         assertEquals(1393367761472L, cirrusMetaData.getCreationDate());
         assertEquals("1f553132-43e0-4fd3-9e50-fcf1d0adc978", cirrusMetaData.getCirrusAgentId());
         assertEquals("dropbox", cirrusMetaData.getCirrusAgentType());
+        assertEquals(DataType.FILE, cirrusMetaData.getDataType());
         assertEquals("text/plain", cirrusMetaData.getMediaType());
     }
 

@@ -16,41 +16,55 @@
  *
  */
 
-package com.cirrus.distribution.scheduler.action;
+package com.cirrus.distribution.scheduler;
 
 import com.cirrus.agent.ICirrusAgent;
-import com.cirrus.data.impl.CirrusFolderData;
-import com.cirrus.distribution.scheduler.ActionType;
-import com.cirrus.server.osgi.extension.ICirrusStorageService;
+import com.cirrus.server.ICirrusAgentManager;
 
-public class CreateDirectoryAction extends AbstractAction<CirrusFolderData> {
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+public class CirrusScheduler {
 
     //==================================================================================================================
     // Private
     //==================================================================================================================
-    private final String path;
+    private final ICirrusAgentManager cirrusAgentAdministration;
+    private final ExecutorService executor;
 
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
-    public CreateDirectoryAction(final ICirrusAgent cirrusAgent, final String path) {
-        super(cirrusAgent, ActionType.CREATE_DIRECTORY);
-        this.path = path;
+    public CirrusScheduler(final ICirrusAgentManager cirrusAgentAdministration) {
+        this.cirrusAgentAdministration = cirrusAgentAdministration;
+        this.executor = Executors.newSingleThreadExecutor();
     }
 
     //==================================================================================================================
     // Public
     //==================================================================================================================
 
-    @Override
-    public CirrusFolderData call() throws Exception {
-        final ICirrusAgent cirrusAgent = this.getCirrusAgent();
-        final ICirrusStorageService storageService = cirrusAgent.getStorageService();
-        return storageService.createDirectory(this.path);
+    public ICirrusAgent findAgent() {
+        final List<ICirrusAgent> allAgents = this.cirrusAgentAdministration.listCirrusAgents();
+        if (allAgents.size() == 0) {
+            throw new Error("No available agents"); // TODO
+        } else {
+            // TODO heuristics
+            return allAgents.get(0);
+        }
     }
 
-    //==================================================================================================================
-    // Private
-    //==================================================================================================================
 
+
+    public <T> T scheduleAction(final IUserAction<T> action) throws ExecutionException {
+        final Future<T> result = this.executor.submit(action);
+        try {
+            return result.get();
+        } catch (final InterruptedException e) {
+            throw new ExecutionException(e);
+        }
+    }
 }

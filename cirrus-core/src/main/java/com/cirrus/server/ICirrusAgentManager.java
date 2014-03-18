@@ -22,7 +22,7 @@ import com.cirrus.server.exception.*;
 
 import java.util.List;
 
-public interface ICirrusAgentAdministration {
+public interface ICirrusAgentManager {
 
     /**
      * start cirrus bundle handler

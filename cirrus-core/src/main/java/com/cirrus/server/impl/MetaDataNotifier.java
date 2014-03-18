@@ -31,9 +31,9 @@ import com.cirrus.persistence.exception.CirrusMetaDataNotFoundException;
 import com.cirrus.server.ICirrusDataListener;
 import com.cirrus.server.exception.IllegalOperationException;
 
-import java.net.UnknownHostException;
+import java.util.List;
 
-public class MetaDataProvider implements ICirrusDataListener {
+public class MetaDataNotifier implements ICirrusDataListener {
 
     //==================================================================================================================
     // Attributes
@@ -43,7 +43,7 @@ public class MetaDataProvider implements ICirrusDataListener {
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
-    public MetaDataProvider(final IMetaDataDAO metaDataDAO) throws UnknownHostException {
+    public MetaDataNotifier(final IMetaDataDAO metaDataDAO) {
         super();
         this.metaDataDAO = metaDataDAO;
     }
@@ -56,7 +56,7 @@ public class MetaDataProvider implements ICirrusDataListener {
     public void handleCirrusDataEvent(final ICirrusDataEvent cirrusDataEvent) throws IllegalOperationException {
         cirrusDataEvent.accept(new ICirrusDataEventVisitor() {
             @Override
-            public void visit(final ICirrusDataCreatedEvent createdEvent) {
+            public void visit(final ICirrusDataCreatedEvent createdEvent) throws IllegalOperationException {
                 performCirrusDataCreatedEvent(createdEvent);
             }
 
@@ -84,19 +84,19 @@ public class MetaDataProvider implements ICirrusDataListener {
                 .appendCriteria("virtualPath", virtualPath);
 
         final IQuery query = queryBuilder.buildQuery();
-        final ICirrusMetaData metaData = this.metaDataDAO.findMetaData(query);
-        if (metaData == null) {
+        final List<ICirrusMetaData> metaDataList = this.metaDataDAO.findMetaData(query);
+        if (metaDataList.size() == 0) {
             throw new IllegalOperationException("Could not retrieve meta data for query <" + query + ">");
         } else {
             try {
-                this.metaDataDAO.delete(metaData.getId());
+                this.metaDataDAO.delete(metaDataList.get(0).getId());
             } catch (final CirrusMetaDataNotFoundException e) {
                 throw new IllegalOperationException(e);
             }
         }
     }
 
-    private void performCirrusDataCreatedEvent(final ICirrusDataCreatedEvent createdEvent) {
+    private void performCirrusDataCreatedEvent(final ICirrusDataCreatedEvent createdEvent) throws IllegalOperationException {
         final long eventTimeStamp = createdEvent.getEventTimeStamp();
         final ICirrusAgentIdentifier sourceCirrusAgentId = createdEvent.getSourceCirrusAgentId();
         final String virtualPath = createdEvent.getVirtualPath();
@@ -108,16 +108,17 @@ public class MetaDataProvider implements ICirrusDataListener {
     }
 
 
-    private static ICirrusMetaData createMetaDataFrom(final long creationTime, final ICirrusAgentIdentifier sourceId, final String virtualPath, final ICirrusData cirrusData) {
-        final CirrusMetaData cirrusMetaData = new CirrusMetaData();
-        cirrusMetaData.setName(cirrusData.getName());
-        cirrusMetaData.setMediaType(""); // TODO media type
-        cirrusMetaData.setLocalPath(cirrusData.getPath());
-        cirrusMetaData.setCreationDate(creationTime);
-        cirrusMetaData.setCirrusAgentId(sourceId.toExternal());
-        cirrusMetaData.setVirtualPath(virtualPath);
-        cirrusMetaData.setCirrusAgentType(""); // TODO
+    private static ICirrusMetaData createMetaDataFrom(final long creationTime, final ICirrusAgentIdentifier sourceId, final String virtualPath, final ICirrusData cirrusData) throws IllegalOperationException {
+        final CirrusMetaData metaData = new CirrusMetaData();
+        metaData.setDataType(cirrusData.getDataType());
+        metaData.setName(cirrusData.getName());
+        metaData.setLocalPath(cirrusData.getPath());
+        metaData.setCreationDate(creationTime);
+        metaData.setCirrusAgentId(sourceId.toExternal());
+        metaData.setVirtualPath(virtualPath);
+        metaData.setCirrusAgentType(""); // TODO
+        metaData.setMediaType(""); // TODO media type
+        return metaData;
 
-        return cirrusMetaData;
     }
 }

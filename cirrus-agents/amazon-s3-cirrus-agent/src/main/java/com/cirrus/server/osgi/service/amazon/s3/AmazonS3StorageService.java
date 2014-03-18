@@ -44,6 +44,11 @@ public class AmazonS3StorageService extends AbstractStorageService<AccessKeyPass
         super();
     }
 
+    @Override
+    public void initializeCirrusRootDirectory() {
+        // TODO root directory
+    }
+
     //==================================================================================================================
     // Public
     //==================================================================================================================

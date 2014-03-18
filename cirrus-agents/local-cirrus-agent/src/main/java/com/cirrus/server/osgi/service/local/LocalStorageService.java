@@ -33,10 +33,23 @@ import java.util.List;
 public class LocalStorageService extends AbstractStorageService<AnonymousTrustedToken> {
 
     //==================================================================================================================
+    // Private
+    //==================================================================================================================
+    private File rootDirectory;
+
+    //==================================================================================================================
     // Constructors
     //==================================================================================================================
     public LocalStorageService() {
         super();
+    }
+
+    @Override
+    public void initializeCirrusRootDirectory() {
+        this.rootDirectory = new File("/" + ROOT_DIRECTORY_NAME);
+        if (!this.rootDirectory.exists()) {
+            throw new IllegalAccessError("the directory <" + this.rootDirectory.getAbsolutePath() + "> must be created");
+        }
     }
 
     //==================================================================================================================
@@ -64,13 +77,14 @@ public class LocalStorageService extends AbstractStorageService<AnonymousTrusted
 
     @Override
     public List<ICirrusData> list(final String path) throws ServiceRequestFailedException {
-        final File file = new File(path);
+        final String newPath = this.rootDirectory.getAbsolutePath() + File.separatorChar + path;
+        final File file = new File(newPath);
         if (!file.exists()) {
-            throw new ServiceRequestFailedException("The directory <" + path + "> doesn't exist");
+            throw new ServiceRequestFailedException("The directory <" + newPath + "> doesn't exist");
         }
 
         if (!file.isDirectory()) {
-            throw new ServiceRequestFailedException("The path <" + path + "> is not a directory");
+            throw new ServiceRequestFailedException("The path <" + newPath + "> is not a directory");
         }
 
         final List<ICirrusData> result = new ArrayList<>();
@@ -86,25 +100,31 @@ public class LocalStorageService extends AbstractStorageService<AnonymousTrusted
 
     @Override
     public CirrusFolderData createDirectory(final String path) throws ServiceRequestFailedException {
-        final File file = new File(path);
-        final boolean created = file.mkdir();
-        if (!created) {
-            throw new ServiceRequestFailedException("The directory <" + path + "> cannot be created");
+        final String newPath = this.rootDirectory.getAbsolutePath() + File.separatorChar + path;
+        final File file = new File(newPath);
+        if (file.exists()) {
+            throw new ServiceRequestFailedException("The directory <" + newPath + "> already exists");
         } else {
-            return new CirrusFolderData(file.getPath());
+            final boolean created = file.mkdirs();
+            if (!created) {
+                throw new ServiceRequestFailedException("The directory <" + newPath + "> cannot be created");
+            } else {
+                return new CirrusFolderData(file.getPath());
+            }
         }
     }
 
     @Override
     public ICirrusData delete(final String path) throws ServiceRequestFailedException {
-        final File file = new File(path);
+        final String newPath = this.rootDirectory.getAbsolutePath() + File.separatorChar + path;
+        final File file = new File(newPath);
         if (!file.exists()) {
-            throw new ServiceRequestFailedException("The entry <" + path + "> doesn't exist");
+            throw new ServiceRequestFailedException("The entry <" + newPath + "> doesn't exist");
         } else {
             final ICirrusData cirrusData = this.createCirrusDataFromFile(file);
             final boolean fileDeleted = file.delete();
             if (!fileDeleted) {
-                throw new ServiceRequestFailedException("The file <" + path + "> cannot be deleted");
+                throw new ServiceRequestFailedException("The file <" + newPath + "> cannot be deleted");
             } else {
                 return cirrusData;
             }
@@ -113,7 +133,8 @@ public class LocalStorageService extends AbstractStorageService<AnonymousTrusted
 
     @Override
     public CirrusFileData transferFile(final String filePath, final long fileSize, final InputStream inputStream) throws ServiceRequestFailedException {
-        final File file = new File(filePath);
+        final String newPath = this.rootDirectory.getAbsolutePath() + File.separatorChar + filePath;
+        final File file = new File(newPath);
         try {
             final boolean newFile = file.createNewFile();
             if (!newFile) {

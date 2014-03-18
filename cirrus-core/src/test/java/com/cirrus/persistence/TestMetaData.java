@@ -45,13 +45,13 @@ public class TestMetaData {
     public void shouldSuccessfullySaveCirrusMetaDataIntoMongoDB() throws IOException {
         assertEquals(0, this.cirrusMetaDataCollection.count());
 
-        final ICirrusMetaData cirrusMetaData = this.createCirrusMetaData();
+        final ICirrusMetaData cirrusMetaData = this.createCirrusFileMetaData();
 
         this.cirrusMetaDataCollection.save(cirrusMetaData);
 
         assertEquals(1, this.cirrusMetaDataCollection.count());
 
-        final ICirrusMetaData metaData = this.cirrusMetaDataCollection.findOne().as(CirrusMetaData.class);
+        final CirrusMetaData metaData = this.cirrusMetaDataCollection.findOne().as(CirrusMetaData.class);
         assertNotNull(metaData);
         assertEquals("myFile.txt", metaData.getName());
         assertEquals("/home/test", metaData.getVirtualPath());
@@ -65,7 +65,7 @@ public class TestMetaData {
     //==================================================================================================================
     // Private
     //==================================================================================================================
-    private ICirrusMetaData createCirrusMetaData() {
+    private ICirrusMetaData createCirrusFileMetaData() {
         final CirrusMetaData cirrusMetaData = new CirrusMetaData();
         cirrusMetaData.setName("myFile.txt");
         cirrusMetaData.setCirrusAgentId("1f553132-43e0-4fd3-9e50-fcf1d0adc978");

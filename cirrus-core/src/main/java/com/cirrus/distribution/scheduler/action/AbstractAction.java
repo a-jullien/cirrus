@@ -18,6 +18,7 @@
 
 package com.cirrus.distribution.scheduler.action;
 
+import com.cirrus.agent.ICirrusAgent;
 import com.cirrus.distribution.scheduler.ActionType;
 import com.cirrus.distribution.scheduler.IUserAction;
 
@@ -27,11 +28,13 @@ public abstract class AbstractAction<T> implements IUserAction<T> {
     // Attributes
     //==================================================================================================================
     private final ActionType actionType;
+    private final ICirrusAgent cirrusAgent;
 
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
-    protected AbstractAction(final ActionType actionType) {
+    protected AbstractAction(final ICirrusAgent cirrusAgent, final ActionType actionType) {
+        this.cirrusAgent = cirrusAgent;
         this.actionType = actionType;
     }
 
@@ -41,5 +44,10 @@ public abstract class AbstractAction<T> implements IUserAction<T> {
 
     public ActionType getKind() {
         return actionType;
+    }
+
+    @Override
+    public ICirrusAgent getCirrusAgent() {
+        return this.cirrusAgent;
     }
 }

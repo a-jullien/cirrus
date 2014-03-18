@@ -60,5 +60,5 @@ public interface IMetaDataDAO {
     /**
      * find a meta data from specified cirrus agent with the name and the real path
      */
-    ICirrusMetaData findMetaData(IQuery query);
+    List<ICirrusMetaData> findMetaData(IQuery query);
 }

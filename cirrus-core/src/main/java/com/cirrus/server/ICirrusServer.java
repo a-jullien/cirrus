@@ -33,10 +33,10 @@ public interface ICirrusServer {
     /**
      * Returns the administration part responsible for the bundle management
      */
-    ICirrusAgentAdministration getCirrusAgentAdministration();
+    ICirrusAgentManager getCirrusAgentManager();
 
     /**
      * Returns the user operations
      */
-    ICirrusUserOperations getCirrusUserOperations();
+    ICirrusUserOperationManager getCirrusUserOperations();
 }

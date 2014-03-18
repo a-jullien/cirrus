@@ -16,21 +16,9 @@
  *
  */
 
-package com.cirrus.distribution.scheduler;
+package com.cirrus.data.impl;
 
-import com.cirrus.agent.ICirrusAgent;
-
-import java.util.concurrent.Callable;
-
-public interface IUserAction<T> extends Callable<T> {
-
-    /**
-     * Returns the kind of the operation
-     */
-    ActionType getKind();
-
-    /**
-     * Returns the cirrus agent where the action will be executed
-     */
-    ICirrusAgent getCirrusAgent();
+public enum DataType {
+    FILE,
+    DIRECTORY
 }

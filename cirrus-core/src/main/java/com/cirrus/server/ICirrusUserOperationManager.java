@@ -18,10 +18,20 @@
 
 package com.cirrus.server;
 
-public interface ICirrusUserOperations {
+import com.cirrus.data.ICirrusMetaData;
+
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+public interface ICirrusUserOperationManager {
 
     /**
      * Creates a new directory from the specified virtual path
      */
-    void createDirectory(String virtualPath);
+    void createDirectory(String virtualPath) throws ExecutionException;
+
+    /**
+     * Returns the list all available data for a specified path
+     */
+    List<ICirrusMetaData> listCirrusData(String virtualPath);
 }
