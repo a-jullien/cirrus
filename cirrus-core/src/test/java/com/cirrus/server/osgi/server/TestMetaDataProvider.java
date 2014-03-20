@@ -62,7 +62,7 @@ public class TestMetaDataProvider {
     public void shouldHaveSuccessfullyStoredMetaDataAfterReceiveCreatedEvent() throws UnknownHostException, ExecutionException {
         final MetaDataNotifier metaDataNotifier = new MetaDataNotifier(this.metaDataDAO);
         final NameBasedCirrusAgentIdentifier cirrusAgentId = new NameBasedCirrusAgentIdentifier("myCirrusAgent");
-        final CirrusFileData cirrusData = new CirrusFileData("/tmp/flunny");
+        final CirrusFileData cirrusData = new CirrusFileData("/tmp/flunny", 42);
         final CirrusDataCreatedEvent createdEvent = new CirrusDataCreatedEvent(cirrusAgentId, "/cirrus/project/A", cirrusData);
         metaDataNotifier.handleCirrusDataEvent(createdEvent);
 
@@ -77,6 +77,7 @@ public class TestMetaDataProvider {
         assertEquals("", storedMetaData.getCirrusAgentType());
         assertEquals(DataType.FILE, storedMetaData.getDataType());
         assertEquals("/cirrus/project/A", storedMetaData.getVirtualPath());
+        assertEquals(42, storedMetaData.getSize());
         assertTrue(storedMetaData.getCreationDate() > 1);
     }
 
@@ -85,7 +86,7 @@ public class TestMetaDataProvider {
 
         final MetaDataNotifier metaDataNotifier = new MetaDataNotifier(this.metaDataDAO);
         final NameBasedCirrusAgentIdentifier cirrusAgentId = new NameBasedCirrusAgentIdentifier("myCirrusAgent");
-        final CirrusFileData cirrusData = new CirrusFileData("/tmp/flunny");
+        final CirrusFileData cirrusData = new CirrusFileData("/tmp/flunny", 42);
         final CirrusDataCreatedEvent createdEvent = new CirrusDataCreatedEvent(cirrusAgentId, "/cirrus/project/A", cirrusData);
         metaDataNotifier.handleCirrusDataEvent(createdEvent);
 

@@ -19,6 +19,8 @@
 package com.cirrus.utils;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class IOFileUtils {
 
@@ -53,6 +55,29 @@ public class IOFileUtils {
             }
         }
         return path.delete();
+    }
+
+    public synchronized static File createTmpFile(final File parent, final String name, final String content) throws IOException {
+        final File tmpFile = new File(parent, name);
+        if (tmpFile.exists()) {
+            throw new IOException("File " + tmpFile.getAbsolutePath() + " already exists");
+        }
+
+        final boolean created = tmpFile.createNewFile();
+        if (!created) {
+            throw new IOException("File " + tmpFile.getAbsolutePath() + " cannot be created");
+        } else {
+            FileWriter fileWriter = null;
+            try {
+                fileWriter = new FileWriter(tmpFile);
+                fileWriter.write(content);
+            } finally {
+                if (fileWriter != null) {
+                    fileWriter.close();
+                }
+            }
+        }
+        return tmpFile;
     }
 
 }

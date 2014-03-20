@@ -140,7 +140,7 @@ public class LocalStorageService extends AbstractStorageService<AnonymousTrusted
                     this.closeStream(outputStream);
                 }
 
-                return new CirrusFileData(file.getPath());
+                return new CirrusFileData(file.getPath(), new File(newPath).length());
             }
         } catch (final IOException e) {
             throw new ServiceRequestFailedException(e);
@@ -162,7 +162,7 @@ public class LocalStorageService extends AbstractStorageService<AnonymousTrusted
 
     private ICirrusData createCirrusDataFromFile(final File file) {
         if (file.isFile()) {
-            return new CirrusFileData(file.getPath());
+            return new CirrusFileData(file.getPath(), file.length());
         } else {
             return new CirrusFolderData(file.getPath());
         }

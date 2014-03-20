@@ -19,18 +19,24 @@
 package com.cirrus.server.impl;
 
 import com.cirrus.agent.ICirrusAgent;
+import com.cirrus.data.ICirrusData;
 import com.cirrus.data.ICirrusMetaData;
+import com.cirrus.data.impl.CirrusFileData;
 import com.cirrus.data.impl.CirrusFolderData;
 import com.cirrus.distribution.event.data.ICirrusDataEvent;
 import com.cirrus.distribution.event.data.impl.CirrusDataCreatedEvent;
+import com.cirrus.distribution.event.data.impl.CirrusDataRemovedEvent;
 import com.cirrus.distribution.scheduler.CirrusScheduler;
 import com.cirrus.distribution.scheduler.action.CreateDirectoryAction;
+import com.cirrus.distribution.scheduler.action.DeleteAction;
+import com.cirrus.distribution.scheduler.action.TransferFileAction;
 import com.cirrus.distribution.scheduler.exception.CirrusAgentCannotBeFoundException;
 import com.cirrus.persistence.QueryBuilder;
 import com.cirrus.persistence.dao.meta.IMetaDataDAO;
 import com.cirrus.server.ICirrusAgentManager;
 import com.cirrus.server.ICirrusUserOperationManager;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -67,9 +73,39 @@ public class CirrusUserOperationManager implements ICirrusUserOperationManager {
 
             final String virtualPath = this.extractPath(completeVirtualPath);
 
-            final CirrusDataCreatedEvent cirrusDataEvent =
-                    new CirrusDataCreatedEvent(agent.getIdentifier(), virtualPath, cirrusFolderData);
-            this.dispatchEvent(cirrusDataEvent);
+            this.dispatchEvent(new CirrusDataCreatedEvent(agent.getIdentifier(), virtualPath, cirrusFolderData));
+        } catch (final CirrusAgentCannotBeFoundException e) {
+            throw new ExecutionException(e);
+        }
+    }
+
+    @Override
+    public void transferFile(final String filePath, final long fileSize, final InputStream inputStream) throws ExecutionException {
+        try {
+            final ICirrusAgent agent = this.scheduler.findAgent();
+
+            final CirrusFileData cirrusFileData =
+                    this.scheduler.scheduleAction(new TransferFileAction(agent, filePath, fileSize, inputStream));
+
+            final String virtualPath = this.extractPath(filePath);
+
+            this.dispatchEvent(new CirrusDataCreatedEvent(agent.getIdentifier(), virtualPath, cirrusFileData));
+
+        } catch (final CirrusAgentCannotBeFoundException e) {
+            throw new ExecutionException(e);
+        }
+    }
+
+    @Override
+    public void delete(final String path) throws ExecutionException {
+        try {
+            final ICirrusAgent agent = this.scheduler.findAgent();
+
+            final ICirrusData removedData = this.scheduler.scheduleAction(new DeleteAction(agent, path));
+            final String virtualPath = this.extractPath(path);
+
+            this.dispatchEvent(new CirrusDataRemovedEvent(agent.getIdentifier(), virtualPath, removedData));
+
         } catch (final CirrusAgentCannotBeFoundException e) {
             throw new ExecutionException(e);
         }
@@ -96,6 +132,15 @@ public class CirrusUserOperationManager implements ICirrusUserOperationManager {
             return "/";
         } else {
             return path.substring(0, index + 1);
+        }
+    }
+
+    private String extractFileName(final String path) {
+        final int index = path.lastIndexOf('/');
+        if (index == -1) {
+            return path;
+        } else {
+            return path.substring(index + 1, path.length());
         }
     }
 }

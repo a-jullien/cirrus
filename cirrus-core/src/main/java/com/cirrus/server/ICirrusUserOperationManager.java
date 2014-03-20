@@ -20,6 +20,7 @@ package com.cirrus.server;
 
 import com.cirrus.data.ICirrusMetaData;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -29,6 +30,16 @@ public interface ICirrusUserOperationManager {
      * Creates a new directory from the specified virtual path
      */
     void createDirectory(String virtualPath) throws ExecutionException;
+
+    /**
+     * transfer file operation
+     */
+    void transferFile(final String filePath, final long fileSize, final InputStream inputStream) throws ExecutionException;
+
+    /**
+     * Delete a cirrus from the path
+     */
+    void delete(final String path) throws ExecutionException;
 
     /**
      * Returns the list all available data for a specified path

@@ -41,4 +41,9 @@ public interface ICirrusData extends Serializable {
      * Returns the real path of the data. Never <code>null</code>
      */
     String getPath();
+
+    /**
+     * Returns the size of the data
+     */
+    long getSize();
 }

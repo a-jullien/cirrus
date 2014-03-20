@@ -19,5 +19,6 @@
 package com.cirrus.distribution.scheduler;
 
 public enum ActionType {
-    CREATE_DIRECTORY
+    CREATE_DIRECTORY,
+    TRANSFER_FILE
 }

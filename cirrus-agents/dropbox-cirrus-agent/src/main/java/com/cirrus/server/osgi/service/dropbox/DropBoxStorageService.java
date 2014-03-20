@@ -102,7 +102,7 @@ public class DropBoxStorageService extends AbstractStorageService<AccessKeyTrust
                 final ICirrusData cirrusData;
                 final boolean isFile = child.isFile();
                 if (isFile) {
-                    cirrusData = new CirrusFileData(child.path);
+                    cirrusData = new CirrusFileData(child.path, child.asFile().numBytes);
                 } else {
                     cirrusData = new CirrusFolderData(child.path);
                 }
@@ -138,7 +138,7 @@ public class DropBoxStorageService extends AbstractStorageService<AccessKeyTrust
             final DbxEntry metadata = this.client.getMetadata(newPath);
             this.client.delete(newPath);
             if (metadata.isFile()) {
-                return new CirrusFileData(metadata.path);
+                return new CirrusFileData(metadata.path, metadata.asFile().numBytes);
             } else {
                 return new CirrusFolderData(metadata.path);
             }
@@ -153,7 +153,7 @@ public class DropBoxStorageService extends AbstractStorageService<AccessKeyTrust
             this.checkAuthenticationToken();
 
             final DbxEntry.File uploadedFile = this.client.uploadFile(this.getRootDirectoryPath() + '/' + filePath, DbxWriteMode.add(), fileSize, inputStream);
-            return new CirrusFileData(uploadedFile.path);
+            return new CirrusFileData(uploadedFile.path, uploadedFile.numBytes);
 
         } catch (final AuthenticationException | DbxException | IOException e) {
             throw new ServiceRequestFailedException(e);

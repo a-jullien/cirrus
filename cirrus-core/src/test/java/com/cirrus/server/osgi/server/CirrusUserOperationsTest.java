@@ -32,6 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -83,6 +84,50 @@ public class CirrusUserOperationsTest {
         final File file = new File(this.tmpDir.getPath() + File.separatorChar + "A");
         assertTrue(file.exists());
         assertEquals(file.getPath(), metaData.getLocalPath());
+    }
+
+    @Test
+    public void shouldListSuccessfullySubDirectory() throws ExecutionException {
+        this.cirrusOperations.createDirectory("/A");
+        this.cirrusOperations.createDirectory("/A/B");
+
+        final List<ICirrusMetaData> result = this.cirrusOperations.listCirrusData("/A/");
+        assertEquals(1, result.size());
+        final ICirrusMetaData metaData = result.get(0);
+        assertEquals("B", metaData.getName());
+        assertEquals(DataType.DIRECTORY, metaData.getDataType());
+    }
+
+    @Test
+    public void shouldSuccessfullyTransferFile() throws IOException, ExecutionException {
+        final File createdFile = IOFileUtils.createTmpFile(this.tmpDir, "file1", "HURT CONTENT");
+        try (FileInputStream inputStream = new FileInputStream(createdFile)) {
+            this.cirrusOperations.transferFile("/toto", createdFile.length(), inputStream);
+
+            final List<ICirrusMetaData> result = this.cirrusOperations.listCirrusData("/");
+            assertEquals(1, result.size());
+            final ICirrusMetaData metaData = result.get(0);
+            assertEquals("toto", metaData.getName());
+            assertEquals(DataType.FILE, metaData.getDataType());
+            assertEquals(new File(this.tmpDir, "toto").getPath(), metaData.getLocalPath());
+            assertEquals("/", metaData.getVirtualPath());
+        }
+    }
+
+    @Test
+    public void shouldSuccessfullyDeleteExistingResource() throws Exception {
+        final File createdFile = IOFileUtils.createTmpFile(this.tmpDir, "file1", "HURT CONTENT");
+        try (FileInputStream inputStream = new FileInputStream(createdFile)) {
+            this.cirrusOperations.transferFile("/toto", createdFile.length(), inputStream);
+
+            final List<ICirrusMetaData> result = this.cirrusOperations.listCirrusData("/");
+            assertEquals(1, result.size());
+        }
+
+        this.cirrusOperations.delete("/toto");
+
+        final List<ICirrusMetaData> newResult = this.cirrusOperations.listCirrusData("/");
+        assertEquals(0, newResult.size());
     }
 
     //==================================================================================================================

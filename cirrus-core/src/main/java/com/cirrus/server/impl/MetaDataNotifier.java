@@ -136,6 +136,7 @@ public class MetaDataNotifier implements ICirrusDataListener {
         metaData.setVirtualPath(virtualPath);
         metaData.setCirrusAgentType(""); // TODO
         metaData.setMediaType(""); // TODO media type
+        metaData.setSize(cirrusData.getSize());
         return metaData;
 
     }

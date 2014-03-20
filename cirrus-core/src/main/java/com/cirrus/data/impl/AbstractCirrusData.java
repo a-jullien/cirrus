@@ -33,15 +33,17 @@ public abstract class AbstractCirrusData implements ICirrusData {
     private final String localPath;
     private final String name;
     private final DataType dataType;
+    private final long size;
 
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
-    protected AbstractCirrusData(final String localPath, final DataType dataType) {
+    protected AbstractCirrusData(final String localPath, final DataType dataType, final long size) {
         this.localPath = localPath;
         this.dataType = dataType;
         this.creationTime = System.currentTimeMillis();
         this.name = DataUtils.extractFileNameFromPath(localPath);
+        this.size = size;
     }
 
     //==================================================================================================================
@@ -66,6 +68,11 @@ public abstract class AbstractCirrusData implements ICirrusData {
     @Override
     public String getPath() {
         return this.localPath;
+    }
+
+    @Override
+    public long getSize() {
+        return size;
     }
 
     //==================================================================================================================

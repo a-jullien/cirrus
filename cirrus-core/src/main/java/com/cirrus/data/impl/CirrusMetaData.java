@@ -36,6 +36,7 @@ public class CirrusMetaData implements ICirrusMetaData {
     private String virtualPath;
     private DataType dataType;
     private String mediaType;
+    private long size;
 
     //==================================================================================================================
     // Constructors
@@ -85,6 +86,10 @@ public class CirrusMetaData implements ICirrusMetaData {
         return mediaType;
     }
 
+    public long getSize() {
+        return size;
+    }
+
     //==================================================================================================================
     // Setters
     //==================================================================================================================
@@ -122,5 +127,9 @@ public class CirrusMetaData implements ICirrusMetaData {
 
     public void setMediaType(final String mediaType) {
         this.mediaType = mediaType;
+    }
+
+    public void setSize(final long size) {
+        this.size = size;
     }
 }

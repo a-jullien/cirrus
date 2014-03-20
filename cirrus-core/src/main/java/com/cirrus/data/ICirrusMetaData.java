@@ -64,4 +64,9 @@ public interface ICirrusMetaData {
      * Returns the media type
      */
     String getMediaType();
+
+    /**
+     * Returns the size of the data
+     */
+    long getSize();
 }

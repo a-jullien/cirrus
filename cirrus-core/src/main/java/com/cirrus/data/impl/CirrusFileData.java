@@ -26,8 +26,8 @@ public class CirrusFileData extends AbstractCirrusData {
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
-    public CirrusFileData(final String localPath) {
-        super(localPath, DataType.FILE);
+    public CirrusFileData(final String localPath, final long size) {
+        super(localPath, DataType.FILE, size);
     }
 
     //==================================================================================================================
