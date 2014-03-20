@@ -30,8 +30,11 @@ import com.cirrus.persistence.dao.meta.IMetaDataDAO;
 import com.cirrus.persistence.exception.CirrusMetaDataNotFoundException;
 import com.cirrus.server.ICirrusDataListener;
 import com.cirrus.server.exception.IllegalOperationException;
+import com.cirrus.utils.Try;
+import org.apache.log4j.Logger;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class MetaDataNotifier implements ICirrusDataListener {
 
@@ -39,6 +42,7 @@ public class MetaDataNotifier implements ICirrusDataListener {
     // Attributes
     //==================================================================================================================
     private final IMetaDataDAO metaDataDAO;
+    private static final Logger logger = Logger.getLogger(MetaDataNotifier.class);
 
     //==================================================================================================================
     // Constructors
@@ -53,18 +57,31 @@ public class MetaDataNotifier implements ICirrusDataListener {
     //==================================================================================================================
 
     @Override
-    public void handleCirrusDataEvent(final ICirrusDataEvent cirrusDataEvent) throws IllegalOperationException {
-        cirrusDataEvent.accept(new ICirrusDataEventVisitor() {
+    public void handleCirrusDataEvent(final ICirrusDataEvent cirrusDataEvent) throws ExecutionException {
+        final Try<ICirrusData> accept = cirrusDataEvent.accept(new ICirrusDataEventVisitor<ICirrusData>() {
             @Override
-            public void visit(final ICirrusDataCreatedEvent createdEvent) throws IllegalOperationException {
+            public Try<ICirrusData> visit(final ICirrusDataCreatedEvent createdEvent) {
                 performCirrusDataCreatedEvent(createdEvent);
+                return Try.success(createdEvent.getCirrusData());
             }
 
             @Override
-            public void visit(final ICirrusDataRemovedEvent removedEvent) throws IllegalOperationException {
-                performCirrusDataRemovedEvent(removedEvent);
+            public Try<ICirrusData> visit(final ICirrusDataRemovedEvent removedEvent) {
+                try {
+                    performCirrusDataRemovedEvent(removedEvent);
+                    return Try.success(removedEvent.getCirrusData());
+                } catch (final IllegalOperationException e) {
+                    return Try.failure(e);
+                }
             }
         });
+
+        try {
+            accept.get();
+        } catch (final Exception e) {
+            throw new ExecutionException(e);
+        }
+
     }
 
     //==================================================================================================================
@@ -89,14 +106,15 @@ public class MetaDataNotifier implements ICirrusDataListener {
             throw new IllegalOperationException("Could not retrieve meta data for query <" + query + ">");
         } else {
             try {
-                this.metaDataDAO.delete(metaDataList.get(0).getId());
+                final ICirrusMetaData metaData = metaDataList.get(0);
+                this.metaDataDAO.delete(metaData.getId());
             } catch (final CirrusMetaDataNotFoundException e) {
                 throw new IllegalOperationException(e);
             }
         }
     }
 
-    private void performCirrusDataCreatedEvent(final ICirrusDataCreatedEvent createdEvent) throws IllegalOperationException {
+    private void performCirrusDataCreatedEvent(final ICirrusDataCreatedEvent createdEvent) {
         final long eventTimeStamp = createdEvent.getEventTimeStamp();
         final ICirrusAgentIdentifier sourceCirrusAgentId = createdEvent.getSourceCirrusAgentId();
         final String virtualPath = createdEvent.getVirtualPath();
@@ -108,7 +126,7 @@ public class MetaDataNotifier implements ICirrusDataListener {
     }
 
 
-    private static ICirrusMetaData createMetaDataFrom(final long creationTime, final ICirrusAgentIdentifier sourceId, final String virtualPath, final ICirrusData cirrusData) throws IllegalOperationException {
+    private static ICirrusMetaData createMetaDataFrom(final long creationTime, final ICirrusAgentIdentifier sourceId, final String virtualPath, final ICirrusData cirrusData)  {
         final CirrusMetaData metaData = new CirrusMetaData();
         metaData.setDataType(cirrusData.getDataType());
         metaData.setName(cirrusData.getName());

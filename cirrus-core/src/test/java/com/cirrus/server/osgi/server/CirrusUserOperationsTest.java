@@ -25,6 +25,7 @@ import com.cirrus.persistence.service.MongoDBService;
 import com.cirrus.server.configuration.CirrusProperties;
 import com.cirrus.server.impl.CirrusAgentManager;
 import com.cirrus.server.impl.CirrusUserOperationManager;
+import com.cirrus.server.impl.GlobalContext;
 import com.cirrus.utils.IOFileUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -47,15 +48,17 @@ public class CirrusUserOperationsTest {
     //==================================================================================================================
     private CirrusUserOperationManager cirrusOperations;
     private IMetaDataDAO metaDataDAO;
+    private File tmpDir;
 
     @Before
     public void setUp() throws Exception {
+        this.tmpDir = IOFileUtils.getTmpDirectory();
         this.metaDataDAO = this.createMetadataDAO();
 
         final URL bundleURL = this.getClass().getResource("/bundle.jar");
         assertNotNull(bundleURL);
 
-        final CirrusAgentManager cirrusAgentManager = new CirrusAgentManager();
+        final CirrusAgentManager cirrusAgentManager = new CirrusAgentManager(GlobalContext.create(this.tmpDir.getPath()));
         cirrusAgentManager.start();
         cirrusAgentManager.installCirrusAgent(bundleURL.toExternalForm());
         this.cirrusOperations = new CirrusUserOperationManager(cirrusAgentManager, this.metaDataDAO);
@@ -64,6 +67,7 @@ public class CirrusUserOperationsTest {
     @After
     public void tearDown() {
         this.metaDataDAO.dropCollection();
+        IOFileUtils.deleteDirectory(this.tmpDir);
     }
 
     @Test
@@ -76,7 +80,9 @@ public class CirrusUserOperationsTest {
         assertEquals("A", metaData.getName());
         assertEquals(DataType.DIRECTORY, metaData.getDataType());
         assertEquals("/", metaData.getVirtualPath());
-        assertEquals("/cirrus/A", metaData.getLocalPath());
+        final File file = new File(this.tmpDir.getPath() + File.separatorChar + "A");
+        assertTrue(file.exists());
+        assertEquals(file.getPath(), metaData.getLocalPath());
     }
 
     //==================================================================================================================

@@ -17,13 +17,14 @@
 package com.cirrus.distribution.event;
 
 import com.cirrus.server.exception.IllegalOperationException;
+import com.cirrus.utils.Try;
 
 import java.io.Serializable;
 
-public interface IVisitableEvent<T> extends Serializable {
+public interface IVisitableEvent<T, R> extends Serializable {
 
     /**
      * accept a visitor in order to introspect the object
      */
-    void accept(T visitor) throws IllegalOperationException;
+    Try<R> accept(T visitor);
 }

@@ -24,7 +24,6 @@ import com.cirrus.distribution.event.data.impl.CirrusDataCreatedEvent;
 import com.cirrus.distribution.event.data.impl.CirrusDataRemovedEvent;
 import com.cirrus.persistence.dao.meta.IMetaDataDAO;
 import com.cirrus.persistence.service.MongoDBService;
-import com.cirrus.server.exception.IllegalOperationException;
 import com.cirrus.server.impl.MetaDataNotifier;
 import org.junit.After;
 import org.junit.Before;
@@ -32,6 +31,7 @@ import org.junit.Test;
 
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import static com.mongodb.util.MyAsserts.assertEquals;
 import static com.mongodb.util.MyAsserts.assertTrue;
@@ -59,7 +59,7 @@ public class TestMetaDataProvider {
     }
 
     @Test
-    public void shouldHaveSuccessfullyStoredMetaDataAfterReceiveCreatedEvent() throws UnknownHostException, IllegalOperationException {
+    public void shouldHaveSuccessfullyStoredMetaDataAfterReceiveCreatedEvent() throws UnknownHostException, ExecutionException {
         final MetaDataNotifier metaDataNotifier = new MetaDataNotifier(this.metaDataDAO);
         final NameBasedCirrusAgentIdentifier cirrusAgentId = new NameBasedCirrusAgentIdentifier("myCirrusAgent");
         final CirrusFileData cirrusData = new CirrusFileData("/tmp/flunny");
@@ -81,7 +81,7 @@ public class TestMetaDataProvider {
     }
 
     @Test
-    public void shouldHaveSuccessfullyRemovedMetaDataAfterReceiveRemovedEvent() throws UnknownHostException, IllegalOperationException {
+    public void shouldHaveSuccessfullyRemovedMetaDataAfterReceiveRemovedEvent() throws UnknownHostException, ExecutionException {
 
         final MetaDataNotifier metaDataNotifier = new MetaDataNotifier(this.metaDataDAO);
         final NameBasedCirrusAgentIdentifier cirrusAgentId = new NameBasedCirrusAgentIdentifier("myCirrusAgent");

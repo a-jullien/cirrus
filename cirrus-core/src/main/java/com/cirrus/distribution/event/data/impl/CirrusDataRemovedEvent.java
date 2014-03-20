@@ -16,10 +16,10 @@
 
 package com.cirrus.distribution.event.data.impl;
 
+import com.cirrus.agent.ICirrusAgentIdentifier;
 import com.cirrus.data.ICirrusData;
 import com.cirrus.distribution.event.data.ICirrusDataEventVisitor;
-import com.cirrus.agent.ICirrusAgentIdentifier;
-import com.cirrus.server.exception.IllegalOperationException;
+import com.cirrus.utils.Try;
 
 public class CirrusDataRemovedEvent extends AbstractCirrusDataEvent implements ICirrusDataRemovedEvent {
 
@@ -57,7 +57,7 @@ public class CirrusDataRemovedEvent extends AbstractCirrusDataEvent implements I
     }
 
     @Override
-    public void accept(final ICirrusDataEventVisitor visitor) throws IllegalOperationException {
-        visitor.visit(this);
+    public Try<ICirrusData> accept(final ICirrusDataEventVisitor<ICirrusData> visitor) {
+        return visitor.visit(this);
     }
 }

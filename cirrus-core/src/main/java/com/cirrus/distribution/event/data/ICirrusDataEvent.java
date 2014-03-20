@@ -16,10 +16,11 @@
 
 package com.cirrus.distribution.event.data;
 
+import com.cirrus.data.ICirrusData;
 import com.cirrus.distribution.event.IVisitableEvent;
 import com.cirrus.agent.ICirrusAgentIdentifier;
 
-public interface ICirrusDataEvent extends IVisitableEvent<ICirrusDataEventVisitor> {
+public interface ICirrusDataEvent extends IVisitableEvent<ICirrusDataEventVisitor<ICirrusData>, ICirrusData> {
 
     /**
      * Returns the event time stamp

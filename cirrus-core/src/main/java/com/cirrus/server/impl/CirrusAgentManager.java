@@ -20,6 +20,7 @@ import com.cirrus.agent.ICirrusAgent;
 import com.cirrus.agent.ICirrusAgentIdentifier;
 import com.cirrus.agent.impl.CirrusAgent;
 import com.cirrus.server.ICirrusAgentManager;
+import com.cirrus.server.IGlobalContext;
 import com.cirrus.server.exception.*;
 import com.cirrus.server.utils.ConfigUtil;
 import org.osgi.framework.Bundle;
@@ -46,12 +47,14 @@ public class CirrusAgentManager implements ICirrusAgentManager {
     //==================================================================================================================
     private final Framework framework;
     private final List<ICirrusAgent> cirrusAgents;
+    private final IGlobalContext globalContext;
 
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
-    public CirrusAgentManager() throws IOException {
+    public CirrusAgentManager(final IGlobalContext globalContext) throws IOException {
         super();
+        this.globalContext = globalContext;
         this.cirrusAgents = new ArrayList<>();
         this.framework = this.createFramework();
     }
@@ -104,6 +107,7 @@ public class CirrusAgentManager implements ICirrusAgentManager {
             if (this.cirrusAgents.contains(cirrusAgent)) {
                 throw new CirrusAgentAlreadyExistException(cirrusAgent.getIdentifier());
             } else {
+                cirrusAgent.getStorageService().initialize(this.globalContext);
                 this.cirrusAgents.add(cirrusAgent);
 
                 OSGIBasedCirrusServer.LOGGER.info(COMPONENT_NAME + " New bundle available: " + cirrusAgent);

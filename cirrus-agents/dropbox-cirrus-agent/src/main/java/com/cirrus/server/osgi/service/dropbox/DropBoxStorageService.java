@@ -45,11 +45,6 @@ public class DropBoxStorageService extends AbstractStorageService<AccessKeyTrust
         super();
     }
 
-    @Override
-    public void initializeCirrusRootDirectory() {
-        // TODO root directory
-    }
-
     //==================================================================================================================
     // Public
     //==================================================================================================================
@@ -176,6 +171,6 @@ public class DropBoxStorageService extends AbstractStorageService<AccessKeyTrust
     }
 
     private String getRootDirectoryPath() {
-        return "/" + ROOT_DIRECTORY_NAME;
+        return this.getGlobalContext().getRootPath();
     }
 }

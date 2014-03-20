@@ -25,6 +25,7 @@ import com.cirrus.persistence.service.MongoDBService;
 import com.cirrus.server.ICirrusAgentManager;
 import com.cirrus.server.ICirrusServer;
 import com.cirrus.server.ICirrusUserOperationManager;
+import com.cirrus.server.IGlobalContext;
 import com.cirrus.server.configuration.CirrusProperties;
 import com.cirrus.server.exception.StartCirrusServerException;
 import com.cirrus.server.exception.StopCirrusServerException;
@@ -56,11 +57,13 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
         super();
         // global properties of the cirrus server
         final CirrusProperties cirrusProperties = new CirrusProperties();
+        final String rootDirectory = cirrusProperties.getProperty(CirrusProperties.CIRRUS_ROOT_DIRECTORY);
+        final IGlobalContext globalContext = GlobalContext.create(rootDirectory);
         // create mongodb service
         final MongoDBService mongoDBService = new MongoDBService(cirrusProperties.getProperty(CirrusProperties.MONGODB_URL));
         final IMetaDataDAO metaDataDAO = mongoDBService.getMetaDataDAO();
         // administration for cirrus bundles
-        this.cirrusAgentManager = new CirrusAgentManager();
+        this.cirrusAgentManager = new CirrusAgentManager(globalContext);
         // user operations
         this.cirrusUserOperations = new CirrusUserOperationManager(this.cirrusAgentManager, metaDataDAO);
     }

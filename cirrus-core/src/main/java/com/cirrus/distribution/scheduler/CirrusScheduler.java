@@ -19,7 +19,9 @@
 package com.cirrus.distribution.scheduler;
 
 import com.cirrus.agent.ICirrusAgent;
+import com.cirrus.distribution.scheduler.exception.CirrusAgentCannotBeFoundException;
 import com.cirrus.server.ICirrusAgentManager;
+import com.cirrus.server.exception.CirrusAgentNotExistException;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -47,10 +49,10 @@ public class CirrusScheduler {
     // Public
     //==================================================================================================================
 
-    public ICirrusAgent findAgent() {
+    public ICirrusAgent findAgent() throws CirrusAgentCannotBeFoundException {
         final List<ICirrusAgent> allAgents = this.cirrusAgentAdministration.listCirrusAgents();
         if (allAgents.size() == 0) {
-            throw new Error("No available agents"); // TODO
+            throw new CirrusAgentCannotBeFoundException("The scheduler is not able to find agents");
         } else {
             // TODO heuristics
             return allAgents.get(0);

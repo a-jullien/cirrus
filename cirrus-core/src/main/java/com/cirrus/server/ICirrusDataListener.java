@@ -19,10 +19,12 @@ package com.cirrus.server;
 import com.cirrus.distribution.event.data.ICirrusDataEvent;
 import com.cirrus.server.exception.IllegalOperationException;
 
+import java.util.concurrent.ExecutionException;
+
 public interface ICirrusDataListener {
 
     /**
      * Method called when a new cirrus data event is available
      */
-    void handleCirrusDataEvent(final ICirrusDataEvent cirrusDataEvent) throws IllegalOperationException;
+    void handleCirrusDataEvent(final ICirrusDataEvent cirrusDataEvent) throws ExecutionException;
 }

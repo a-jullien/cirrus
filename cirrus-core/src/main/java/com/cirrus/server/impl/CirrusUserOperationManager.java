@@ -25,11 +25,11 @@ import com.cirrus.distribution.event.data.ICirrusDataEvent;
 import com.cirrus.distribution.event.data.impl.CirrusDataCreatedEvent;
 import com.cirrus.distribution.scheduler.CirrusScheduler;
 import com.cirrus.distribution.scheduler.action.CreateDirectoryAction;
+import com.cirrus.distribution.scheduler.exception.CirrusAgentCannotBeFoundException;
 import com.cirrus.persistence.QueryBuilder;
 import com.cirrus.persistence.dao.meta.IMetaDataDAO;
 import com.cirrus.server.ICirrusAgentManager;
 import com.cirrus.server.ICirrusUserOperationManager;
-import com.cirrus.server.exception.IllegalOperationException;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -60,15 +60,19 @@ public class CirrusUserOperationManager implements ICirrusUserOperationManager {
 
     @Override
     public void createDirectory(final String completeVirtualPath) throws ExecutionException {
-        final ICirrusAgent agent = this.scheduler.findAgent();
-        final CirrusFolderData cirrusFolderData =
-                this.scheduler.scheduleAction(new CreateDirectoryAction(agent, completeVirtualPath));
+        try {
+            final ICirrusAgent agent = this.scheduler.findAgent();
+            final CirrusFolderData cirrusFolderData =
+                    this.scheduler.scheduleAction(new CreateDirectoryAction(agent, completeVirtualPath));
 
-        final String virtualPath = this.extractPath(completeVirtualPath);
+            final String virtualPath = this.extractPath(completeVirtualPath);
 
-        final CirrusDataCreatedEvent cirrusDataEvent =
-                new CirrusDataCreatedEvent(agent.getIdentifier(), virtualPath, cirrusFolderData);
-        this.dispatchEvent(cirrusDataEvent);
+            final CirrusDataCreatedEvent cirrusDataEvent =
+                    new CirrusDataCreatedEvent(agent.getIdentifier(), virtualPath, cirrusFolderData);
+            this.dispatchEvent(cirrusDataEvent);
+        } catch (final CirrusAgentCannotBeFoundException e) {
+            throw new ExecutionException(e);
+        }
     }
 
     @Override
@@ -82,21 +86,8 @@ public class CirrusUserOperationManager implements ICirrusUserOperationManager {
     // Private
     //==================================================================================================================
 
-    private void dispatchEvent(final ICirrusDataEvent event) {
-        try {
-            this.metaDataNotifier.handleCirrusDataEvent(event);
-        } catch (final IllegalOperationException e) {
-            e.printStackTrace(); // TODO
-        }
-    }
-
-    private String extractFileName(final String path) {
-        final int index = path.lastIndexOf('/');
-        if (index == -1) {
-            return path;
-        } else {
-            return path.substring(index + 1, path.length());
-        }
+    private void dispatchEvent(final ICirrusDataEvent event) throws ExecutionException {
+        this.metaDataNotifier.handleCirrusDataEvent(event);
     }
 
     private String extractPath(final String path) {

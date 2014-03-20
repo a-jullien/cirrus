@@ -16,11 +16,11 @@
 
 package com.cirrus.server.osgi.extension;
 
-import com.cirrus.data.impl.CirrusFileData;
-import com.cirrus.data.impl.CirrusFolderData;
 import com.cirrus.agent.authentication.IStorageServiceTrustedToken;
 import com.cirrus.data.ICirrusData;
-import com.cirrus.server.ICirrusDataListener;
+import com.cirrus.data.impl.CirrusFileData;
+import com.cirrus.data.impl.CirrusFolderData;
+import com.cirrus.server.IGlobalContext;
 
 import java.io.InputStream;
 import java.util.List;
@@ -31,11 +31,15 @@ public interface ICirrusStorageService<TrustedToken extends IStorageServiceTrust
     //==================================================================================================================
     // Constants
     //==================================================================================================================
-    String ROOT_DIRECTORY_NAME = "cirrus";
     String SERVICE_NAME_PROPERTY = "Storage-Service-Name";
     String SERVICE_VERSION_PROPERTY = "Storage-Service-Version";
     String SERVICE_VENDOR_PROPERTY = "Storage-Service-Vendor";
     String SERVICE_CLASS_PROPERTY = "Storage-Service-Class";
+
+    /**
+     * initialize the context
+     */
+    void initialize(final IGlobalContext globalContext);
 
     /**
      * Authenticates from specified authentication mechanism

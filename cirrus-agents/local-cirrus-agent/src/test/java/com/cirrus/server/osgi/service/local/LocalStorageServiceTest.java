@@ -22,6 +22,8 @@ import com.cirrus.data.ICirrusData;
 import com.cirrus.data.impl.CirrusFileData;
 import com.cirrus.data.impl.CirrusFolderData;
 import com.cirrus.agent.authentication.impl.AnonymousTrustedToken;
+import com.cirrus.server.IGlobalContext;
+import com.cirrus.server.impl.GlobalContext;
 import com.cirrus.server.osgi.extension.ServiceRequestFailedException;
 import com.cirrus.utils.IOFileUtils;
 import org.junit.After;
@@ -43,10 +45,12 @@ public class LocalStorageServiceTest {
     // Attributes
     //==================================================================================================================
     private File tmpDirectory;
+    private IGlobalContext context;
 
     @Before
     public void setUp() {
         this.tmpDirectory = IOFileUtils.getTmpDirectory();
+        this.context = GlobalContext.create(this.tmpDirectory.getPath());
         assertTrue(this.tmpDirectory.exists());
     }
 
@@ -61,7 +65,7 @@ public class LocalStorageServiceTest {
         final LocalStorageService localStorageService = createLocalStorageService();
 
         final File directory = new File(this.tmpDirectory, "testDirectory");
-        final CirrusFolderData createdCirrusFolder = localStorageService.createDirectory(directory.getPath());
+        final CirrusFolderData createdCirrusFolder = localStorageService.createDirectory("/testDirectory");
         assertNotNull(createdCirrusFolder);
         assertEquals(createdCirrusFolder.getName(), "testDirectory");
         assertEquals(createdCirrusFolder.getPath(), directory.getPath());
@@ -73,7 +77,7 @@ public class LocalStorageServiceTest {
 
         final File directory = new File(this.tmpDirectory, "testDirectory");
         assertTrue(directory.mkdir());
-        final ICirrusData delete = localStorageService.delete(directory.getPath());
+        final ICirrusData delete = localStorageService.delete("/testDirectory");
         assertNotNull(delete);
         assertEquals(delete.getName(), "testDirectory");
         assertEquals(delete.getPath(), directory.getPath());
@@ -86,7 +90,7 @@ public class LocalStorageServiceTest {
 
         final File file = new File(this.tmpDirectory, "testFile");
         assertTrue(file.createNewFile());
-        final ICirrusData delete = localStorageService.delete(file.getPath());
+        final ICirrusData delete = localStorageService.delete("/testFile");
         assertNotNull(delete);
         assertEquals(delete.getName(), "testFile");
         assertEquals(delete.getPath(), file.getPath());
@@ -115,7 +119,7 @@ public class LocalStorageServiceTest {
         final File sourceFile = new File(this.tmpDirectory, "sourceFile");
         assertTrue(sourceFile.createNewFile());
 
-        final File destinationFile = new File(this.tmpDirectory, "destinationFile");
+        final File destinationFile = new File("destinationFile");
         assertFalse(destinationFile.exists());
 
         try (FileInputStream inputStream = new FileInputStream(sourceFile)) {
@@ -131,6 +135,7 @@ public class LocalStorageServiceTest {
     private LocalStorageService createLocalStorageService() {
         final LocalStorageService localStorageService = new LocalStorageService();
         localStorageService.authenticate(new AnonymousTrustedToken());
+        localStorageService.initialize(this.context);
         return localStorageService;
     }
 }

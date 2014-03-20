@@ -20,6 +20,7 @@ import com.cirrus.data.ICirrusData;
 import com.cirrus.distribution.event.data.ICirrusDataEventVisitor;
 import com.cirrus.agent.ICirrusAgentIdentifier;
 import com.cirrus.server.exception.IllegalOperationException;
+import com.cirrus.utils.Try;
 
 public class CirrusDataCreatedEvent extends AbstractCirrusDataEvent implements ICirrusDataCreatedEvent {
 
@@ -47,8 +48,8 @@ public class CirrusDataCreatedEvent extends AbstractCirrusDataEvent implements I
     // Public
     //==================================================================================================================
     @Override
-    public void accept(final ICirrusDataEventVisitor visitor) throws IllegalOperationException {
-        visitor.visit(this);
+    public Try<ICirrusData> accept(final ICirrusDataEventVisitor<ICirrusData> visitor) {
+        return visitor.visit(this);
     }
 
     @Override

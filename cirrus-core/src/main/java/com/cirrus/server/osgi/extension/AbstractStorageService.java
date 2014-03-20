@@ -17,6 +17,7 @@
 package com.cirrus.server.osgi.extension;
 
 import com.cirrus.agent.authentication.IStorageServiceTrustedToken;
+import com.cirrus.server.IGlobalContext;
 
 public abstract class AbstractStorageService<TrustedToken extends IStorageServiceTrustedToken> implements ICirrusStorageService<TrustedToken> {
 
@@ -24,13 +25,25 @@ public abstract class AbstractStorageService<TrustedToken extends IStorageServic
     // Private
     //==================================================================================================================
 
+    private IGlobalContext globalContext;
+
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
     protected AbstractStorageService() {
         super();
-        this.initializeCirrusRootDirectory();
     }
 
-    public abstract void initializeCirrusRootDirectory();
+    //==================================================================================================================
+    // Public
+    //==================================================================================================================
+
+    @Override
+    public void initialize(final IGlobalContext globalContext) {
+        this.globalContext = globalContext;
+    }
+
+    public IGlobalContext getGlobalContext() {
+        return globalContext;
+    }
 }

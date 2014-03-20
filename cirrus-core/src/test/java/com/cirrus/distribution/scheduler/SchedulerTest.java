@@ -21,9 +21,11 @@ package com.cirrus.distribution.scheduler;
 import com.cirrus.agent.ICirrusAgent;
 import com.cirrus.data.impl.CirrusFolderData;
 import com.cirrus.distribution.scheduler.action.CreateDirectoryAction;
-import com.cirrus.server.configuration.CirrusProperties;
+import com.cirrus.distribution.scheduler.exception.CirrusAgentCannotBeFoundException;
+import com.cirrus.server.IGlobalContext;
 import com.cirrus.server.exception.*;
 import com.cirrus.server.impl.CirrusAgentManager;
+import com.cirrus.server.impl.GlobalContext;
 import com.cirrus.utils.IOFileUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -43,17 +45,14 @@ public class SchedulerTest {
     //==================================================================================================================
     private CirrusAgentManager cirrusAgentAdministration;
     private File tmpDirectory;
+    private IGlobalContext globalContext;
 
 
     @Before
     public void setUp() throws Exception {
         this.tmpDirectory = IOFileUtils.getTmpDirectory();
-
-        // global properties of the cirrus server
-        final CirrusProperties cirrusProperties = new CirrusProperties();
-        // create mongodb service
-
-        this.cirrusAgentAdministration = new CirrusAgentManager();
+        this.globalContext = GlobalContext.create(tmpDirectory.getPath());
+        this.cirrusAgentAdministration = new CirrusAgentManager(this.globalContext);
         this.cirrusAgentAdministration.start();
 
         final URL bundleURL = this.getClass().getResource("/bundle.jar");
@@ -64,39 +63,38 @@ public class SchedulerTest {
 
     @After
     public void tearDown() throws StopCirrusServerException {
-        try {
-            this.cirrusAgentAdministration.stop();
-        } finally {
-            IOFileUtils.deleteDirectory(this.tmpDirectory);
-        }
+        this.cirrusAgentAdministration.stop();
+        IOFileUtils.deleteDirectory(this.tmpDirectory);
+    }
+
+    @Test(expected = CirrusAgentCannotBeFoundException.class)
+    public void shouldHaveErrorWhenSchedulerHasNoAgents() throws Exception {
+        final CirrusAgentManager emptyAgentManager = new CirrusAgentManager(this.globalContext);
+        emptyAgentManager.start();
+
+        final CirrusScheduler cirrusScheduler = new CirrusScheduler(emptyAgentManager);
+        cirrusScheduler.findAgent();
     }
 
     @Test(expected = ExecutionException.class)
-    public void shouldHaveErrorCreatedDirectoryFromActionWithAlreadyExist() throws CirrusAgentAlreadyExistException, ServerNotStartedException, StartCirrusAgentException, CirrusAgentInstallationException, ExecutionException {
-        final File file = new File(this.tmpDirectory, "hurt");
-        assertTrue(file.mkdir());
+    public void shouldHaveErrorCreatedDirectoryFromActionWithAlreadyExist() throws CirrusAgentAlreadyExistException, ServerNotStartedException, StartCirrusAgentException, CirrusAgentInstallationException, ExecutionException, CirrusAgentCannotBeFoundException {
+        final File directoryFile = new File(this.globalContext.getRootPath(), "hurt");
+        assertTrue(directoryFile.mkdir());
 
         final CirrusScheduler cirrusScheduler = new CirrusScheduler(this.cirrusAgentAdministration);
-        final CreateDirectoryAction action = new CreateDirectoryAction(cirrusScheduler.findAgent(), file.getPath());
-        final CirrusFolderData createdFolder = cirrusScheduler.scheduleAction(action);
-        assertNotNull(createdFolder);
-
-        assertEquals("/tmp/hurt", createdFolder.getPath());
-
-        assertTrue(IOFileUtils.deleteDirectory(file));
+        final CreateDirectoryAction action = new CreateDirectoryAction(cirrusScheduler.findAgent(), "/hurt");
+        cirrusScheduler.scheduleAction(action);
     }
 
     @Test
-    public void shouldHaveSuccessfullyCreatedDirectoryFromAction() throws CirrusAgentAlreadyExistException, ServerNotStartedException, StartCirrusAgentException, CirrusAgentInstallationException, ExecutionException {
-        final File file = new File(this.tmpDirectory, "hurt");
-
+    public void shouldHaveSuccessfullyCreatedDirectoryFromAction() throws CirrusAgentAlreadyExistException, ServerNotStartedException, StartCirrusAgentException, CirrusAgentInstallationException, ExecutionException, CirrusAgentCannotBeFoundException {
+        final File directoryFile = new File(this.globalContext.getRootPath(), "hurt");
         final CirrusScheduler cirrusScheduler = new CirrusScheduler(this.cirrusAgentAdministration);
-        final CreateDirectoryAction action = new CreateDirectoryAction(cirrusScheduler.findAgent(), file.getPath());
+        final CreateDirectoryAction action = new CreateDirectoryAction(cirrusScheduler.findAgent(), "/hurt");
         final CirrusFolderData createdFolder = cirrusScheduler.scheduleAction(action);
         assertNotNull(createdFolder);
 
-        assertEquals("cirrus" + file.getAbsolutePath(), createdFolder.getPath());
-
-        IOFileUtils.deleteDirectory(file);
+        assertTrue(directoryFile.exists());
+        assertEquals(directoryFile.getPath(), createdFolder.getPath());
     }
 }
