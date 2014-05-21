@@ -90,6 +90,19 @@ public class CirrusAgentAdministrationTest {
     }
 
     @Test
+    public void shouldGetAgentByIdAfterSuccessfullyInstallation() throws Exception {
+        final ICirrusAgentManager cirrusAgentAdministration = new CirrusAgentManager(this.context);
+        cirrusAgentAdministration.start();
+
+        final URL bundleURL = this.getClass().getResource("/bundle.jar");
+
+        final ICirrusAgent cirrusAgent = cirrusAgentAdministration.installCirrusAgent(bundleURL.toExternalForm());
+        assertNotNull(cirrusAgent);
+
+        assertNotNull(cirrusAgentAdministration.getCirrusAgentById(cirrusAgent.getIdentifier()));
+    }
+
+    @Test
     public void shouldInstallSuccessfullyANewBundle() throws Exception {
         final ICirrusAgentManager cirrusAgentAdministration = new CirrusAgentManager(this.context);
         cirrusAgentAdministration.start();

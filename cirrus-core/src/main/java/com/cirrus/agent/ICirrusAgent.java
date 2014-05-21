@@ -16,6 +16,7 @@
 
 package com.cirrus.agent;
 
+import com.cirrus.agent.authentication.AuthenticationMode;
 import com.cirrus.server.osgi.extension.ICirrusStorageService;
 import com.cirrus.server.exception.StartCirrusAgentException;
 import com.cirrus.server.exception.StopCirrusAgentException;
@@ -44,6 +45,13 @@ public interface ICirrusAgent {
      * @return {@link ICirrusStorageService} service
      */
     ICirrusStorageService getStorageService();
+
+    /**
+     * Returns the authentication mode supported by the agent
+     *
+     * @return {@link com.cirrus.agent.authentication.AuthenticationMode} value
+     */
+    AuthenticationMode getAuthenticationMode();
 
     /**
      * start cirrus agent

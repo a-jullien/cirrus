@@ -35,6 +35,7 @@ public interface ICirrusStorageService<TrustedToken extends IStorageServiceTrust
     String SERVICE_VERSION_PROPERTY = "Storage-Service-Version";
     String SERVICE_VENDOR_PROPERTY = "Storage-Service-Vendor";
     String SERVICE_CLASS_PROPERTY = "Storage-Service-Class";
+    String SERVICE_AUTHENTICATION_MODE_PROPERTY = "Storage-Service-Authentication-Mode";
 
     /**
      * initialize the context

@@ -49,6 +49,7 @@
                         <Storage-Service-Version>1.7.6</Storage-Service-Version>
                         <Storage-Service-Class>com.cirrus.server.osgi.service.dropbox.DropBoxStorageService</Storage-Service-Class>
                         <Storage-Service-Vendor>Dropbox</Storage-Service-Vendor>
+                        <Storage-Service-Authentication-Mode>ACCESS_KEY</Storage-Service-Authentication-Mode>
                         <Import-Package>com.cirrus.server.osgi.extension.*, com.cirrus.data.*,
                             com.cirrus.agent.authentication.*,com.cirrus.server.*</Import-Package>
                         <Export-Package>com.dropbox.core.*,com.fasterxml.jackson.*</Export-Package>

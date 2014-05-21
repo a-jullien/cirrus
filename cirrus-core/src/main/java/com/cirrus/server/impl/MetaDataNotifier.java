@@ -31,7 +31,6 @@ import com.cirrus.persistence.exception.CirrusMetaDataNotFoundException;
 import com.cirrus.server.ICirrusDataListener;
 import com.cirrus.server.exception.IllegalOperationException;
 import com.cirrus.utils.Try;
-import org.apache.log4j.Logger;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -42,7 +41,6 @@ public class MetaDataNotifier implements ICirrusDataListener {
     // Attributes
     //==================================================================================================================
     private final IMetaDataDAO metaDataDAO;
-    private static final Logger logger = Logger.getLogger(MetaDataNotifier.class);
 
     //==================================================================================================================
     // Constructors

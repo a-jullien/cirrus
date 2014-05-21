@@ -29,4 +29,8 @@ public class CirrusAgentInstallationException extends Exception {
     public CirrusAgentInstallationException(final Throwable cause) {
         super(cause);
     }
+
+    public CirrusAgentInstallationException(final String message) {
+        super(message);
+    }
 }

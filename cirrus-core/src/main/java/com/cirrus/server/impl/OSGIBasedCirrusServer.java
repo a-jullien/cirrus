@@ -16,10 +16,6 @@
 
 package com.cirrus.server.impl;
 
-import com.cirrus.agent.ICirrusAgent;
-import com.cirrus.agent.ICirrusAgentBundleDescription;
-import com.cirrus.agent.authentication.impl.AccessKeyTrustedToken;
-import com.cirrus.data.ICirrusData;
 import com.cirrus.persistence.dao.meta.IMetaDataDAO;
 import com.cirrus.persistence.service.MongoDBService;
 import com.cirrus.server.ICirrusAgentManager;
@@ -29,11 +25,9 @@ import com.cirrus.server.IGlobalContext;
 import com.cirrus.server.configuration.CirrusProperties;
 import com.cirrus.server.exception.StartCirrusServerException;
 import com.cirrus.server.exception.StopCirrusServerException;
-import com.cirrus.server.osgi.extension.ICirrusStorageService;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.List;
 
 public class OSGIBasedCirrusServer implements ICirrusServer {
 
@@ -93,54 +87,5 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     public ICirrusUserOperationManager getCirrusUserOperations() {
         return this.cirrusUserOperations;
     }
-
-    //==================================================================================================================
-    // Main
-    //==================================================================================================================
-    @SuppressWarnings("unchecked")
-    public static void main(final String[] args) throws Exception {
-        final OSGIBasedCirrusServer osgiBasedCirrusServer = new OSGIBasedCirrusServer();
-        osgiBasedCirrusServer.start();
-
-        final ICirrusAgentManager agentAdministration = osgiBasedCirrusServer.getCirrusAgentManager();
-
-        final String trustedToken = args[0];
-
-        for (int i = 1; i < args.length; i++) {
-            final String arg = args[i];
-            agentAdministration.installCirrusAgent(arg);
-        }
-
-        final StringBuilder stringBuilder = new StringBuilder();
-        final List<ICirrusAgent> existingAgents = agentAdministration.listCirrusAgents();
-        for (final ICirrusAgent existingAgent : existingAgents) {
-            final ICirrusAgentBundleDescription bundleDescription = existingAgent.getCirrusAgentBundleDescription();
-            final ICirrusStorageService<AccessKeyTrustedToken> storageService = existingAgent.getStorageService();
-            storageService.authenticate(new AccessKeyTrustedToken(trustedToken));
-
-            final String accountName = storageService.getAccountName();
-            final long totalSpace = storageService.getTotalSpace();
-            final long usedSpace = storageService.getUsedSpace();
-
-            stringBuilder.append(bundleDescription).append('\n')
-                    .append("Account name: ").append(accountName).append('\n')
-                    .append("Total space: ").append(totalSpace).append('\n')
-                    .append("Used space: ").append(usedSpace).append('\n');
-
-            final List<ICirrusData> rootData = storageService.list("/");
-            stringBuilder.append("Children data on /:");
-            for (final ICirrusData cirrusData : rootData) {
-                stringBuilder.append(cirrusData);
-            }
-        }
-
-        LOGGER.info(stringBuilder.toString());
-
-        osgiBasedCirrusServer.stop();
-    }
-
-    //==================================================================================================================
-    // Private
-    //==================================================================================================================
 
 }

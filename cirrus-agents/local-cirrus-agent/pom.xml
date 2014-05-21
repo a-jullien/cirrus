@@ -44,6 +44,7 @@
                         <Storage-Service-Version>1.0.0</Storage-Service-Version>
                         <Storage-Service-Class>com.cirrus.server.osgi.service.local.LocalStorageService</Storage-Service-Class>
                         <Storage-Service-Vendor>Local</Storage-Service-Vendor>
+                        <Storage-Service-Authentication-Mode>ANONYMOUS</Storage-Service-Authentication-Mode>
                         <Import-Package>com.cirrus.server.osgi.extension.*, com.cirrus.data.*,
                             com.cirrus.agent.authentication.*,com.cirrus.server.*</Import-Package>
                         <Export-Package>org.apache.commons.io.*</Export-Package>

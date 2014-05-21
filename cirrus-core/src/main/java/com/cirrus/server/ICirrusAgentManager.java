@@ -42,7 +42,7 @@ public interface ICirrusAgentManager {
     /**
      * install new cirrus agent as a new bundle in the current osgi platform
      */
-    void installCirrusAgent(final String cirrusAgentPath) throws CirrusAgentInstallationException, StartCirrusAgentException, CirrusAgentAlreadyExistException, ServerNotStartedException;
+    ICirrusAgent installCirrusAgent(final String cirrusAgentPath) throws CirrusAgentInstallationException, StartCirrusAgentException, CirrusAgentAlreadyExistException, ServerNotStartedException;
 
     /**
      * uninstall existing cirrus agent from current osgi platform
@@ -53,4 +53,12 @@ public interface ICirrusAgentManager {
      * Returns all available installed cirrus agents
      */
     List<ICirrusAgent> listCirrusAgents();
+
+    /**
+     * Returns the cirrus agent from the specified identifier
+     *
+     * @param cirrusAgentIdentifier the unique identifier
+     * @return the {ICirrusAgent} agent. Never <code>null</code>
+     */
+    ICirrusAgent getCirrusAgentById(final ICirrusAgentIdentifier cirrusAgentIdentifier) throws CirrusAgentNotExistException;
 }

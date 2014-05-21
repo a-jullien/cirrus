@@ -14,13 +14,14 @@
             <version>4.2.1</version>
         </dependency>
 
+        <!-- ========== mongo driver ========== -->
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
             <version>2.11.4</version>
         </dependency>
 
-        <!-- mongo db pojo wrapper -->
+        <!-- ========== mongodb pojo wrapper ========== -->
         <dependency>
             <groupId>org.jongo</groupId>
             <artifactId>jongo</artifactId>
@@ -67,6 +68,7 @@
                         <Export-Package>com.cirrus.server.osgi.extension.*</Export-Package>
                         <Embed-Dependency>*;artifactId=org.apache.felix.framework;inline=true</Embed-Dependency>
                         <Bundle-Vendor>Antoine Jullien</Bundle-Vendor>
+                        <Bundle-Activator>com.cirrus.server.MyStartActivator</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>

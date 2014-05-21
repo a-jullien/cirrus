@@ -20,6 +20,7 @@ import com.cirrus.agent.ICirrusAgent;
 import com.cirrus.agent.ICirrusAgentBundleDescription;
 import com.cirrus.agent.ICirrusAgentIdentifier;
 import com.cirrus.agent.IStorageServiceVendor;
+import com.cirrus.agent.authentication.AuthenticationMode;
 import com.cirrus.server.osgi.extension.ICirrusStorageService;
 import com.cirrus.server.exception.CirrusAgentInstallationException;
 import com.cirrus.server.exception.StartCirrusAgentException;
@@ -41,6 +42,7 @@ public class CirrusAgent implements ICirrusAgent {
     private final ICirrusStorageService storageService;
     private final ICirrusAgentBundleDescription bundleDescription;
     private final Bundle bundle;
+    private final AuthenticationMode authenticationMode;
 
     //==================================================================================================================
     // Constructors
@@ -52,6 +54,7 @@ public class CirrusAgent implements ICirrusAgent {
         this.storageService = this.resolveStorageServiceFrom(bundle);
         this.storageServiceVendor = this.createStorageServiceVendor(bundle);
         this.bundleDescription = this.createBundleDescription(bundle);
+        this.authenticationMode = this.getAuthenticationMode(bundle);
         this.identifier = new UUIDBasedCirrusAgentIdentifier(this.bundleDescription.getName());
     }
 
@@ -77,6 +80,11 @@ public class CirrusAgent implements ICirrusAgent {
     @Override
     public ICirrusStorageService getStorageService() {
         return this.storageService;
+    }
+
+    @Override
+    public AuthenticationMode getAuthenticationMode() {
+        return this.authenticationMode;
     }
 
     @Override
@@ -158,13 +166,28 @@ public class CirrusAgent implements ICirrusAgent {
         }
     }
 
-    private ICirrusAgentBundleDescription createBundleDescription(final Bundle bundle) {
+    private ICirrusAgentBundleDescription createBundleDescription(final Bundle bundle) throws CirrusAgentInstallationException {
         final Dictionary<String, String> dict = bundle.getHeaders();
-        final String bundleName = dict.get(Constants.BUNDLE_NAME);
-        final String bundleDescription = dict.get(Constants.BUNDLE_DESCRIPTION);
-        final String bundleVersion = dict.get(Constants.BUNDLE_VERSION);
-        final String bundleVendor = dict.get(Constants.BUNDLE_VENDOR);
+        final String bundleName = this.getBundleProperty(dict, Constants.BUNDLE_NAME);
+        final String bundleDescription = this.getBundleProperty(dict, Constants.BUNDLE_DESCRIPTION);
+        final String bundleVersion = this.getBundleProperty(dict, Constants.BUNDLE_VERSION);
+        final String bundleVendor = this.getBundleProperty(dict, Constants.BUNDLE_VENDOR);
 
         return new CirrusAgentBundleDescription(bundleName, bundleDescription, bundleVersion, bundleVendor);
+    }
+
+    private AuthenticationMode getAuthenticationMode(final Bundle bundle) throws CirrusAgentInstallationException {
+        final Dictionary<String, String> dictionary = bundle.getHeaders();
+        final String authenticationModeValue = this.getBundleProperty(dictionary, ICirrusStorageService.SERVICE_AUTHENTICATION_MODE_PROPERTY);
+        return AuthenticationMode.valueOf(authenticationModeValue);
+    }
+
+    private String getBundleProperty(final Dictionary<String, String> dictionary, final String propertyName) throws CirrusAgentInstallationException {
+        final String value = dictionary.get(propertyName);
+        if (value == null) {
+            throw new CirrusAgentInstallationException("Could not retrieve bundle property '" + propertyName + "'");
+        } else {
+            return value;
+        }
     }
 }
