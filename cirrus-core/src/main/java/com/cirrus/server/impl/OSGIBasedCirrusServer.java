@@ -68,12 +68,14 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
 
     @Override
     public void start() throws StartCirrusServerException {
+        System.out.println("start");
         // start cirrus agent manager
         this.cirrusAgentManager.start();
     }
 
     @Override
     public void stop() throws StopCirrusServerException {
+        System.out.println("stop");
         // stop cirrus agent manager
         this.cirrusAgentManager.stop();
     }
@@ -86,6 +88,11 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     @Override
     public ICirrusUserOperationManager getCirrusUserOperations() {
         return this.cirrusUserOperations;
+    }
+
+    public static void main(final String[] args) throws IOException, StartCirrusServerException {
+        final OSGIBasedCirrusServer osgiBasedCirrusServer = new OSGIBasedCirrusServer();
+        osgiBasedCirrusServer.start();
     }
 
 }

@@ -29,4 +29,8 @@ public class StopCirrusServerException extends Exception {
     public StopCirrusServerException(final Throwable cause) {
         super(cause);
     }
+
+    public StopCirrusServerException(final String message) {
+        super(message);
+    }
 }

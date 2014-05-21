@@ -29,4 +29,8 @@ public class StartCirrusAgentException extends Exception {
     public StartCirrusAgentException(final Throwable cause) {
         super(cause);
     }
+
+    public StartCirrusAgentException(final String message) {
+        super(message);
+    }
 }

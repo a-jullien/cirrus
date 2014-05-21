@@ -48,6 +48,7 @@ public class CirrusAgentManager implements ICirrusAgentManager {
     private final Framework framework;
     private final List<ICirrusAgent> cirrusAgents;
     private final IGlobalContext globalContext;
+    private boolean isStarted;
 
     //==================================================================================================================
     // Constructors
@@ -57,6 +58,7 @@ public class CirrusAgentManager implements ICirrusAgentManager {
         this.globalContext = globalContext;
         this.cirrusAgents = new ArrayList<>();
         this.framework = this.createFramework();
+        this.isStarted = false;
     }
 
     //==================================================================================================================
@@ -65,33 +67,43 @@ public class CirrusAgentManager implements ICirrusAgentManager {
     @Override
     public void start() throws StartCirrusServerException {
 
-        try {
-            this.framework.init();
-            this.framework.start();
-            this.framework.waitForStop(10);
+        if (!this.isStarted()) {
+            try {
+                this.framework.init();
+                this.framework.start();
+                this.isStarted = true;
+                this.framework.waitForStop(10);
 
-        } catch (final BundleException | InterruptedException e) {
-            throw new StartCirrusServerException(e);
+            } catch (final BundleException | InterruptedException e) {
+                throw new StartCirrusServerException(e);
+            }
+
+            OSGIBasedCirrusServer.LOGGER.info(COMPONENT_NAME + " started.");
+        } else {
+            throw new StartCirrusServerException("The cirrus server is already started");
         }
-
-        OSGIBasedCirrusServer.LOGGER.info(COMPONENT_NAME + " started.");
     }
 
     @Override
     public void stop() throws StopCirrusServerException {
-        try {
-            // stop osgi framework
-            this.framework.stop();
-        } catch (final BundleException e) {
-            throw new StopCirrusServerException(e);
-        }
+        if (this.isStarted()) {
+            try {
+                // stop osgi framework
+                this.framework.stop();
+                this.isStarted = false;
+            } catch (final BundleException e) {
+                throw new StopCirrusServerException(e);
+            }
 
-        OSGIBasedCirrusServer.LOGGER.info(COMPONENT_NAME + " stopped.");
+            OSGIBasedCirrusServer.LOGGER.info(COMPONENT_NAME + " stopped.");
+        } else {
+            throw new StopCirrusServerException("The cirrus server is not started");
+        }
     }
 
     @Override
     public boolean isStarted() {
-        return this.framework.getState() == Framework.ACTIVE;
+        return this.isStarted && (this.framework.getState() == Framework.ACTIVE);
     }
 
     @Override
