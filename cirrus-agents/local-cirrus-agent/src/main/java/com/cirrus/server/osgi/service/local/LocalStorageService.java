@@ -26,7 +26,13 @@ import com.cirrus.server.osgi.extension.AbstractStorageService;
 import com.cirrus.server.osgi.extension.ServiceRequestFailedException;
 import org.apache.commons.io.IOUtils;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,22 +74,25 @@ public class LocalStorageService extends AbstractStorageService<AnonymousTrusted
 
     @Override
     public List<ICirrusData> list(final String path) throws ServiceRequestFailedException {
-        final String newPath = this.getGlobalContext().getRootPath() + File.separatorChar + path;
-        final File file = new File(newPath);
-        if (!file.exists()) {
+        final Path newPath = Paths.get(this.getGlobalContext().getRootPath(), path);
+
+        if (!Files.exists(newPath)) {
             throw new ServiceRequestFailedException("The directory <" + newPath + "> doesn't exist");
         }
 
-        if (!file.isDirectory()) {
+        if (!Files.isDirectory(newPath)) {
             throw new ServiceRequestFailedException("The path <" + newPath + "> is not a directory");
         }
 
+
         final List<ICirrusData> result = new ArrayList<>();
-        final File[] children = file.listFiles();
-        if (children != null) {
-            for (final File child : children) {
-                result.add(this.createCirrusDataFromFile(child));
+        try (final DirectoryStream<Path> directoryStream = Files.newDirectoryStream(newPath)) {
+            for (final Path currentPath : directoryStream) {
+                result.add(this.createCirrusDataFromFile(currentPath));
             }
+
+        } catch (final IOException e) {
+            // ignore
         }
 
         return result;
@@ -91,57 +100,49 @@ public class LocalStorageService extends AbstractStorageService<AnonymousTrusted
 
     @Override
     public CirrusFolderData createDirectory(final String path) throws ServiceRequestFailedException {
-        final String newPath = this.getGlobalContext().getRootPath() + File.separatorChar + path;
-        final File file = new File(newPath);
-        if (file.exists()) {
+        final Path newPath = Paths.get(this.getGlobalContext().getRootPath(), path);
+
+        if (Files.exists(newPath)) {
             throw new ServiceRequestFailedException("The directory <" + newPath + "> already exists");
         } else {
-            final boolean created = file.mkdirs();
-            if (!created) {
-                throw new ServiceRequestFailedException("The directory <" + newPath + "> cannot be created");
-            } else {
-                return new CirrusFolderData(file.getPath());
+            try {
+                final Path directories = Files.createDirectories(newPath);
+                return new CirrusFolderData(directories.toString());
+            } catch (final IOException e) {
+                throw new ServiceRequestFailedException(e);
             }
         }
     }
 
     @Override
     public ICirrusData delete(final String path) throws ServiceRequestFailedException {
-        final String newPath = this.getGlobalContext().getRootPath() + File.separatorChar + path;
-        final File file = new File(newPath);
-        if (!file.exists()) {
+        final Path newPath = Paths.get(this.getGlobalContext().getRootPath(), path);
+
+        if (!Files.exists(newPath)) {
             throw new ServiceRequestFailedException("The entry <" + newPath + "> doesn't exist");
         } else {
-            final ICirrusData cirrusData = this.createCirrusDataFromFile(file);
-            final boolean fileDeleted = file.delete();
-            if (!fileDeleted) {
-                throw new ServiceRequestFailedException("The file <" + newPath + "> cannot be deleted");
-            } else {
+            try {
+                final ICirrusData cirrusData = this.createCirrusDataFromFile(newPath);
+                Files.delete(newPath);
                 return cirrusData;
+            } catch (final IOException e) {
+                throw new ServiceRequestFailedException(e);
             }
         }
     }
 
     @Override
     public CirrusFileData transferFile(final String filePath, final long fileSize, final InputStream inputStream) throws ServiceRequestFailedException {
-        final String newPath = this.getGlobalContext().getRootPath() + File.separatorChar + filePath;
-        final File file = new File(newPath);
-        try {
-            final boolean newFile = file.createNewFile();
-            if (!newFile) {
-                throw new ServiceRequestFailedException("The file <" + file + "> cannot be created");
-            } else {
-                FileOutputStream outputStream = null;
-                try {
-                    outputStream = new FileOutputStream(file);
-                    IOUtils.copy(inputStream, outputStream);
-                } finally {
-                    this.closeStream(inputStream);
-                    this.closeStream(outputStream);
-                }
+        final Path newPath = Paths.get(this.getGlobalContext().getRootPath(), filePath);
 
-                return new CirrusFileData(file.getPath(), new File(newPath).length());
+        try {
+            final Path createFilePath = Files.createFile(newPath);
+
+            try (final OutputStream outputStream = Files.newOutputStream(createFilePath)) {
+                IOUtils.copy(inputStream, outputStream);
             }
+
+            return new CirrusFileData(createFilePath.toString(), Files.size(createFilePath));
         } catch (final IOException e) {
             throw new ServiceRequestFailedException(e);
         }
@@ -150,21 +151,12 @@ public class LocalStorageService extends AbstractStorageService<AnonymousTrusted
     //==================================================================================================================
     // Private
     //==================================================================================================================
-    private void closeStream(final Closeable closeable) {
-        if (closeable != null) {
-            try {
-                closeable.close();
-            } catch (final IOException e) {
-                // ignore
-            }
-        }
-    }
 
-    private ICirrusData createCirrusDataFromFile(final File file) {
-        if (file.isFile()) {
-            return new CirrusFileData(file.getPath(), file.length());
+    private ICirrusData createCirrusDataFromFile(final Path path) throws IOException {
+        if (Files.isDirectory(path)) {
+            return new CirrusFolderData(path.toString());
         } else {
-            return new CirrusFolderData(file.getPath());
+            return new CirrusFileData(path.toString(), Files.size(path));
         }
     }
 }
