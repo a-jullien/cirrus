@@ -16,7 +16,7 @@
  *
  */
 
-package com.cirrus.server.web.handler;
+package com.cirrus.server.http.handler;
 
 
 import com.cirrus.server.exception.StartWebServiceException;
@@ -24,10 +24,17 @@ import com.cirrus.server.exception.StopWebServiceException;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 
 public class JettyWebServer {
+
+    //==================================================================================================================
+    // Constants
+    //==================================================================================================================
+    private final static String RESOURCES_PACKAGE = "com.cirrus.server.http.resources";
 
     //==================================================================================================================
     // Attributes
@@ -45,6 +52,9 @@ public class JettyWebServer {
         this.server.setHandler(handler);
     }
 
+    //==================================================================================================================
+    // Public
+    //==================================================================================================================
     public void start() throws StartWebServiceException {
         try {
             this.server.start();
@@ -67,9 +77,14 @@ public class JettyWebServer {
     private ResourceConfig createResourceConfig() {
         final ResourceConfig resourceConfig = new ResourceConfig();
         resourceConfig.register(new WebApplicationBinder());
-        return resourceConfig.packages("com.cirrus.server.web.resources");
+        resourceConfig.register(JacksonFeature.class);
+        resourceConfig.register(MultiPartFeature.class);
+        return resourceConfig.packages(RESOURCES_PACKAGE);
     }
 
+    //==================================================================================================================
+    // MAIN
+    //==================================================================================================================
     public static void main(final String[] args) throws StartWebServiceException {
         final JettyWebServer jettyWebServer = new JettyWebServer(8080);
         jettyWebServer.start();

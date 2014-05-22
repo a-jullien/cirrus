@@ -21,6 +21,13 @@ import com.cirrus.server.exception.*;
 public interface ICirrusServer {
 
     /**
+     * Returns the symbolical name of the cirrus server
+     *
+     * @return the server name
+     */
+    String getName();
+
+    /**
      * start cirrus server
      */
     void start() throws StartCirrusServerException;
@@ -29,6 +36,13 @@ public interface ICirrusServer {
      * stop cirrus server
      */
     void stop() throws StopCirrusServerException;
+
+    /**
+     * Checks if the server is started or not
+     *
+     * @return true if the cirrus server is started, false otherwise
+     */
+    boolean isStarted();
 
     /**
      * Returns the administration part responsible for the bundle management

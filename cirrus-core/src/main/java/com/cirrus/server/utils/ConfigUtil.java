@@ -31,12 +31,12 @@ public class ConfigUtil {
     public static Map<String, String> createFrameworkConfiguration() throws IOException {
         final Map<String, String> configuration = new HashMap<String, String>();
 
-        final Properties p = new Properties();
+        final Properties properties = new Properties();
 
-        p.load(ConfigUtil.class.getResourceAsStream("/framework-config.properties"));
-        final Set<String> propertyNames = p.stringPropertyNames();
+        properties.load(ConfigUtil.class.getResourceAsStream("/framework-config.properties"));
+        final Set<String> propertyNames = properties.stringPropertyNames();
         for (String propertyName : propertyNames) {
-            final String propertyValue = p.getProperty(propertyName);
+            final String propertyValue = properties.getProperty(propertyName);
             configuration.put(propertyName, propertyValue);
         }
 

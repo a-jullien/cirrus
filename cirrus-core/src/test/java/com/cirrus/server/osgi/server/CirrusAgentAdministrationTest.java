@@ -56,7 +56,7 @@ public class CirrusAgentAdministrationTest {
     // Public
     //==================================================================================================================
     @Test
-    public void shouldSuccessfullyCreateAndStartCirrusServer() throws StartCirrusServerException, StopCirrusServerException, IOException {
+    public void shouldSuccessfullyCreateAndStartCirrusServer() throws StartCirrusServerException, StopCirrusServerException, IOException, ServerNotStartedException {
         final ICirrusAgentManager cirrusAgentAdministration = new CirrusAgentManager(this.context);
         cirrusAgentAdministration.start();
 

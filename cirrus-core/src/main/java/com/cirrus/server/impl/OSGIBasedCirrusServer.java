@@ -43,6 +43,7 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
 
     private final ICirrusAgentManager cirrusAgentManager;
     private final ICirrusUserOperationManager cirrusUserOperations;
+    private final String name;
 
     //==================================================================================================================
     // Constructors
@@ -52,6 +53,7 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
         // global properties of the cirrus server
         final CirrusProperties cirrusProperties = new CirrusProperties();
         final String rootDirectory = cirrusProperties.getProperty(CirrusProperties.CIRRUS_ROOT_DIRECTORY);
+        this.name = cirrusProperties.getProperty(CirrusProperties.CIRRUS_SERVER_NAME);
         final IGlobalContext globalContext = GlobalContext.create(rootDirectory);
         // create mongodb service
         final MongoDBService mongoDBService = new MongoDBService(cirrusProperties.getProperty(CirrusProperties.MONGODB_URL));
@@ -67,17 +69,25 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     //==================================================================================================================
 
     @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
     public void start() throws StartCirrusServerException {
-        System.out.println("start");
         // start cirrus agent manager
         this.cirrusAgentManager.start();
     }
 
     @Override
     public void stop() throws StopCirrusServerException {
-        System.out.println("stop");
         // stop cirrus agent manager
         this.cirrusAgentManager.stop();
+    }
+
+    @Override
+    public boolean isStarted() {
+        return this.cirrusAgentManager.isStarted();
     }
 
     @Override
@@ -89,10 +99,4 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     public ICirrusUserOperationManager getCirrusUserOperations() {
         return this.cirrusUserOperations;
     }
-
-    public static void main(final String[] args) throws IOException, StartCirrusServerException {
-        final OSGIBasedCirrusServer osgiBasedCirrusServer = new OSGIBasedCirrusServer();
-        osgiBasedCirrusServer.start();
-    }
-
 }

@@ -20,6 +20,7 @@ import com.cirrus.agent.ICirrusAgent;
 import com.cirrus.agent.ICirrusAgentIdentifier;
 import com.cirrus.server.exception.*;
 
+import java.io.InputStream;
 import java.util.List;
 
 public interface ICirrusAgentManager {
@@ -40,9 +41,14 @@ public interface ICirrusAgentManager {
     boolean isStarted();
 
     /**
-     * install new cirrus agent as a new bundle in the current osgi platform
+     * install new cirrus agent as a new bundle in the current osgi platform from location
      */
-    ICirrusAgent installCirrusAgent(final String cirrusAgentPath) throws CirrusAgentInstallationException, StartCirrusAgentException, CirrusAgentAlreadyExistException, ServerNotStartedException;
+    ICirrusAgent installCirrusAgent(final String cirrusAgentLocation) throws CirrusAgentInstallationException, StartCirrusAgentException, CirrusAgentAlreadyExistException, ServerNotStartedException;
+
+    /**
+     * install new cirrus agent as a new bundle in the current osgi platform from input stream
+     */
+    ICirrusAgent installCirrusAgent(final String cirrusAgentLocation, final InputStream inputStream) throws CirrusAgentInstallationException, StartCirrusAgentException, CirrusAgentAlreadyExistException, ServerNotStartedException;
 
     /**
      * uninstall existing cirrus agent from current osgi platform
@@ -52,7 +58,7 @@ public interface ICirrusAgentManager {
     /**
      * Returns all available installed cirrus agents
      */
-    List<ICirrusAgent> listCirrusAgents();
+    List<ICirrusAgent> listCirrusAgents() throws ServerNotStartedException;
 
     /**
      * Returns the cirrus agent from the specified identifier
@@ -60,5 +66,5 @@ public interface ICirrusAgentManager {
      * @param cirrusAgentIdentifier the unique identifier
      * @return the {ICirrusAgent} agent. Never <code>null</code>
      */
-    ICirrusAgent getCirrusAgentById(final ICirrusAgentIdentifier cirrusAgentIdentifier) throws CirrusAgentNotExistException;
+    ICirrusAgent getCirrusAgentById(final ICirrusAgentIdentifier cirrusAgentIdentifier) throws CirrusAgentNotExistException, ServerNotStartedException;
 }

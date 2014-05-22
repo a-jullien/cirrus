@@ -35,6 +35,7 @@ import com.cirrus.persistence.QueryBuilder;
 import com.cirrus.persistence.dao.meta.IMetaDataDAO;
 import com.cirrus.server.ICirrusAgentManager;
 import com.cirrus.server.ICirrusUserOperationManager;
+import com.cirrus.server.exception.ServerNotStartedException;
 
 import java.io.InputStream;
 import java.util.List;
@@ -74,7 +75,7 @@ public class CirrusUserOperationManager implements ICirrusUserOperationManager {
             final String virtualPath = this.extractPath(completeVirtualPath);
 
             this.dispatchEvent(new CirrusDataCreatedEvent(agent.getIdentifier(), virtualPath, cirrusFolderData));
-        } catch (final CirrusAgentCannotBeFoundException e) {
+        } catch (final CirrusAgentCannotBeFoundException | ServerNotStartedException e) {
             throw new ExecutionException(e);
         }
     }
@@ -91,7 +92,7 @@ public class CirrusUserOperationManager implements ICirrusUserOperationManager {
 
             this.dispatchEvent(new CirrusDataCreatedEvent(agent.getIdentifier(), virtualPath, cirrusFileData));
 
-        } catch (final CirrusAgentCannotBeFoundException e) {
+        } catch (final CirrusAgentCannotBeFoundException | ServerNotStartedException e) {
             throw new ExecutionException(e);
         }
     }
@@ -106,7 +107,7 @@ public class CirrusUserOperationManager implements ICirrusUserOperationManager {
 
             this.dispatchEvent(new CirrusDataRemovedEvent(agent.getIdentifier(), virtualPath, removedData));
 
-        } catch (final CirrusAgentCannotBeFoundException e) {
+        } catch (final CirrusAgentCannotBeFoundException | ServerNotStartedException e) {
             throw new ExecutionException(e);
         }
     }

@@ -16,16 +16,11 @@
  *
  */
 
-package com.cirrus.server.web.handler;
+package com.cirrus.server.http.verb;
 
-import com.cirrus.server.impl.OSGIBasedCirrusServer;
-import org.glassfish.hk2.utilities.binding.AbstractBinder;
-
-import javax.inject.Singleton;
-
-public class WebApplicationBinder extends AbstractBinder{
-    @Override
-    protected void configure() {
-        bind(OSGIBasedCirrusServer.class).to(OSGIBasedCirrusServer.class).in(Singleton.class);
-    }
+@java.lang.annotation.Target({java.lang.annotation.ElementType.METHOD})
+@java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
+@javax.ws.rs.HttpMethod("STATUS")
+@java.lang.annotation.Documented
+public @interface STATUS {
 }

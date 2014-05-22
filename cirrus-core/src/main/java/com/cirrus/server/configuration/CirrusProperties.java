@@ -25,6 +25,7 @@ public class CirrusProperties {
     //==================================================================================================================
     // Constants
     //==================================================================================================================
+    public static final String CIRRUS_SERVER_NAME = "cirrus.server.name";
     public static final String MONGODB_URL = "cirrus.mongodb.url";
     public static final String CIRRUS_ROOT_DIRECTORY = "cirrus.root.directory";
 

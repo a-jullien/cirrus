@@ -30,6 +30,7 @@ import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -107,13 +108,13 @@ public class CirrusAgentManager implements ICirrusAgentManager {
     }
 
     @Override
-    public ICirrusAgent installCirrusAgent(final String cirrusAgentPath) throws CirrusAgentInstallationException, StartCirrusAgentException, CirrusAgentAlreadyExistException, ServerNotStartedException {
+    public ICirrusAgent installCirrusAgent(final String cirrusAgentLocation, final InputStream inputStream) throws CirrusAgentInstallationException, StartCirrusAgentException, CirrusAgentAlreadyExistException, ServerNotStartedException {
         this.checkServerIdStarted();
 
-        OSGIBasedCirrusServer.LOGGER.info(COMPONENT_NAME + " Install bundle '" + cirrusAgentPath + "'");
+        OSGIBasedCirrusServer.LOGGER.info(COMPONENT_NAME + " Install bundle '" + cirrusAgentLocation + "'");
         final BundleContext bundleContext = this.framework.getBundleContext();
         try {
-            final Bundle bundle = bundleContext.installBundle(cirrusAgentPath);
+            final Bundle bundle = bundleContext.installBundle(cirrusAgentLocation, inputStream);
 
             final CirrusAgent cirrusAgent = new CirrusAgent(bundle);
             if (this.cirrusAgents.contains(cirrusAgent)) {
@@ -135,6 +136,11 @@ public class CirrusAgentManager implements ICirrusAgentManager {
     }
 
     @Override
+    public ICirrusAgent installCirrusAgent(final String cirrusAgentLocation) throws CirrusAgentInstallationException, StartCirrusAgentException, CirrusAgentAlreadyExistException, ServerNotStartedException {
+        return this.installCirrusAgent(cirrusAgentLocation, null);
+    }
+
+    @Override
     public void uninstallCirrusAgent(final ICirrusAgentIdentifier cirrusAgentIdentifier) throws StopCirrusAgentException, CirrusAgentNotExistException, UninstallCirrusAgentException, ServerNotStartedException {
         this.checkServerIdStarted();
 
@@ -146,12 +152,14 @@ public class CirrusAgentManager implements ICirrusAgentManager {
     }
 
     @Override
-    public List<ICirrusAgent> listCirrusAgents() {
+    public List<ICirrusAgent> listCirrusAgents() throws ServerNotStartedException {
+        this.checkServerIdStarted();
         return this.cirrusAgents;
     }
 
     @Override
-    public ICirrusAgent getCirrusAgentById(final ICirrusAgentIdentifier cirrusAgentId) throws CirrusAgentNotExistException {
+    public ICirrusAgent getCirrusAgentById(final ICirrusAgentIdentifier cirrusAgentId) throws CirrusAgentNotExistException, ServerNotStartedException {
+        this.checkServerIdStarted();
         for (final ICirrusAgent cirrusAgent : this.cirrusAgents) {
             if (cirrusAgent.getIdentifier().equals(cirrusAgentId)) {
                 return cirrusAgent;

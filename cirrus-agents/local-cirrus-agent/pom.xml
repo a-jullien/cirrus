@@ -4,8 +4,8 @@
 
     <modelVersion>4.0.0</modelVersion>
     <packaging>bundle</packaging>
-    <name>Dropbox Cirrus Bundle</name>
-    <description>Dropbox integration</description>
+    <name>Local Cirrus Bundle</name>
+    <description>cirrus bundle based on local file system</description>
     <groupId>com.cirrus</groupId>
     <artifactId>local-cirrus-agent</artifactId>
     <version>1.0-SNAPSHOT</version>
