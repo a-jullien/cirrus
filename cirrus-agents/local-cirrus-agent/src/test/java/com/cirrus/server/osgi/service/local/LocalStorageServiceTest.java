@@ -18,10 +18,11 @@
 
 package com.cirrus.server.osgi.service.local;
 
+import com.cirrus.agent.authentication.impl.AnonymousTrustedToken;
 import com.cirrus.data.ICirrusData;
 import com.cirrus.data.impl.CirrusFileData;
 import com.cirrus.data.impl.CirrusFolderData;
-import com.cirrus.agent.authentication.impl.AnonymousTrustedToken;
+import com.cirrus.data.impl.DataType;
 import com.cirrus.server.IGlobalContext;
 import com.cirrus.server.impl.GlobalContext;
 import com.cirrus.server.osgi.extension.ServiceRequestFailedException;
@@ -33,6 +34,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.List;
 
 import static com.mongodb.util.MyAsserts.assertFalse;
 import static com.mongodb.util.MyAsserts.assertTrue;
@@ -58,6 +60,13 @@ public class LocalStorageServiceTest {
     public void tearDown() {
         assertTrue(IOFileUtils.deleteDirectory(this.tmpDirectory));
         assertFalse(this.tmpDirectory.exists());
+    }
+
+    @Test(expected = ServiceRequestFailedException.class)
+    public void shouldErrorWhenCreateExistingDirectory() throws ServiceRequestFailedException {
+        final LocalStorageService localStorageService = createLocalStorageService();
+        assertTrue(new File(this.tmpDirectory, "testDirectory").mkdirs());
+        localStorageService.createDirectory("/testDirectory");
     }
 
     @Test
@@ -127,6 +136,36 @@ public class LocalStorageServiceTest {
             assertNotNull(cirrusFileData);
             assertEquals("destinationFile", destinationFile.getName());
         }
+    }
+
+    @Test(expected = ServiceRequestFailedException.class)
+    public void shouldErrorWhenListNonExistingContent() throws ServiceRequestFailedException {
+        final LocalStorageService localStorageService = this.createLocalStorageService();
+        localStorageService.list("/nonExisting");
+    }
+
+    @Test(expected = ServiceRequestFailedException.class)
+    public void shouldErrorWhenListFile() throws ServiceRequestFailedException, IOException {
+        final LocalStorageService localStorageService = this.createLocalStorageService();
+        assertTrue(new File(this.tmpDirectory, "file1").createNewFile());
+
+        localStorageService.list("/file1");
+    }
+
+    @Test
+    public void shouldSuccessfullyListContent() throws ServiceRequestFailedException {
+        final LocalStorageService localStorageService = this.createLocalStorageService();
+        final List<ICirrusData> emptyList = localStorageService.list("/");
+        assertNotNull(emptyList);
+        assertEquals(0, emptyList.size());
+
+        localStorageService.createDirectory("/directory1");
+
+        final List<ICirrusData> newList = localStorageService.list("/");
+        assertEquals(1, newList.size());
+        final ICirrusData data = newList.get(0);
+        assertEquals(DataType.DIRECTORY, data.getDataType());
+        assertEquals("directory1", data.getName());
     }
 
     //==================================================================================================================

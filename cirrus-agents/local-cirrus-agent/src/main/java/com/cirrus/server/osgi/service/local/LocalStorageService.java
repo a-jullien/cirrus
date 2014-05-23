@@ -92,7 +92,7 @@ public class LocalStorageService extends AbstractStorageService<AnonymousTrusted
             }
 
         } catch (final IOException e) {
-            // ignore
+            throw new ServiceRequestFailedException(e);
         }
 
         return result;
