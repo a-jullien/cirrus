@@ -50,7 +50,7 @@ public class LocalStorageServiceTest {
     private IGlobalContext context;
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
         this.tmpDirectory = IOFileUtils.getTmpDirectory();
         this.context = GlobalContext.create(this.tmpDirectory.getPath());
         assertTrue(this.tmpDirectory.exists());

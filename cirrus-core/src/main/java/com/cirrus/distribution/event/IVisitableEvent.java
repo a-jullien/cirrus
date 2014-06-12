@@ -16,7 +16,6 @@
 
 package com.cirrus.distribution.event;
 
-import com.cirrus.server.exception.IllegalOperationException;
 import com.cirrus.utils.Try;
 
 import java.io.Serializable;

@@ -62,6 +62,7 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
         this.cirrusAgentManager = new CirrusAgentManager(globalContext);
         // user operations
         this.cirrusUserOperations = new CirrusUserOperationManager(this.cirrusAgentManager, metaDataDAO);
+        LOGGER.info("cirrus server initialized");
     }
 
     //==================================================================================================================

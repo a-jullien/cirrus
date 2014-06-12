@@ -135,13 +135,4 @@ public class CirrusUserOperationManager implements ICirrusUserOperationManager {
             return path.substring(0, index + 1);
         }
     }
-
-    private String extractFileName(final String path) {
-        final int index = path.lastIndexOf('/');
-        if (index == -1) {
-            return path;
-        } else {
-            return path.substring(index + 1, path.length());
-        }
-    }
 }

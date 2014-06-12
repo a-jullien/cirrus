@@ -28,18 +28,45 @@ public class CirrusAgentBundleDescription implements ICirrusAgentBundleDescripti
     //==================================================================================================================
     // Private
     //==================================================================================================================
-    private final String name;
-    private final String description;
-    private final String version;
-    private final String vendor;
+    private String name;
+    private String description;
+    private String version;
+    private String vendor;
 
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
+
+    public CirrusAgentBundleDescription() {
+        super();
+    }
+
     public CirrusAgentBundleDescription(final String name, final String description, final String version, final String vendor) {
+        this();
         this.name = name;
         this.description = description;
         this.version = version;
+        this.vendor = vendor;
+    }
+
+    //==================================================================================================================
+    // Setters
+    //==================================================================================================================
+
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public void setDescription(final String description) {
+        this.description = description;
+    }
+
+    public void setVersion(final String version) {
+        this.version = version;
+    }
+
+    public void setVendor(final String vendor) {
         this.vendor = vendor;
     }
 

@@ -34,7 +34,8 @@ public class JettyWebServer {
     //==================================================================================================================
     // Constants
     //==================================================================================================================
-    private final static String RESOURCES_PACKAGE = "com.cirrus.server.http.resources";
+    public final static String RESOURCES_PACKAGE = "com.cirrus.server.http.resources";
+    public final static String EXCEPTION_MAPPER_PACKAGE = "com.cirrus.server.http.exception";
 
     //==================================================================================================================
     // Attributes
@@ -79,14 +80,19 @@ public class JettyWebServer {
         resourceConfig.register(new WebApplicationBinder());
         resourceConfig.register(JacksonFeature.class);
         resourceConfig.register(MultiPartFeature.class);
-        return resourceConfig.packages(RESOURCES_PACKAGE);
+        return resourceConfig.packages(true, RESOURCES_PACKAGE, EXCEPTION_MAPPER_PACKAGE);
     }
 
     //==================================================================================================================
     // MAIN
     //==================================================================================================================
     public static void main(final String[] args) throws StartWebServiceException {
-        final JettyWebServer jettyWebServer = new JettyWebServer(8080);
-        jettyWebServer.start();
+        if (args.length == 0) {
+            throw new StartWebServiceException("Please specify the port of the http port");
+        } else {
+            final String port = args[0];
+            final JettyWebServer jettyWebServer = new JettyWebServer(Integer.valueOf(port));
+            jettyWebServer.start();
+        }
     }
 }

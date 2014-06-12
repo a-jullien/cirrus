@@ -16,23 +16,44 @@
  *
  */
 
-package com.cirrus.server.exception;
+package com.cirrus.server.http.entity;
 
-public class StartWebServiceException extends Exception {
+import com.cirrus.agent.impl.CirrusAgentBundleDescription;
+
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
+
+@XmlRootElement
+public class CirrusAgents {
 
     //==================================================================================================================
-    // Constants
+    // Attributes
     //==================================================================================================================
-    private static final long serialVersionUID = 3560595087451328147L;
+
+    private final List<CirrusAgentBundleDescription> agents;
 
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
-    public StartWebServiceException(final Throwable cause) {
-        super(cause);
+
+    public CirrusAgents() {
+        this.agents = new ArrayList<>();
     }
 
-    public StartWebServiceException(final String message) {
-        super(message);
+    //==================================================================================================================
+    // Public
+    //==================================================================================================================
+
+    public void addAgent(final CirrusAgentBundleDescription agentDescription) {
+        this.agents.add(agentDescription);
+    }
+
+    //==================================================================================================================
+    // Getters
+    //==================================================================================================================
+
+    public List<CirrusAgentBundleDescription> getAgents() {
+        return agents;
     }
 }

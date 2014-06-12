@@ -16,16 +16,18 @@
  *
  */
 
-package com.cirrus.server.http.handler;
+package com.cirrus.server.http.exception.mapper;
 
-import com.cirrus.server.impl.OSGIBasedCirrusServer;
-import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import com.cirrus.server.exception.StartCirrusServerException;
 
-import javax.inject.Singleton;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.Provider;
 
-public class WebApplicationBinder extends AbstractBinder {
+@SuppressWarnings("UnusedDeclaration")
+@Provider
+public class StartCirrusServerExceptionMapper extends AbstractExceptionMapper<StartCirrusServerException> {
     @Override
-    protected void configure() {
-        bind(OSGIBasedCirrusServer.class).to(OSGIBasedCirrusServer.class).in(Singleton.class);
+    public Response toResponse(final StartCirrusServerException e) {
+        return super.buildResponse(Response.Status.NOT_ACCEPTABLE, "An error occurred when the server is starting");
     }
 }

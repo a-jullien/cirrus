@@ -100,7 +100,7 @@ public class MetaDataNotifier implements ICirrusDataListener {
 
         final IQuery query = queryBuilder.buildQuery();
         final List<ICirrusMetaData> metaDataList = this.metaDataDAO.findMetaData(query);
-        if (metaDataList.size() == 0) {
+        if (metaDataList.isEmpty()) {
             throw new IllegalOperationException("Could not retrieve meta data for query <" + query + ">");
         } else {
             try {

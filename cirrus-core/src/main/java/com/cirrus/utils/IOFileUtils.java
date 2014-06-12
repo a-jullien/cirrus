@@ -24,16 +24,16 @@ import java.io.IOException;
 
 public class IOFileUtils {
 
-    public static File getTmpDirectory() {
+    public static File getTmpDirectory() throws IOException {
         final String tmpPath = System.getProperty("java.io.tmpdir", "/tmp");
         final File file = new File(tmpPath + File.separatorChar + "cirrus-test-directory");
         if (file.isFile()) {
-            throw new RuntimeException("The tmp folder <" + file.getAbsolutePath() + "> should not be a file !");
+            throw new IOException("The tmp folder <" + file.getAbsolutePath() + "> should not be a file !");
         }
         if (!file.isDirectory()) {
             final boolean isCreated = file.mkdirs();
             if (!isCreated) {
-                throw new RuntimeException("The tmp folder <" + file.getAbsolutePath() + "> couldn't be created.");
+                throw new IOException("The tmp folder <" + file.getAbsolutePath() + "> couldn't be created.");
             }
         }
         return file;

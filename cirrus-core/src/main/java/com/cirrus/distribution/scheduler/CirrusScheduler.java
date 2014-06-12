@@ -51,7 +51,7 @@ public class CirrusScheduler {
 
     public ICirrusAgent findAgent() throws CirrusAgentCannotBeFoundException, ServerNotStartedException {
         final List<ICirrusAgent> allAgents = this.cirrusAgentAdministration.listCirrusAgents();
-        if (allAgents.size() == 0) {
+        if (allAgents.isEmpty()) {
             throw new CirrusAgentCannotBeFoundException("The scheduler is not able to find agents");
         } else {
             // TODO heuristics

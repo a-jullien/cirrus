@@ -16,10 +16,9 @@
 
 package com.cirrus.distribution.event.data.impl;
 
+import com.cirrus.agent.ICirrusAgentIdentifier;
 import com.cirrus.data.ICirrusData;
 import com.cirrus.distribution.event.data.ICirrusDataEventVisitor;
-import com.cirrus.agent.ICirrusAgentIdentifier;
-import com.cirrus.server.exception.IllegalOperationException;
 import com.cirrus.utils.Try;
 
 public class CirrusDataCreatedEvent extends AbstractCirrusDataEvent implements ICirrusDataCreatedEvent {

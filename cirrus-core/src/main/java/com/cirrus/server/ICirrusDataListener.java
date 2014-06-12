@@ -17,7 +17,6 @@
 package com.cirrus.server;
 
 import com.cirrus.distribution.event.data.ICirrusDataEvent;
-import com.cirrus.server.exception.IllegalOperationException;
 
 import java.util.concurrent.ExecutionException;
 

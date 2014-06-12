@@ -23,19 +23,16 @@ import com.cirrus.agent.ICirrusAgent;
 import com.cirrus.agent.ICirrusAgentBundleDescription;
 import com.cirrus.agent.impl.UUIDBasedCirrusAgentIdentifier;
 import com.cirrus.server.exception.*;
+import com.cirrus.server.http.entity.CirrusAgents;
 import com.cirrus.server.http.entity.CirrusServerInformation;
-import com.cirrus.server.http.verb.INSTALL;
 import com.cirrus.server.http.verb.START;
-import com.cirrus.server.http.verb.STATUS;
 import com.cirrus.server.http.verb.STOP;
 import com.cirrus.server.impl.OSGIBasedCirrusServer;
-import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -57,22 +54,22 @@ public class CirrusServerManagementService {
 
     @Path("/agents")
     @GET
-    public List<ICirrusAgentBundleDescription> getInstalledAgents() throws ServerNotStartedException {
-        final List<ICirrusAgentBundleDescription> agentDescriptions = new ArrayList<>();
+    public CirrusAgents getInstalledAgents() throws ServerNotStartedException {
+        final CirrusAgents agents = new CirrusAgents();
         final List<ICirrusAgent> cirrusAgents = this.cirrusServer.getCirrusAgentManager().listCirrusAgents();
         for (final ICirrusAgent cirrusAgent : cirrusAgents) {
             final ICirrusAgentBundleDescription agentDescription = cirrusAgent.getCirrusAgentBundleDescription();
-            agentDescriptions.add(agentDescription);
+            agents.addAgent((com.cirrus.agent.impl.CirrusAgentBundleDescription) agentDescription); // TODO remove cast by JsonDeserialize
         }
 
-        return agentDescriptions;
+        return agents;
     }
 
-
-    @INSTALL
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public void installNewAgent(@FormDataParam("name") final String name,
-                                @FormDataParam("file") final InputStream inputStream) throws CirrusAgentAlreadyExistException, ServerNotStartedException, StartCirrusAgentException, CirrusAgentInstallationException {
+    @Path("/agents")
+    @POST
+    @Consumes(MediaType.APPLICATION_OCTET_STREAM)
+    public void installNewAgent(@HeaderParam("name") final String name,
+                                final InputStream inputStream) throws CirrusAgentAlreadyExistException, ServerNotStartedException, StartCirrusAgentException, CirrusAgentInstallationException {
         this.cirrusServer.getCirrusAgentManager().installCirrusAgent(name, inputStream);
     }
 
@@ -94,7 +91,7 @@ public class CirrusServerManagementService {
         return this.getCirrusServerStatus();
     }
 
-    @STATUS
+    @GET
     public CirrusServerInformation getCirrusServerStatus() {
         final boolean started = this.cirrusServer.isStarted();
         final CirrusServerInformation.STATUS status = started ?

@@ -16,23 +16,22 @@
  *
  */
 
-package com.cirrus.server.exception;
+package com.cirrus.server.http.exception.mapper;
 
-public class StartWebServiceException extends Exception {
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+
+public abstract class AbstractExceptionMapper<E extends Throwable> implements ExceptionMapper<E> {
 
     //==================================================================================================================
-    // Constants
+    // Public
     //==================================================================================================================
-    private static final long serialVersionUID = 3560595087451328147L;
 
-    //==================================================================================================================
-    // Constructors
-    //==================================================================================================================
-    public StartWebServiceException(final Throwable cause) {
-        super(cause);
+    protected Response buildResponse(final Response.Status httpErrorCode, final String message) {
+        final Response.ResponseBuilder builder = Response.status(httpErrorCode).type(MediaType.TEXT_PLAIN_TYPE);
+        builder.entity(message);
+        return builder.build();
     }
 
-    public StartWebServiceException(final String message) {
-        super(message);
-    }
 }
