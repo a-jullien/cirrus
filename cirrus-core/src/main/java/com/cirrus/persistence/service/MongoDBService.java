@@ -24,10 +24,6 @@ public class MongoDBService implements IMongoDBService {
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
-    public MongoDBService(final String host, final int port) throws UnknownHostException {
-        this("mongodb://" + host + ":" + port);
-    }
-
     public MongoDBService(final String databaseURI) throws UnknownHostException {
         final MongoClientURI mongoClientURI = new MongoClientURI(databaseURI);
         final MongoClient mongoClient = new MongoClient(mongoClientURI);

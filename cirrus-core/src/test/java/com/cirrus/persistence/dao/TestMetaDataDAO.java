@@ -27,11 +27,12 @@ import com.cirrus.persistence.QueryBuilder;
 import com.cirrus.persistence.dao.meta.IMetaDataDAO;
 import com.cirrus.persistence.exception.CirrusMetaDataNotFoundException;
 import com.cirrus.persistence.service.MongoDBService;
+import com.cirrus.server.configuration.CirrusProperties;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.net.UnknownHostException;
+import java.io.IOException;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
@@ -45,8 +46,11 @@ public class TestMetaDataDAO {
     private IMetaDataDAO metaDataDAO;
 
     @Before
-    public void setUp() throws UnknownHostException {
-        final MongoDBService mongoDBService = new MongoDBService("localhost", 22222);
+    public void setUp() throws IOException {
+        final CirrusProperties cirrusProperties = new CirrusProperties();
+        final String databaseURL = cirrusProperties.getProperty(CirrusProperties.MONGODB_URL);
+
+        final MongoDBService mongoDBService = new MongoDBService(databaseURL);
         this.metaDataDAO = mongoDBService.getMetaDataDAO();
     }
 

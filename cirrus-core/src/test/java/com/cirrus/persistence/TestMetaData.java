@@ -2,8 +2,9 @@ package com.cirrus.persistence;
 
 import com.cirrus.data.ICirrusMetaData;
 import com.cirrus.data.impl.CirrusMetaData;
-import com.cirrus.persistence.service.MongoDBService;
 import com.cirrus.persistence.service.IMongoDBService;
+import com.cirrus.persistence.service.MongoDBService;
+import com.cirrus.server.configuration.CirrusProperties;
 import com.mongodb.DB;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
@@ -12,7 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -25,8 +25,10 @@ public class TestMetaData {
     private MongoCollection cirrusMetaDataCollection;
 
     @Before
-    public void setUp() throws UnknownHostException {
-        final MongoDBService mongoDBService = new MongoDBService("localhost", 22222);
+    public void setUp() throws IOException {
+        final CirrusProperties cirrusProperties = new CirrusProperties();
+        final String databaseURL = cirrusProperties.getProperty(CirrusProperties.MONGODB_URL);
+        final MongoDBService mongoDBService = new MongoDBService(databaseURL);
         final DB database = mongoDBService.getDatabase();
         final Jongo jongo = new Jongo(database);
 
