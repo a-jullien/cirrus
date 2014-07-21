@@ -58,6 +58,11 @@ public class DropBoxStorageService extends AbstractStorageService<AccessKeyTrust
     }
 
     @Override
+    public void shutdown() {
+        // do nothing here
+    }
+
+    @Override
     public String getAccountName() throws ServiceRequestFailedException {
         try {
             this.checkAuthenticationToken();

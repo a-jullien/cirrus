@@ -58,6 +58,11 @@ public class LocalStorageService extends AbstractStorageService<AnonymousTrusted
     }
 
     @Override
+    public void shutdown() {
+        // do nothing here
+    }
+
+    @Override
     public String getAccountName() throws ServiceRequestFailedException {
         return System.getProperty("user.name");
     }
