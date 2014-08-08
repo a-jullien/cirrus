@@ -41,6 +41,7 @@ import java.util.concurrent.ExecutionException;
 import static com.mongodb.util.MyAsserts.assertEquals;
 import static com.mongodb.util.MyAsserts.assertTrue;
 import static junit.framework.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class CirrusUserOperationsTest {
 
@@ -57,7 +58,7 @@ public class CirrusUserOperationsTest {
         this.metaDataDAO = this.createMetadataDAO();
 
         final URL bundleURL = this.getClass().getResource("/bundle.jar");
-        assertNotNull(bundleURL);
+        assertThat(bundleURL).isNotNull();
 
         final CirrusAgentManager cirrusAgentManager = new CirrusAgentManager(GlobalContext.create(this.tmpDir.getPath()));
         cirrusAgentManager.start();
@@ -75,15 +76,15 @@ public class CirrusUserOperationsTest {
     public void shouldCreateSuccessfullyANonExistingDirectory() throws ExecutionException {
         this.cirrusOperations.createDirectory("/A");
         final List<ICirrusMetaData> result = this.cirrusOperations.listCirrusData("/");
-        assertNotNull(result);
-        assertEquals(1, result.size());
+        assertThat(result).isNotNull();
+        assertThat(result.size()).isEqualTo(1);
         final ICirrusMetaData metaData = result.get(0);
-        assertEquals("A", metaData.getName());
-        assertEquals(DataType.DIRECTORY, metaData.getDataType());
-        assertEquals("/", metaData.getVirtualPath());
+        assertThat(metaData.getName()).isEqualTo("A");
+        assertThat(metaData.getDataType()).isEqualTo(DataType.DIRECTORY);
+        assertThat(metaData.getVirtualPath()).isEqualTo("/");
         final File file = new File(this.tmpDir.getPath() + File.separatorChar + "A");
         assertTrue(file.exists());
-        assertEquals(file.getPath(), metaData.getLocalPath());
+        assertThat(metaData.getLocalPath()).isEqualTo(file.getPath());
     }
 
     @Test
@@ -92,10 +93,10 @@ public class CirrusUserOperationsTest {
         this.cirrusOperations.createDirectory("/A/B");
 
         final List<ICirrusMetaData> result = this.cirrusOperations.listCirrusData("/A/");
-        assertEquals(1, result.size());
+        assertThat(result.size()).isEqualTo(1);
         final ICirrusMetaData metaData = result.get(0);
-        assertEquals("B", metaData.getName());
-        assertEquals(DataType.DIRECTORY, metaData.getDataType());
+        assertThat(metaData.getName()).isEqualTo("B");
+        assertThat(metaData.getDataType()).isEqualTo(DataType.DIRECTORY);
     }
 
     @Test
@@ -105,12 +106,12 @@ public class CirrusUserOperationsTest {
             this.cirrusOperations.transferFile("/toto", createdFile.length(), inputStream);
 
             final List<ICirrusMetaData> result = this.cirrusOperations.listCirrusData("/");
-            assertEquals(1, result.size());
+            assertThat(result.size()).isEqualTo(1);
             final ICirrusMetaData metaData = result.get(0);
-            assertEquals("toto", metaData.getName());
-            assertEquals(DataType.FILE, metaData.getDataType());
-            assertEquals(new File(this.tmpDir, "toto").getPath(), metaData.getLocalPath());
-            assertEquals("/", metaData.getVirtualPath());
+            assertThat(metaData.getName()).isEqualTo("toto");
+            assertThat(metaData.getDataType()).isEqualTo(DataType.FILE);
+            assertThat(metaData.getLocalPath()).isEqualTo(new File(this.tmpDir, "toto").getPath());
+            assertThat(metaData.getVirtualPath()).isEqualTo("/");
         }
     }
 
@@ -121,13 +122,13 @@ public class CirrusUserOperationsTest {
             this.cirrusOperations.transferFile("/toto", createdFile.length(), inputStream);
 
             final List<ICirrusMetaData> result = this.cirrusOperations.listCirrusData("/");
-            assertEquals(1, result.size());
+            assertThat(result.size()).isEqualTo(1);
         }
 
         this.cirrusOperations.delete("/toto");
 
         final List<ICirrusMetaData> newResult = this.cirrusOperations.listCirrusData("/");
-        assertEquals(0, newResult.size());
+        assertThat(newResult.size()).isEqualTo(0);
     }
 
     //==================================================================================================================

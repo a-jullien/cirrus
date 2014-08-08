@@ -25,6 +25,7 @@ import java.net.URL;
 import java.util.List;
 
 import static junit.framework.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class CirrusAgentAdministrationTest {
 
@@ -63,7 +64,7 @@ public class CirrusAgentAdministrationTest {
         assertTrue(cirrusAgentAdministration.isStarted());
 
         final List<ICirrusAgent> cirrusAgents = cirrusAgentAdministration.listCirrusAgents();
-        assertNotNull(cirrusAgents);
+        assertThat(cirrusAgents).isNotNull();
         assertTrue(cirrusAgents.isEmpty());
     }
 
@@ -97,9 +98,9 @@ public class CirrusAgentAdministrationTest {
         final URL bundleURL = this.getClass().getResource("/bundle.jar");
 
         final ICirrusAgent cirrusAgent = cirrusAgentAdministration.installCirrusAgent(bundleURL.toExternalForm());
-        assertNotNull(cirrusAgent);
+        assertThat(cirrusAgent).isNotNull();
 
-        assertNotNull(cirrusAgentAdministration.getCirrusAgentById(cirrusAgent.getIdentifier()));
+        assertThat(cirrusAgentAdministration.getCirrusAgentById(cirrusAgent.getIdentifier())).isNotNull();
     }
 
     @Test
@@ -112,24 +113,24 @@ public class CirrusAgentAdministrationTest {
         cirrusAgentAdministration.installCirrusAgent(bundleURL.toExternalForm());
 
         final List<ICirrusAgent> cirrusAgents = cirrusAgentAdministration.listCirrusAgents();
-        assertEquals(1, cirrusAgents.size());
+        assertThat(cirrusAgents.size()).isEqualTo(1);
 
         final ICirrusAgent cirrusAgent = cirrusAgents.get(0);
         final ICirrusAgentIdentifier cirrusAgentIdentifier = cirrusAgent.getIdentifier();
-        assertNotNull(cirrusAgentIdentifier);
+        assertThat(cirrusAgentIdentifier).isNotNull();
 
         final ICirrusAgentBundleDescription bundleDescription = cirrusAgent.getCirrusAgentBundleDescription();
-        assertNotNull(bundleDescription);
-        assertEquals("Dropbox Cirrus Bundle", bundleDescription.getName());
-        assertEquals("Dropbox integration", bundleDescription.getDescription());
-        assertEquals("1.0.0.SNAPSHOT", bundleDescription.getVersion());
-        assertEquals("Antoine Jullien", bundleDescription.getVendor());
+        assertThat(bundleDescription).isNotNull();
+        assertThat(bundleDescription.getName()).isEqualTo("Dropbox Cirrus Bundle");
+        assertThat(bundleDescription.getDescription()).isEqualTo("Dropbox integration");
+        assertThat(bundleDescription.getVersion()).isEqualTo("1.0.0.SNAPSHOT");
+        assertThat(bundleDescription.getVendor()).isEqualTo("Antoine Jullien");
 
         final IStorageServiceVendor storageServiceVendor = cirrusAgent.getStorageServiceVendor();
-        assertNotNull(storageServiceVendor);
-        assertEquals("local-cirrus-agent", storageServiceVendor.getName());
-        assertEquals("Local", storageServiceVendor.getVendor());
-        assertEquals("1.0.0", storageServiceVendor.getVersion());
+        assertThat(storageServiceVendor).isNotNull();
+        assertThat(storageServiceVendor.getName()).isEqualTo("local-cirrus-agent");
+        assertThat(storageServiceVendor.getVendor()).isEqualTo("Local");
+        assertThat(storageServiceVendor.getVersion()).isEqualTo("1.0.0");
 
         final ICirrusStorageService storageService = cirrusAgent.getStorageService();
         assertNotNull(storageService);

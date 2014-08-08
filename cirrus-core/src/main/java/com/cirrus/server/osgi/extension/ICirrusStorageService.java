@@ -48,6 +48,11 @@ public interface ICirrusStorageService<TrustedToken extends IStorageServiceTrust
     void authenticate(final TrustedToken trustedToken);
 
     /**
+     * Shutdown the storage service if this feature is available
+     */
+    void shutdown();
+
+    /**
      * Returns the account name of the storage service
      */
     String getAccountName() throws ServiceRequestFailedException;

@@ -16,6 +16,7 @@ import java.io.IOException;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TestMetaData {
 
@@ -51,17 +52,17 @@ public class TestMetaData {
 
         this.cirrusMetaDataCollection.save(cirrusMetaData);
 
-        assertEquals(1, this.cirrusMetaDataCollection.count());
+        assertThat(this.cirrusMetaDataCollection.count()).isEqualTo(1);
 
         final CirrusMetaData metaData = this.cirrusMetaDataCollection.findOne().as(CirrusMetaData.class);
         assertNotNull(metaData);
-        assertEquals("myFile.txt", metaData.getName());
-        assertEquals("/home/test", metaData.getVirtualPath());
-        assertEquals("/tmp/cirrus", metaData.getLocalPath());
-        assertEquals(1393367761472L, metaData.getCreationDate());
-        assertEquals("1f553132-43e0-4fd3-9e50-fcf1d0adc978", metaData.getCirrusAgentId());
-        assertEquals("dropbox", metaData.getCirrusAgentType());
-        assertEquals("text/plain", metaData.getMediaType());
+        assertThat(metaData.getName()).isEqualTo("myFile.txt");
+        assertThat(metaData.getVirtualPath()).isEqualTo("/home/test");
+        assertThat(metaData.getLocalPath()).isEqualTo("/tmp/cirrus");
+        assertThat(metaData.getCreationDate()).isEqualTo(1393367761472L);
+        assertThat(metaData.getCirrusAgentId()).isEqualTo("1f553132-43e0-4fd3-9e50-fcf1d0adc978");
+        assertThat(metaData.getCirrusAgentType()).isEqualTo("dropbox");
+        assertThat(metaData.getMediaType()).isEqualTo("text/plain");
     }
 
     //==================================================================================================================

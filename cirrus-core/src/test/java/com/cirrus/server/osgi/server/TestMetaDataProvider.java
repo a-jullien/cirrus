@@ -35,9 +35,8 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import static com.mongodb.util.MyAsserts.assertEquals;
 import static com.mongodb.util.MyAsserts.assertTrue;
-import static junit.framework.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TestMetaDataProvider {
 
@@ -72,17 +71,17 @@ public class TestMetaDataProvider {
         metaDataNotifier.handleCirrusDataEvent(createdEvent);
 
         final List<ICirrusMetaData> metaDataList = this.metaDataDAO.listMetaDataByCirrusAgentId(cirrusAgentId);
-        assertNotNull(metaDataList);
-        assertEquals(1, metaDataList.size());
+        assertThat(metaDataList).isNotNull();
+        assertThat(metaDataList.size()).isEqualTo(1);
         final ICirrusMetaData storedMetaData = metaDataList.get(0);
-        assertNotNull(storedMetaData.getId());
-        assertEquals("flunny", storedMetaData.getName());
-        assertEquals("myCirrusAgent", storedMetaData.getCirrusAgentId());
-        assertEquals("/tmp/flunny", storedMetaData.getLocalPath());
-        assertEquals("", storedMetaData.getCirrusAgentType());
-        assertEquals(DataType.FILE, storedMetaData.getDataType());
-        assertEquals("/cirrus/project/A", storedMetaData.getVirtualPath());
-        assertEquals(42, storedMetaData.getSize());
+        assertThat(storedMetaData.getId()).isNotNull();
+        assertThat(storedMetaData.getName()).isEqualTo("flunny");
+        assertThat(storedMetaData.getCirrusAgentId()).isEqualTo("myCirrusAgent");
+        assertThat(storedMetaData.getLocalPath()).isEqualTo("/tmp/flunny");
+        assertThat(storedMetaData.getCirrusAgentType()).isEqualTo("");
+        assertThat(storedMetaData.getDataType()).isEqualTo(DataType.FILE);
+        assertThat(storedMetaData.getVirtualPath()).isEqualTo("/cirrus/project/A");
+        assertThat(storedMetaData.getSize()).isEqualTo(42);
         assertTrue(storedMetaData.getCreationDate() > 1);
     }
 
@@ -96,14 +95,14 @@ public class TestMetaDataProvider {
         metaDataNotifier.handleCirrusDataEvent(createdEvent);
 
         final List<ICirrusMetaData> metaDataListAfterCreatedEvent = this.metaDataDAO.listMetaDataByCirrusAgentId(cirrusAgentId);
-        assertNotNull(metaDataListAfterCreatedEvent);
-        assertEquals(1, metaDataListAfterCreatedEvent.size());
+        assertThat(metaDataListAfterCreatedEvent).isNotNull();
+        assertThat(metaDataListAfterCreatedEvent.size()).isEqualTo(1);
 
         final CirrusDataRemovedEvent cirrusDataRemovedEvent = new CirrusDataRemovedEvent(cirrusAgentId, "/cirrus/project/A", cirrusData);
         metaDataNotifier.handleCirrusDataEvent(cirrusDataRemovedEvent);
 
         final List<ICirrusMetaData> metaDataListAfterRemovedEvent = this.metaDataDAO.listMetaDataByCirrusAgentId(cirrusAgentId);
-        assertNotNull(metaDataListAfterRemovedEvent);
-        assertEquals(0, metaDataListAfterRemovedEvent.size());
+        assertThat(metaDataListAfterRemovedEvent).isNotNull();
+        assertThat(metaDataListAfterRemovedEvent.size()).isEqualTo(0);
     }
 }

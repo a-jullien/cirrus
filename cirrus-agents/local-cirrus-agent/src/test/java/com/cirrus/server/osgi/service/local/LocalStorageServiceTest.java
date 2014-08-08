@@ -38,8 +38,7 @@ import java.util.List;
 
 import static com.mongodb.util.MyAsserts.assertFalse;
 import static com.mongodb.util.MyAsserts.assertTrue;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LocalStorageServiceTest {
 
@@ -75,9 +74,9 @@ public class LocalStorageServiceTest {
 
         final File directory = new File(this.tmpDirectory, "testDirectory");
         final CirrusFolderData createdCirrusFolder = localStorageService.createDirectory("/testDirectory");
-        assertNotNull(createdCirrusFolder);
-        assertEquals(createdCirrusFolder.getName(), "testDirectory");
-        assertEquals(createdCirrusFolder.getPath(), directory.getPath());
+        assertThat(createdCirrusFolder).isNotNull();
+        assertThat(createdCirrusFolder.getName()).isEqualTo("testDirectory");
+        assertThat(createdCirrusFolder.getPath()).isEqualTo(directory.getPath());
     }
 
     @Test
@@ -87,9 +86,9 @@ public class LocalStorageServiceTest {
         final File directory = new File(this.tmpDirectory, "testDirectory");
         assertTrue(directory.mkdir());
         final ICirrusData delete = localStorageService.delete("/testDirectory");
-        assertNotNull(delete);
-        assertEquals(delete.getName(), "testDirectory");
-        assertEquals(delete.getPath(), directory.getPath());
+        assertThat(delete).isNotNull();
+        assertThat(delete.getName()).isEqualTo("testDirectory");
+        assertThat(delete.getPath()).isEqualTo(directory.getPath());
         assertTrue(delete instanceof CirrusFolderData);
     }
 
@@ -100,10 +99,10 @@ public class LocalStorageServiceTest {
         final File file = new File(this.tmpDirectory, "testFile");
         assertTrue(file.createNewFile());
         final ICirrusData delete = localStorageService.delete("/testFile");
-        assertNotNull(delete);
-        assertEquals(delete.getName(), "testFile");
-        assertEquals(delete.getPath(), file.getPath());
-        assertTrue(delete instanceof CirrusFileData);
+        assertThat(delete).isNotNull();
+        assertThat(delete.getName()).isEqualTo("testFile");
+        assertThat(delete.getPath()).isEqualTo(file.getPath());
+        assertThat(delete).isExactlyInstanceOf(CirrusFileData.class);
     }
 
     @Test(expected = ServiceRequestFailedException.class)
@@ -133,8 +132,8 @@ public class LocalStorageServiceTest {
 
         try (FileInputStream inputStream = new FileInputStream(sourceFile)) {
             final CirrusFileData cirrusFileData = localStorageService.transferFile(destinationFile.getPath(), 0, inputStream);
-            assertNotNull(cirrusFileData);
-            assertEquals("destinationFile", destinationFile.getName());
+            assertThat(cirrusFileData).isNotNull();
+            assertThat(destinationFile.getName()).isEqualTo("destinationFile");
         }
     }
 
@@ -156,16 +155,16 @@ public class LocalStorageServiceTest {
     public void shouldSuccessfullyListContent() throws ServiceRequestFailedException {
         final LocalStorageService localStorageService = this.createLocalStorageService();
         final List<ICirrusData> emptyList = localStorageService.list("/");
-        assertNotNull(emptyList);
-        assertEquals(0, emptyList.size());
+        assertThat(emptyList).isNotNull();
+        assertThat(emptyList.size()).isEqualTo(0);
 
         localStorageService.createDirectory("/directory1");
 
         final List<ICirrusData> newList = localStorageService.list("/");
-        assertEquals(1, newList.size());
+        assertThat(newList.size()).isEqualTo(1);
         final ICirrusData data = newList.get(0);
-        assertEquals(DataType.DIRECTORY, data.getDataType());
-        assertEquals("directory1", data.getName());
+        assertThat(data.getDataType()).isEqualTo(DataType.DIRECTORY);
+        assertThat(data.getName()).isEqualTo("directory1");
     }
 
     //==================================================================================================================

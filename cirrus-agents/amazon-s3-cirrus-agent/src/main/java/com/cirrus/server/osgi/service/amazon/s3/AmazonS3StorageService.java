@@ -31,6 +31,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class AmazonS3StorageService extends AbstractStorageService<AccessKeyPasswordTrustedToken> {
 
@@ -86,23 +87,18 @@ public class AmazonS3StorageService extends AbstractStorageService<AccessKeyPass
         throw new ServiceRequestFailedException("Not Yet Implemented");
     }
 
+    // TODO simplify this method
     @Override
     public List<ICirrusData> list(final String path) throws ServiceRequestFailedException {
         final List<ICirrusData> content = new ArrayList<>();
+        final ListObjectsRequest listObjectsRequest = this.buildObjectRequest(path);
 
-        final ListObjectsRequest listObjectsRequest = buildObjectRequest(path);
-
-        ObjectListing objectListing;
-
+        final AtomicReference<ObjectListing> objectListing = new AtomicReference<>();
         do {
-            objectListing = this.amazonS3Client.listObjects(listObjectsRequest);
+            objectListing.set(this.amazonS3Client.listObjects(listObjectsRequest));
             for (final S3ObjectSummary objectSummary :
-                    objectListing.getObjectSummaries()) {
+                    objectListing.get().getObjectSummaries()) {
                 final String key = objectSummary.getKey();
-
-                System.out.println( " - " + key + "  " +
-                        "(size = " + objectSummary.getSize() +
-                        ", etag = " + objectSummary.getETag() + ", storageClass = " + objectSummary.getStorageClass() + ")");
 
                 if (path.equals(SEPARATOR)) {
                     // root directory
@@ -117,14 +113,19 @@ public class AmazonS3StorageService extends AbstractStorageService<AccessKeyPass
                     final int beginIndex = key.indexOf(SEPARATOR);
                     final String substring = key.substring(beginIndex + 1, key.length());
                     if (!substring.isEmpty()) {
-                        System.out.println("key = " + key + " substring = " + substring);
+                        final ICirrusData cirrusData;
+                        if (substring.endsWith(SEPARATOR)) {
+                            cirrusData = new CirrusFolderData(substring);
+                        } else {
+                            cirrusData = new CirrusFileData(SEPARATOR + substring, objectSummary.getSize());
+                        }
 
-
+                        content.add(cirrusData);
                     }
                 }
             }
-            listObjectsRequest.setMarker(objectListing.getNextMarker());
-        } while (objectListing.isTruncated());
+            listObjectsRequest.setMarker(objectListing.get().getNextMarker());
+        } while (objectListing.get().isTruncated());
 
         return content;
     }

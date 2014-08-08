@@ -4,9 +4,7 @@ import com.cirrus.agent.impl.StorageServiceVendor;
 import com.cirrus.agent.impl.UUIDBasedCirrusAgentIdentifier;
 import org.junit.Test;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotSame;
-import static junit.framework.TestCase.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class CirrusAgentTest {
 
@@ -17,7 +15,7 @@ public class CirrusAgentTest {
     @Test
     public void shouldCreateSuccessfullyDefaultCirrusAgentIdentifier() {
         final ICirrusAgentIdentifier cirrusAgentIdentifier = new UUIDBasedCirrusAgentIdentifier();
-        assertNotNull(cirrusAgentIdentifier.toExternal());
+        assertThat(cirrusAgentIdentifier.toExternal()).isNotNull();
     }
 
     @Test
@@ -25,8 +23,8 @@ public class CirrusAgentTest {
         final ICirrusAgentIdentifier cirrusAgentIdentifier =
                 new UUIDBasedCirrusAgentIdentifier("1f553132-43e0-4fd3-9e50-fcf1d0adc978");
         final String externalRepresentation = cirrusAgentIdentifier.toExternal();
-        assertNotNull(externalRepresentation);
-        assertNotSame("1f553132-43e0-4fd3-9e50-fcf1d0adc978", externalRepresentation);
+        assertThat(externalRepresentation).isNotNull();
+        assertThat(externalRepresentation).isNotEqualTo("1f553132-43e0-4fd3-9e50-fcf1d0adc978");
     }
 
     @Test
@@ -37,15 +35,15 @@ public class CirrusAgentTest {
         final ICirrusAgentIdentifier cirrusAgentIdentifier2 =
                 new UUIDBasedCirrusAgentIdentifier("1f553132-43e0-4fd3-9e50-fcf1d0adc978");
 
-        assertEquals(cirrusAgentIdentifier1, cirrusAgentIdentifier2);
+        assertThat(cirrusAgentIdentifier1).isEqualTo(cirrusAgentIdentifier2);
     }
 
     @Test
     public void shouldCreateSuccessfullyStorageServiceVendor() {
         final IStorageServiceVendor storageServiceVendor = this.giveMeAStorageServiceVendor();
-        assertEquals("DropBox", storageServiceVendor.getName());
-        assertEquals("1.0", storageServiceVendor.getVersion());
-        assertEquals("DropBox & Co", storageServiceVendor.getVendor());
+        assertThat(storageServiceVendor.getName()).isEqualTo("DropBox");
+        assertThat(storageServiceVendor.getVersion()).isEqualTo("1.0");
+        assertThat(storageServiceVendor.getVendor()).isEqualTo("DropBox & Co");
     }
 
     //==================================================================================================================

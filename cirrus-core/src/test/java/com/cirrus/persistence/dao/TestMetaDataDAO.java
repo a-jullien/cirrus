@@ -37,6 +37,7 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TestMetaDataDAO {
 
@@ -63,7 +64,7 @@ public class TestMetaDataDAO {
     public void shouldHaveNoRecordsWhenListMetaDataByUnknownCirrusAgentId() {
         final List<ICirrusMetaData> cirrusMetaDatas = this.metaDataDAO.listMetaDataByCirrusAgentId(new UUIDBasedCirrusAgentIdentifier());
         assertNotNull(cirrusMetaDatas);
-        assertEquals(0, cirrusMetaDatas.size());
+        assertThat(cirrusMetaDatas.size()).isEqualTo(0);
     }
 
     @Test
@@ -72,8 +73,8 @@ public class TestMetaDataDAO {
         final String uuid = "1f553132-43e0-4fd3-9e50-fcf1d0adc978";
         final List<ICirrusMetaData> metaDataFromDatabase =
                 this.metaDataDAO.listMetaDataByCirrusAgentId(new NameBasedCirrusAgentIdentifier(uuid));
-        assertNotNull(metaDataFromDatabase);
-        assertEquals(1, metaDataFromDatabase.size());
+        assertThat(metaDataFromDatabase).isNotNull();
+        assertThat(metaDataFromDatabase.size()).isEqualTo(1);
 
         final ICirrusMetaData cirrusMetaData = metaDataFromDatabase.get(0);
         checkData(cirrusMetaData);
@@ -86,7 +87,7 @@ public class TestMetaDataDAO {
         this.metaDataDAO.delete(cirrusMetaData.getId());
 
         final String uuid = "1f553132-43e0-4fd3-9e50-fcf1d0adc978";
-        assertEquals(0, this.metaDataDAO.listMetaDataByCirrusAgentId(new NameBasedCirrusAgentIdentifier(uuid)).size());
+        assertThat(this.metaDataDAO.listMetaDataByCirrusAgentId(new NameBasedCirrusAgentIdentifier(uuid)).size()).isEqualTo(0);
     }
 
     @Test
@@ -99,9 +100,9 @@ public class TestMetaDataDAO {
         this.metaDataDAO.update(cirrusMetaData);
         final String uuid = "1f553132-43e0-4fd3-9e50-fcf1d0adc978";
         final List<ICirrusMetaData> reloadedMetaData = this.metaDataDAO.listMetaDataByCirrusAgentId(new NameBasedCirrusAgentIdentifier(uuid));
-        assertEquals(1, reloadedMetaData.size());
+        assertThat(reloadedMetaData.size()).isEqualTo(1);
         final ICirrusMetaData metaData = reloadedMetaData.get(0);
-        assertEquals("myFile.txt.copy", metaData.getName());
+        assertThat(metaData.getName()).isEqualTo("myFile.txt.copy");
     }
 
     @Test
@@ -135,8 +136,8 @@ public class TestMetaDataDAO {
         final NameBasedCirrusAgentIdentifier sourceCirrusAgentId = new NameBasedCirrusAgentIdentifier("1f553132-43e0-4fd3-9e50-fcf1d0adc978");
         final IQuery query = this.createQuery(sourceCirrusAgentId);
         final List<ICirrusMetaData> metaDataList = this.metaDataDAO.findMetaData(query);
-        assertNotNull(metaDataList);
-        assertEquals(1, metaDataList.size());
+        assertThat(metaDataList).isNotNull();
+        assertThat(metaDataList.size()).isEqualTo(1);
     }
 
     @Test
@@ -147,8 +148,8 @@ public class TestMetaDataDAO {
         final UUIDBasedCirrusAgentIdentifier sourceCirrusAgentId = new UUIDBasedCirrusAgentIdentifier();
         final IQuery query = this.createQuery(sourceCirrusAgentId);
         final List<ICirrusMetaData> cirrusMetaDataList = this.metaDataDAO.findMetaData(query);
-        assertNotNull(cirrusMetaDataList);
-        assertEquals(0, cirrusMetaDataList.size());
+        assertThat(cirrusMetaDataList).isNotNull();
+        assertThat(cirrusMetaDataList.size()).isEqualTo(0);
     }
     //==================================================================================================================
     // Private

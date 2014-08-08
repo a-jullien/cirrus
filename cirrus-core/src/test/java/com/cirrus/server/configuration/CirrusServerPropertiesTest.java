@@ -21,7 +21,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static junit.framework.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class CirrusServerPropertiesTest {
 
@@ -43,6 +43,6 @@ public class CirrusServerPropertiesTest {
     @Test
     public void shouldHaveSuccessWhenGetExistingProperty() {
         final String property = this.cirrusProperties.getProperty(CirrusProperties.MONGODB_URL);
-        assertNotNull(property);
+        assertThat(property).isNotNull();
     }
 }

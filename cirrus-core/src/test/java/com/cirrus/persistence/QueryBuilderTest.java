@@ -18,8 +18,7 @@ package com.cirrus.persistence;
 
 import org.junit.Test;
 
-import static com.mongodb.util.MyAsserts.assertEquals;
-import static junit.framework.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class QueryBuilderTest {
 
@@ -27,8 +26,8 @@ public class QueryBuilderTest {
     public void shouldHaveCorrectQueryWithNoCriteria() {
         final QueryBuilder queryBuilder = new QueryBuilder();
         final IQuery query = queryBuilder.buildQuery();
-        assertNotNull(query);
-        assertEquals("{}", query);
+        assertThat(query).isNotNull();
+        assertThat(query.toExternal()).isEqualTo("{}");
     }
 
     @Test
@@ -36,8 +35,8 @@ public class QueryBuilderTest {
         final QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.appendCriteria("property1", "value1").appendCriteria("property2", "value2");
         final IQuery query = queryBuilder.buildQuery();
-        assertNotNull(query);
-        assertEquals("{property1:'value1',property2:'value2'}", query);
+        assertThat(query).isNotNull();
+        assertThat(query.toExternal()).isEqualTo("{property1:'value1',property2:'value2'}");
     }
 
     @Test
@@ -45,7 +44,7 @@ public class QueryBuilderTest {
         final QueryBuilder queryBuilder = new QueryBuilder();
         queryBuilder.appendCriteria("property1", "value1").appendCriteria("property1", "value1");
         final IQuery query = queryBuilder.buildQuery();
-        assertNotNull(query);
-        assertEquals("{property1:'value1'}", query);
+        assertThat(query).isNotNull();
+        assertThat(query.toExternal()).isEqualTo("{property1:'value1'}");
     }
 }

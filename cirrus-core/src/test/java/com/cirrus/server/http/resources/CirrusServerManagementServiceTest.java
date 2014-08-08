@@ -35,7 +35,7 @@ import java.net.URL;
 import java.util.List;
 
 import static com.mongodb.util.MyAsserts.assertNotNull;
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SuppressWarnings("unchecked")
 public class CirrusServerManagementServiceTest extends AbstractJerseyTest {
@@ -45,39 +45,39 @@ public class CirrusServerManagementServiceTest extends AbstractJerseyTest {
         final WebTarget webTargetForPath = super.getWebTargetFor("admin", "agents");
         final Response response = webTargetForPath.request().accept(MediaType.APPLICATION_JSON).get();
         assertNotNull(response);
-        assertEquals(406, response.getStatus());
+        assertThat(response.getStatus()).isEqualTo(406);
     }
 
     @Test
     public void shouldCheckStatusWhenServerNotStarted() {
         final WebTarget webTargetForPath = super.getWebTargetFor("admin");
         final CirrusServerInformation serverInformation = webTargetForPath.request().accept(MediaType.APPLICATION_JSON).get(CirrusServerInformation.class);
-        assertNotNull(serverInformation);
-        assertEquals("Atlantis", serverInformation.getName());
-        assertEquals(CirrusServerInformation.STATUS.STOPPED, serverInformation.getStatus());
+        assertThat(serverInformation).isNotNull();
+        assertThat(serverInformation.getName()).isEqualTo("Atlantis");
+        assertThat(serverInformation.getStatus()).isEqualTo(CirrusServerInformation.STATUS.STOPPED);
     }
 
     @Test
     public void shouldSuccessfullyStartServer() {
         final CirrusServerInformation serverInformation = startServer();
-        assertNotNull(serverInformation);
-        assertEquals("Atlantis", serverInformation.getName());
-        assertEquals(CirrusServerInformation.STATUS.STARTED, serverInformation.getStatus());
+        assertThat(serverInformation).isNotNull();
+        assertThat(serverInformation.getName()).isEqualTo("Atlantis");
+        assertThat(serverInformation.getStatus()).isEqualTo(CirrusServerInformation.STATUS.STARTED);
     }
 
     @Test
     public void shouldSuccessfullyStopServer() {
         // start first
         final CirrusServerInformation serverInformationAfterStart = startServer();
-        assertNotNull(serverInformationAfterStart);
-        assertEquals("Atlantis", serverInformationAfterStart.getName());
-        assertEquals(CirrusServerInformation.STATUS.STARTED, serverInformationAfterStart.getStatus());
+        assertThat(serverInformationAfterStart).isNotNull();
+        assertThat(serverInformationAfterStart.getName()).isEqualTo("Atlantis");
+        assertThat(serverInformationAfterStart.getStatus()).isEqualTo(CirrusServerInformation.STATUS.STARTED);
 
         // stop server
         final CirrusServerInformation serverInformationAfterStop = stopServer();
-        assertNotNull(serverInformationAfterStop);
-        assertEquals("Atlantis", serverInformationAfterStop.getName());
-        assertEquals(CirrusServerInformation.STATUS.STOPPED, serverInformationAfterStop.getStatus());
+        assertThat(serverInformationAfterStop).isNotNull();
+        assertThat(serverInformationAfterStop.getName()).isEqualTo("Atlantis");
+        assertThat(serverInformationAfterStop.getStatus()).isEqualTo(CirrusServerInformation.STATUS.STOPPED);
     }
 
     @Test
@@ -88,8 +88,8 @@ public class CirrusServerManagementServiceTest extends AbstractJerseyTest {
             final Entity<InputStream> entity = Entity.entity(stream, MediaType.APPLICATION_OCTET_STREAM);
             final Response post = startWebTargetForPath.request().header("name", "myBundle").accept(MediaType.APPLICATION_OCTET_STREAM).post(entity);
 
-            assertNotNull(post);
-            assertEquals(406, post.getStatus());
+            assertThat(post).isNotNull();
+            assertThat(post.getStatus()).isEqualTo(406);
         }
     }
 
@@ -105,19 +105,19 @@ public class CirrusServerManagementServiceTest extends AbstractJerseyTest {
                     header("name", "myBundle").
                     method("POST", Entity.entity(stream, MediaType.APPLICATION_OCTET_STREAM));
 
-            assertNotNull(response);
-            assertEquals(204, response.getStatus());
+            assertThat(response).isNotNull();
+            assertThat(response.getStatus()).isEqualTo(204);
         }
 
         final CirrusAgents agents = this.listAgents();
-        assertNotNull(agents);
+        assertThat(agents).isNotNull();
         final List<CirrusAgentBundleDescription> bundleDescriptions = agents.getAgents();
-        assertEquals(1, bundleDescriptions.size());
+        assertThat(bundleDescriptions.size()).isEqualTo(1);
         final ICirrusAgentBundleDescription cirrusAgentBundleDescription = bundleDescriptions.get(0);
-        assertEquals("Dropbox Cirrus Bundle", cirrusAgentBundleDescription.getName());
-        assertEquals("Dropbox integration", cirrusAgentBundleDescription.getDescription());
-        assertEquals("Antoine Jullien", cirrusAgentBundleDescription.getVendor());
-        assertEquals("1.0.0.SNAPSHOT", cirrusAgentBundleDescription.getVersion());
+        assertThat(cirrusAgentBundleDescription.getName()).isEqualTo("Dropbox Cirrus Bundle");
+        assertThat(cirrusAgentBundleDescription.getDescription()).isEqualTo("Dropbox integration");
+        assertThat(cirrusAgentBundleDescription.getVendor()).isEqualTo("Antoine Jullien");
+        assertThat(cirrusAgentBundleDescription.getVersion()).isEqualTo("1.0.0.SNAPSHOT");
     }
 
     //==================================================================================================================

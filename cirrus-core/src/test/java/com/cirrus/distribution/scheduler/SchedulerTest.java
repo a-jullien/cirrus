@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static com.mongodb.util.MyAsserts.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SchedulerTest {
 
@@ -92,9 +93,9 @@ public class SchedulerTest {
         final CirrusScheduler cirrusScheduler = new CirrusScheduler(this.cirrusAgentAdministration);
         final CreateDirectoryAction action = new CreateDirectoryAction(cirrusScheduler.findAgent(), "/hurt");
         final CirrusFolderData createdFolder = cirrusScheduler.scheduleAction(action);
-        assertNotNull(createdFolder);
+        assertThat(createdFolder).isNotNull();
 
         assertTrue(directoryFile.exists());
-        assertEquals(directoryFile.getPath(), createdFolder.getPath());
+        assertThat(directoryFile.getPath()).isEqualTo(createdFolder.getPath());
     }
 }

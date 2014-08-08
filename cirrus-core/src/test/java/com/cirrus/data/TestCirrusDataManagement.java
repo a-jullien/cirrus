@@ -4,9 +4,8 @@ import com.cirrus.data.impl.CirrusFileData;
 import com.cirrus.data.impl.CirrusFolderData;
 import org.junit.Test;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TestCirrusDataManagement {
 
@@ -28,19 +27,19 @@ public class TestCirrusDataManagement {
     public void shouldCreateSuccessfullyCirrusFileData() {
         final ICirrusData cirrusData = new CirrusFileData("/tmp/aFile", 42);
         assertTrue(cirrusData.getCreationTime() > 0);
-        assertNotNull(cirrusData.getName());
-        assertEquals("aFile", cirrusData.getName());
-        assertEquals("/tmp/aFile", cirrusData.getPath());
-        assertEquals(42, cirrusData.getSize());
+        assertThat(cirrusData.getName()).isNotNull();
+        assertThat(cirrusData.getName()).isEqualTo("aFile");
+        assertThat(cirrusData.getPath()).isEqualTo("/tmp/aFile");
+        assertThat(cirrusData.getSize()).isEqualTo(42);
     }
 
     @Test
     public void shouldCreateSuccessfullyCirrusFolderData() {
         final ICirrusData cirrusData = new CirrusFolderData("/tmp/aFolder");
         assertTrue(cirrusData.getCreationTime() > 0);
-        assertNotNull(cirrusData.getName());
-        assertEquals("aFolder", cirrusData.getName());
-        assertEquals("/tmp/aFolder", cirrusData.getPath());
-        assertEquals(0, cirrusData.getSize());
+        assertThat(cirrusData.getName()).isNotNull();
+        assertThat(cirrusData.getName()).isEqualTo("aFolder");
+        assertThat(cirrusData.getPath()).isEqualTo("/tmp/aFolder");
+        assertThat(cirrusData.getSize()).isEqualTo(0);
     }
 }

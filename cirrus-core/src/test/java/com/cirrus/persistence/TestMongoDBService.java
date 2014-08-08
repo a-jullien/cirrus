@@ -8,8 +8,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static com.mongodb.util.MyAsserts.assertEquals;
-import static junit.framework.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TestMongoDBService {
 
@@ -20,7 +19,7 @@ public class TestMongoDBService {
 
         final IMongoDBService mongoDBService = new MongoDBService(databaseURL);
         final DB database = mongoDBService.getDatabase();
-        assertNotNull(database);
-        assertEquals(IMongoDBService.CIRRUS_DATABASE_NAME, database.getName());
+        assertThat(database).isNotNull();
+        assertThat(database.getName()).isEqualTo(IMongoDBService.CIRRUS_DATABASE_NAME);
     }
 }
