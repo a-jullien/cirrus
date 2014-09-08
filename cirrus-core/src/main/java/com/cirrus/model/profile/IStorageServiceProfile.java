@@ -26,6 +26,11 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 public interface IStorageServiceProfile {
 
     /**
+     * Returns the profile name
+     */
+    String getProfileName();
+
+    /**
      * Returns the service name
      */
     String getServiceName();

@@ -18,8 +18,10 @@
 
 package com.cirrus.persistence.dao.profile;
 
+import com.cirrus.model.profile.IStorageServiceProfile;
 import com.cirrus.model.profile.IUserProfile;
 import com.cirrus.persistence.dao.ICirrusDAO;
+import com.cirrus.persistence.exception.UserProfileNotFoundException;
 
 import java.util.List;
 
@@ -29,6 +31,25 @@ public interface IUserProfileDAO extends ICirrusDAO {
      * Saves a new user profile
      */
     void save(IUserProfile profile);
+
+    /**
+     * Removes an existing user profile
+     *
+     * @param emailAddress the email address associated to the user profile
+     */
+    void delete(String emailAddress) throws UserProfileNotFoundException;
+
+    /**
+     *  @param emailAddress
+     * @param storageServiceProfile
+     */
+    IUserProfile addStorageService(final String emailAddress, final IStorageServiceProfile storageServiceProfile) throws UserProfileNotFoundException;
+
+    /**
+     *  @param emailAddress
+     * @param storageServiceProfile
+     */
+    IUserProfile removeStorageService(final String emailAddress, final IStorageServiceProfile storageServiceProfile) throws UserProfileNotFoundException;
 
     /**
      * List all user profiles
@@ -42,4 +63,5 @@ public interface IUserProfileDAO extends ICirrusDAO {
      * @return the user profile or <code>null</code> if the user profile doesn't exist
      */
     IUserProfile getUserProfileByEmailAddress(final String emailAddress);
+
 }

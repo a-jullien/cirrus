@@ -28,6 +28,7 @@ import com.cirrus.model.profile.IUserProfile;
 import com.cirrus.model.profile.impl.StorageServiceProfile;
 import com.cirrus.model.profile.impl.UserProfile;
 import com.cirrus.persistence.dao.profile.IUserProfileDAO;
+import com.cirrus.persistence.exception.UserProfileNotFoundException;
 import com.cirrus.persistence.service.MongoDBService;
 import com.cirrus.server.configuration.CirrusProperties;
 import org.junit.After;
@@ -81,7 +82,7 @@ public class TestUserProfileDAO {
     public void testSaveUserProfileWithOneStorageServiceProfileUsingAnonymousAuthenticator() throws Exception {
         final IUserProfile userProfile = new UserProfile("test1@flunny.org");
 
-        final StorageServiceProfile storageServiceProfile = new StorageServiceProfile("DropBox");
+        final StorageServiceProfile storageServiceProfile = new StorageServiceProfile("profile1", "DropBox");
         storageServiceProfile.setStorageServiceAuthenticator(new AnonymousAuthenticator());
         userProfile.addStorageProfile(storageServiceProfile);
         this.profileDAO.save(userProfile);
@@ -100,7 +101,7 @@ public class TestUserProfileDAO {
     public void testSaveUserProfileWithOneStorageServiceProfileUsingAccessKeyAuthenticator() throws Exception {
         final IUserProfile userProfile = new UserProfile("test1@flunny.org");
 
-        final StorageServiceProfile storageServiceProfile = new StorageServiceProfile("DropBox");
+        final StorageServiceProfile storageServiceProfile = new StorageServiceProfile("profile1", "DropBox");
         storageServiceProfile.setStorageServiceAuthenticator(new AccessKeyAuthenticator("myAccessKey"));
         userProfile.addStorageProfile(storageServiceProfile);
         this.profileDAO.save(userProfile);
@@ -119,7 +120,7 @@ public class TestUserProfileDAO {
     public void testSaveUserProfileWithOneStorageServiceProfileUsingAccessKeyPasswordAuthenticator() throws Exception {
         final IUserProfile userProfile = new UserProfile("test1@flunny.org");
 
-        final StorageServiceProfile storageServiceProfile = new StorageServiceProfile("DropBox");
+        final StorageServiceProfile storageServiceProfile = new StorageServiceProfile("profile1", "DropBox");
         storageServiceProfile.setStorageServiceAuthenticator(new AccessKeyPasswordAuthenticator("myAccessKey", "myAccessPassword"));
         userProfile.addStorageProfile(storageServiceProfile);
         this.profileDAO.save(userProfile);
@@ -132,5 +133,47 @@ public class TestUserProfileDAO {
         final IStorageServiceAuthenticator authenticator = loadedStorageProfiles.get(0).getStorageServiceAuthenticator();
         assertThat(authenticator).isExactlyInstanceOf(AccessKeyPasswordAuthenticator.class);
         assertThat(authenticator.getMode()).isEqualTo(AuthenticationMode.ACCESS_KEY_PASSWORD);
+    }
+
+    @Test
+    public void shouldSuccessfullyDeleteAnExistingUserProfile() throws Exception {
+        final IUserProfile userProfile = new UserProfile("test1@flunny.org");
+        this.profileDAO.save(userProfile);
+
+
+        this.profileDAO.delete(userProfile.getEmailAddress());
+
+        final IUserProfile loadedUserProfile = this.profileDAO.getUserProfileByEmailAddress("test1@flunny.org");
+        assertThat(loadedUserProfile).isNull();
+    }
+
+    @Test(expected = UserProfileNotFoundException.class)
+    public void shouldErrorWhenDeleteAnNonExistingUserProfile() throws Exception {
+        this.profileDAO.delete("notExist@flunny.org");
+    }
+
+    @Test
+    public void shouldSuccessfullyDeleteStorageProfileFromUserProfile() throws Exception {
+        final IUserProfile userProfile = new UserProfile("test1@flunny.org");
+        final StorageServiceProfile dropbox = new StorageServiceProfile("profile1", "Dropbox");
+        dropbox.setStorageServiceAuthenticator(new AnonymousAuthenticator());
+        userProfile.addStorageProfile(dropbox);
+
+        this.profileDAO.save(userProfile);
+
+        final IUserProfile updatedUserProfile = this.profileDAO.removeStorageService("test1@flunny.org", dropbox);
+        assertThat(updatedUserProfile.listStorageProfiles().size()).isEqualTo(0);
+    }
+
+    @Test
+    public void shouldSuccessfullyAddStorageProfileFromUserProfile() throws Exception {
+        final IUserProfile userProfile = new UserProfile("test1@flunny.org");
+        this.profileDAO.save(userProfile);
+
+        final StorageServiceProfile dropbox = new StorageServiceProfile("profile1", "Dropbox");
+        dropbox.setStorageServiceAuthenticator(new AnonymousAuthenticator());
+
+        final IUserProfile updatedUserProfile = this.profileDAO.addStorageService("test1@flunny.org", dropbox);
+        assertThat(updatedUserProfile.listStorageProfiles().size()).isEqualTo(1);
     }
 }

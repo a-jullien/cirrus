@@ -18,9 +18,10 @@
 
 package com.cirrus.persistence.dao.profile.impl;
 
+import com.cirrus.model.profile.IStorageServiceProfile;
 import com.cirrus.model.profile.IUserProfile;
 import com.cirrus.persistence.dao.profile.IUserProfileDAO;
-import org.bson.types.ObjectId;
+import com.cirrus.persistence.exception.UserProfileNotFoundException;
 import org.jongo.MongoCollection;
 
 import java.util.ArrayList;
@@ -41,7 +42,6 @@ public class UserProfileDAO implements IUserProfileDAO {
 
     public UserProfileDAO(final MongoCollection profileCollection) {
         this.profileCollection = profileCollection;
-        this.profileCollection.ensureIndex("{emailAddress: 1}");
     }
 
     //==================================================================================================================
@@ -57,6 +57,41 @@ public class UserProfileDAO implements IUserProfileDAO {
     @Override
     public void save(final IUserProfile profile) {
         this.profileCollection.save(profile);
+    }
+
+    @Override
+    public void delete(final String emailAddress) throws UserProfileNotFoundException {
+        if (!isExist(emailAddress)){
+            throw new UserProfileNotFoundException(emailAddress);
+        }
+        final String query = "{_id: '" + emailAddress + "'}";
+        this.profileCollection.remove(query);
+    }
+
+    @Override
+    public IUserProfile addStorageService(final String emailAddress, final IStorageServiceProfile storageServiceProfile) throws UserProfileNotFoundException {
+        final IUserProfile userProfileByEmailAddress = this.getUserProfileByEmailAddress(emailAddress);
+        if (userProfileByEmailAddress == null) {
+            throw new UserProfileNotFoundException(emailAddress);
+        } else {
+            userProfileByEmailAddress.addStorageProfile(storageServiceProfile);
+            final String query = "{_id: '" + emailAddress + "'}";
+            this.profileCollection.update(query).with(userProfileByEmailAddress);
+            return userProfileByEmailAddress;
+        }
+    }
+
+    @Override
+    public IUserProfile removeStorageService(final String emailAddress, final IStorageServiceProfile storageServiceProfile) throws UserProfileNotFoundException {
+        final IUserProfile userProfileByEmailAddress = this.getUserProfileByEmailAddress(emailAddress);
+        if (userProfileByEmailAddress == null) {
+            throw new UserProfileNotFoundException(emailAddress);
+        } else {
+            userProfileByEmailAddress.removeStorageProfile(storageServiceProfile);
+            final String query = "{_id: '" + emailAddress + "'}";
+            this.profileCollection.update(query).with(userProfileByEmailAddress);
+            return userProfileByEmailAddress;
+        }
     }
 
     @Override
@@ -77,5 +112,13 @@ public class UserProfileDAO implements IUserProfileDAO {
     public IUserProfile getUserProfileByEmailAddress(final String emailAddress) {
         final String query = "{_id: '" + emailAddress + "'}";
         return this.profileCollection.findOne(query).as(IUserProfile.class);
+    }
+
+    //==================================================================================================================
+    // Private
+    //==================================================================================================================
+
+    private boolean isExist(final String emailAddress) {
+        return this.getUserProfileByEmailAddress(emailAddress) != null;
     }
 }
