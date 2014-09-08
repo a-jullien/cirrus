@@ -121,8 +121,8 @@ public class CirrusAgentAdministrationTest {
 
         final ICirrusAgentBundleDescription bundleDescription = cirrusAgent.getCirrusAgentBundleDescription();
         assertThat(bundleDescription).isNotNull();
-        assertThat(bundleDescription.getName()).isEqualTo("Dropbox Cirrus Bundle");
-        assertThat(bundleDescription.getDescription()).isEqualTo("Dropbox integration");
+        assertThat(bundleDescription.getName()).isEqualTo("Local Cirrus Bundle");
+        assertThat(bundleDescription.getDescription()).isEqualTo("cirrus bundle based on local file system");
         assertThat(bundleDescription.getVersion()).isEqualTo("1.0.0.SNAPSHOT");
         assertThat(bundleDescription.getVendor()).isEqualTo("Antoine Jullien");
 

@@ -1,7 +1,9 @@
 package com.cirrus.persistence.service;
 
 import com.cirrus.persistence.dao.meta.IMetaDataDAO;
-import com.cirrus.persistence.dao.meta.MetaDataDAO;
+import com.cirrus.persistence.dao.meta.impl.MetaDataDAO;
+import com.cirrus.persistence.dao.profile.IUserProfileDAO;
+import com.cirrus.persistence.dao.profile.impl.UserProfileDAO;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
@@ -20,6 +22,7 @@ public class MongoDBService implements IMongoDBService {
     //==================================================================================================================
     private final DB database;
     private final IMetaDataDAO metaDataDAO;
+    private final IUserProfileDAO profileDAO;
 
     //==================================================================================================================
     // Constructors
@@ -32,6 +35,7 @@ public class MongoDBService implements IMongoDBService {
 
         // dao creation
         this.metaDataDAO = new MetaDataDAO(jongo.getCollection(CIRRUS_META_DATA_COLLECTION));
+        this.profileDAO = new UserProfileDAO(jongo.getCollection(CIRRUS_USER_PROFILE_COLLECTION));
     }
 
     //==================================================================================================================
@@ -46,4 +50,10 @@ public class MongoDBService implements IMongoDBService {
     public IMetaDataDAO getMetaDataDAO() {
         return this.metaDataDAO;
     }
+
+    @Override
+    public IUserProfileDAO getUserProfileDAO() {
+        return this.profileDAO;
+    }
 }
+

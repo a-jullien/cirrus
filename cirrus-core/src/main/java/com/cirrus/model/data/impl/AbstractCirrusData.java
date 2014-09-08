@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.cirrus.data.impl;
+package com.cirrus.model.data.impl;
 
-import com.cirrus.data.ICirrusData;
+import com.cirrus.model.data.ICirrusData;
 import com.cirrus.utils.DataUtils;
 
 public abstract class AbstractCirrusData implements ICirrusData {

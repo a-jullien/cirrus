@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.cirrus.data.impl;
+package com.cirrus.model.data.impl;
 
 public class CirrusFolderData extends AbstractCirrusData {
 

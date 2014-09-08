@@ -18,8 +18,8 @@
 
 package com.cirrus.server.osgi.server;
 
-import com.cirrus.data.ICirrusMetaData;
-import com.cirrus.data.impl.DataType;
+import com.cirrus.model.data.ICirrusMetaData;
+import com.cirrus.model.data.impl.DataType;
 import com.cirrus.persistence.dao.meta.IMetaDataDAO;
 import com.cirrus.persistence.service.MongoDBService;
 import com.cirrus.server.configuration.CirrusProperties;

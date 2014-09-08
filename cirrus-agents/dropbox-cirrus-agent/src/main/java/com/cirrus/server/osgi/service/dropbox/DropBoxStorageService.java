@@ -16,10 +16,10 @@
 
 package com.cirrus.server.osgi.service.dropbox;
 
-import com.cirrus.data.ICirrusData;
-import com.cirrus.data.impl.CirrusFileData;
-import com.cirrus.data.impl.CirrusFolderData;
-import com.cirrus.agent.authentication.impl.AccessKeyTrustedToken;
+import com.cirrus.model.data.ICirrusData;
+import com.cirrus.model.data.impl.CirrusFileData;
+import com.cirrus.model.data.impl.CirrusFolderData;
+import com.cirrus.agent.authentication.impl.AccessKeyAuthenticator;
 import com.cirrus.server.osgi.extension.AbstractStorageService;
 import com.cirrus.server.osgi.extension.AuthenticationException;
 import com.cirrus.server.osgi.extension.ServiceRequestFailedException;
@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class DropBoxStorageService extends AbstractStorageService<AccessKeyTrustedToken> {
+public class DropBoxStorageService extends AbstractStorageService<AccessKeyAuthenticator> {
 
     //==================================================================================================================
     // Attributes
@@ -50,7 +50,7 @@ public class DropBoxStorageService extends AbstractStorageService<AccessKeyTrust
     //==================================================================================================================
 
     @Override
-    public void authenticate(final AccessKeyTrustedToken trustedToken) {
+    public void authenticate(final AccessKeyAuthenticator trustedToken) {
         final DbxAuthInfo authInfo = new DbxAuthInfo(trustedToken.getAccessKey(), DbxHost.Default);
         final String userLocale = Locale.getDefault().toString();
         final DbxRequestConfig requestConfig = new DbxRequestConfig(SERVICE_NAME_PROPERTY, userLocale);

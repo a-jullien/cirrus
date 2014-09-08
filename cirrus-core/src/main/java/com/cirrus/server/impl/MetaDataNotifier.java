@@ -17,9 +17,9 @@
 package com.cirrus.server.impl;
 
 import com.cirrus.agent.ICirrusAgentIdentifier;
-import com.cirrus.data.ICirrusData;
-import com.cirrus.data.ICirrusMetaData;
-import com.cirrus.data.impl.CirrusMetaData;
+import com.cirrus.model.data.ICirrusData;
+import com.cirrus.model.data.ICirrusMetaData;
+import com.cirrus.model.data.impl.CirrusMetaData;
 import com.cirrus.distribution.event.data.ICirrusDataEvent;
 import com.cirrus.distribution.event.data.ICirrusDataEventVisitor;
 import com.cirrus.distribution.event.data.impl.ICirrusDataCreatedEvent;

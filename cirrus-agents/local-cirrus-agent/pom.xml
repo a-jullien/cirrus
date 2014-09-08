@@ -6,9 +6,16 @@
     <packaging>bundle</packaging>
     <name>Local Cirrus Bundle</name>
     <description>cirrus bundle based on local file system</description>
-    <groupId>com.cirrus</groupId>
     <artifactId>local-cirrus-agent</artifactId>
     <version>1.0-SNAPSHOT</version>
+
+    <parent>
+        <artifactId>cirrus-agents</artifactId>
+        <groupId>com.cirrus</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+
     <dependencies>
         <dependency>
             <groupId>com.cirrus</groupId>
@@ -20,27 +27,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-io</artifactId>
             <version>1.3.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.8.1</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>1.5.0</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.9.0</version>
-            <scope>test</scope>
         </dependency>
 
     </dependencies>
@@ -59,7 +45,7 @@
                         <Storage-Service-Class>com.cirrus.server.osgi.service.local.LocalStorageService</Storage-Service-Class>
                         <Storage-Service-Vendor>Local</Storage-Service-Vendor>
                         <Storage-Service-Authentication-Mode>ANONYMOUS</Storage-Service-Authentication-Mode>
-                        <Import-Package>com.cirrus.server.osgi.extension.*, com.cirrus.data.*,
+                        <Import-Package>com.cirrus.server.osgi.extension.*, com.cirrus.model.data.*,
                             com.cirrus.agent.authentication.*,com.cirrus.server.*</Import-Package>
                         <Export-Package>org.apache.commons.io.*</Export-Package>
                         <Embed-Dependency>*;scope=runtime;inline=true</Embed-Dependency>
@@ -67,35 +53,7 @@
                     </instructions>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.7.1.201405082137</version>
-                <executions>
-                    <execution>
-                        <id>jacoco-initialize</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>jacoco-site</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+
         </plugins>
     </build>
 </project>

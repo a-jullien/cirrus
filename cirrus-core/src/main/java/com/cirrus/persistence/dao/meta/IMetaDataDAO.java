@@ -17,18 +17,14 @@
 package com.cirrus.persistence.dao.meta;
 
 import com.cirrus.agent.ICirrusAgentIdentifier;
-import com.cirrus.data.ICirrusMetaData;
+import com.cirrus.model.data.ICirrusMetaData;
 import com.cirrus.persistence.IQuery;
+import com.cirrus.persistence.dao.ICirrusDAO;
 import com.cirrus.persistence.exception.CirrusMetaDataNotFoundException;
 
 import java.util.List;
 
-public interface IMetaDataDAO {
-
-    /**
-     * Drop collection
-     */
-    void dropCollection();
+public interface IMetaDataDAO extends ICirrusDAO {
 
     /**
      * Returns the cirrus meta data from identifier

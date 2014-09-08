@@ -16,17 +16,17 @@
 
 package com.cirrus.server.osgi.extension;
 
-import com.cirrus.agent.authentication.IStorageServiceTrustedToken;
-import com.cirrus.data.ICirrusData;
-import com.cirrus.data.impl.CirrusFileData;
-import com.cirrus.data.impl.CirrusFolderData;
+import com.cirrus.agent.authentication.IStorageServiceAuthenticator;
+import com.cirrus.model.data.ICirrusData;
+import com.cirrus.model.data.impl.CirrusFileData;
+import com.cirrus.model.data.impl.CirrusFolderData;
 import com.cirrus.server.IGlobalContext;
 
 import java.io.InputStream;
 import java.util.List;
 
 @SuppressWarnings("UnusedDeclaration")
-public interface ICirrusStorageService<TrustedToken extends IStorageServiceTrustedToken> {
+public interface ICirrusStorageService<TrustedToken extends IStorageServiceAuthenticator> {
 
     //==================================================================================================================
     // Constants
@@ -45,7 +45,7 @@ public interface ICirrusStorageService<TrustedToken extends IStorageServiceTrust
     /**
      * Authenticates from specified authentication mechanism
      */
-    void authenticate(final TrustedToken trustedToken);
+    void authenticate(final TrustedToken trustedToken) throws AuthenticationException;
 
     /**
      * Shutdown the storage service if this feature is available
@@ -58,12 +58,12 @@ public interface ICirrusStorageService<TrustedToken extends IStorageServiceTrust
     String getAccountName() throws ServiceRequestFailedException;
 
     /**
-     * Returns the total space
+     * Returns the total space in bytes
      */
     long getTotalSpace() throws ServiceRequestFailedException;
 
     /**
-     * Returns the used space
+     * Returns the used space in bytes
      */
     long getUsedSpace() throws ServiceRequestFailedException;
 

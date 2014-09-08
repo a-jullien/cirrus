@@ -18,11 +18,11 @@
 
 package com.cirrus.server.osgi.service.local;
 
-import com.cirrus.agent.authentication.impl.AnonymousTrustedToken;
-import com.cirrus.data.ICirrusData;
-import com.cirrus.data.impl.CirrusFileData;
-import com.cirrus.data.impl.CirrusFolderData;
-import com.cirrus.data.impl.DataType;
+import com.cirrus.agent.authentication.impl.AnonymousAuthenticator;
+import com.cirrus.model.data.ICirrusData;
+import com.cirrus.model.data.impl.CirrusFileData;
+import com.cirrus.model.data.impl.CirrusFolderData;
+import com.cirrus.model.data.impl.DataType;
 import com.cirrus.server.IGlobalContext;
 import com.cirrus.server.impl.GlobalContext;
 import com.cirrus.server.osgi.extension.ServiceRequestFailedException;
@@ -172,7 +172,7 @@ public class LocalStorageServiceTest {
     //==================================================================================================================
     private LocalStorageService createLocalStorageService() {
         final LocalStorageService localStorageService = new LocalStorageService();
-        localStorageService.authenticate(new AnonymousTrustedToken());
+        localStorageService.authenticate(new AnonymousAuthenticator());
         localStorageService.initialize(this.context);
         return localStorageService;
     }

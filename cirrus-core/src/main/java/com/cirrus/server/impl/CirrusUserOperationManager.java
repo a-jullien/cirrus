@@ -19,10 +19,10 @@
 package com.cirrus.server.impl;
 
 import com.cirrus.agent.ICirrusAgent;
-import com.cirrus.data.ICirrusData;
-import com.cirrus.data.ICirrusMetaData;
-import com.cirrus.data.impl.CirrusFileData;
-import com.cirrus.data.impl.CirrusFolderData;
+import com.cirrus.model.data.ICirrusData;
+import com.cirrus.model.data.ICirrusMetaData;
+import com.cirrus.model.data.impl.CirrusFileData;
+import com.cirrus.model.data.impl.CirrusFolderData;
 import com.cirrus.distribution.event.data.ICirrusDataEvent;
 import com.cirrus.distribution.event.data.impl.CirrusDataCreatedEvent;
 import com.cirrus.distribution.event.data.impl.CirrusDataRemovedEvent;

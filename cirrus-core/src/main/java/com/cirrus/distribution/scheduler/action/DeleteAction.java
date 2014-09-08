@@ -19,7 +19,7 @@
 package com.cirrus.distribution.scheduler.action;
 
 import com.cirrus.agent.ICirrusAgent;
-import com.cirrus.data.ICirrusData;
+import com.cirrus.model.data.ICirrusData;
 import com.cirrus.distribution.scheduler.ActionType;
 import com.cirrus.server.osgi.extension.ICirrusStorageService;
 

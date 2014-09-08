@@ -1,7 +1,7 @@
-package com.cirrus.data;
+package com.cirrus.model.data;
 
-import com.cirrus.data.impl.CirrusFileData;
-import com.cirrus.data.impl.CirrusFolderData;
+import com.cirrus.model.data.impl.CirrusFileData;
+import com.cirrus.model.data.impl.CirrusFolderData;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertTrue;

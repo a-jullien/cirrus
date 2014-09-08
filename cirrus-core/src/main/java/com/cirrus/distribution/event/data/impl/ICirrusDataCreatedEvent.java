@@ -16,7 +16,7 @@
 
 package com.cirrus.distribution.event.data.impl;
 
-import com.cirrus.data.ICirrusData;
+import com.cirrus.model.data.ICirrusData;
 import com.cirrus.distribution.event.data.ICirrusDataEvent;
 
 public interface ICirrusDataCreatedEvent extends ICirrusDataEvent {

@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package com.cirrus.persistence.dao.meta;
+package com.cirrus.persistence.dao.meta.impl;
 
 import com.cirrus.agent.ICirrusAgentIdentifier;
-import com.cirrus.data.ICirrusMetaData;
-import com.cirrus.data.impl.CirrusMetaData;
+import com.cirrus.model.data.ICirrusMetaData;
+import com.cirrus.model.data.impl.CirrusMetaData;
 import com.cirrus.persistence.IQuery;
+import com.cirrus.persistence.dao.meta.IMetaDataDAO;
 import com.cirrus.persistence.exception.CirrusMetaDataNotFoundException;
 import org.bson.types.ObjectId;
 import org.jongo.MongoCollection;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class MetaDataDAO implements IMetaDataDAO {
 
@@ -47,6 +49,7 @@ public class MetaDataDAO implements IMetaDataDAO {
     //==================================================================================================================
     @Override
     public void dropCollection() {
+        this.metaDataCollection.dropIndexes();
         this.metaDataCollection.drop();
     }
 
@@ -60,10 +63,12 @@ public class MetaDataDAO implements IMetaDataDAO {
         final List<ICirrusMetaData> result = new ArrayList<>();
         final String query = "{cirrusAgentId: '" + cirrusAgentId.toExternal() + "'}";
         final Iterable<CirrusMetaData> cirrusMetaDatas = this.metaDataCollection.find(query).as(CirrusMetaData.class);
-        for (final CirrusMetaData cirrusMetaData : cirrusMetaDatas) {
-            result.add(cirrusMetaData);
-        }
-
+        cirrusMetaDatas.forEach(new Consumer<CirrusMetaData>() {
+            @Override
+            public void accept(final CirrusMetaData cirrusMetaData) {
+                result.add(cirrusMetaData);
+            }
+        });
         return result;
     }
 
@@ -95,10 +100,12 @@ public class MetaDataDAO implements IMetaDataDAO {
     public List<ICirrusMetaData> findMetaData(final IQuery query) {
         final List<ICirrusMetaData> result = new ArrayList<>();
         final Iterable<CirrusMetaData> cirrusMetaDatas = this.metaDataCollection.find(query.toExternal()).as(CirrusMetaData.class);
-        for (final CirrusMetaData cirrusMetaData : cirrusMetaDatas) {
-            result.add(cirrusMetaData);
-        }
-
+        cirrusMetaDatas.forEach(new Consumer<CirrusMetaData>() {
+            @Override
+            public void accept(final CirrusMetaData cirrusMetaData) {
+                result.add(cirrusMetaData);
+            }
+        });
         return result;
     }
 

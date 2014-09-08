@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.cirrus.data.impl;
+package com.cirrus.model.data.impl;
 
-import com.cirrus.data.ICirrusMetaData;
+import com.cirrus.model.data.ICirrusMetaData;
 import org.jongo.marshall.jackson.oid.Id;
 import org.jongo.marshall.jackson.oid.ObjectId;
 
@@ -54,38 +54,47 @@ public class CirrusMetaData implements ICirrusMetaData {
         return this.id;
     }
 
+    @Override
     public DataType getDataType() {
         return dataType;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public long getCreationDate() {
         return creationDate;
     }
 
+    @Override
     public String getCirrusAgentType() {
         return cirrusAgentType;
     }
 
+    @Override
     public String getCirrusAgentId() {
         return cirrusAgentId;
     }
 
+    @Override
     public String getLocalPath() {
         return localPath;
     }
 
+    @Override
     public String getVirtualPath() {
         return virtualPath;
     }
 
+    @Override
     public String getMediaType() {
         return mediaType;
     }
 
+    @Override
     public long getSize() {
         return size;
     }

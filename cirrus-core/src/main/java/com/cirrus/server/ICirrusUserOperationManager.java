@@ -18,7 +18,7 @@
 
 package com.cirrus.server;
 
-import com.cirrus.data.ICirrusMetaData;
+import com.cirrus.model.data.ICirrusMetaData;
 
 import java.io.InputStream;
 import java.util.List;

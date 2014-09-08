@@ -18,26 +18,42 @@
 
 package com.cirrus.agent.authentication.impl;
 
-import com.cirrus.agent.authentication.IStorageServiceTrustedToken;
+import com.cirrus.agent.authentication.AuthenticationMode;
+import com.cirrus.agent.authentication.IStorageServiceAuthenticator;
+import com.fasterxml.jackson.annotation.*;
 
-public class AccessKeyTrustedToken implements IStorageServiceTrustedToken {
+public abstract class AbstractAuthenticator implements IStorageServiceAuthenticator {
 
     //==================================================================================================================
     // Attributes
     //==================================================================================================================
-    private final String accessKey;
+
+    @JsonIgnore
+    private AuthenticationMode mode;
 
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
-    public AccessKeyTrustedToken(final String accessKey) {
-        this.accessKey = accessKey;
+
+
+    @JsonCreator
+    public AbstractAuthenticator(@JsonProperty("mode") final AuthenticationMode mode) {
+        this.mode = mode;
     }
 
     //==================================================================================================================
     // Getters
     //==================================================================================================================
-    public String getAccessKey() {
-        return accessKey;
+
+    public AuthenticationMode getMode() {
+        return this.mode;
+    }
+
+    //==================================================================================================================
+    // Setters
+    //==================================================================================================================
+
+    public void setMode(final AuthenticationMode mode) {
+        this.mode = mode;
     }
 }

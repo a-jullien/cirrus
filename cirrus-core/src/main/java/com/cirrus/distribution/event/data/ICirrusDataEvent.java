@@ -16,7 +16,7 @@
 
 package com.cirrus.distribution.event.data;
 
-import com.cirrus.data.ICirrusData;
+import com.cirrus.model.data.ICirrusData;
 import com.cirrus.distribution.event.IVisitableEvent;
 import com.cirrus.agent.ICirrusAgentIdentifier;
 

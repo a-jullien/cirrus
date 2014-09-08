@@ -19,7 +19,7 @@
 package com.cirrus.distribution.scheduler;
 
 import com.cirrus.agent.ICirrusAgent;
-import com.cirrus.data.impl.CirrusFolderData;
+import com.cirrus.model.data.impl.CirrusFolderData;
 import com.cirrus.distribution.scheduler.action.CreateDirectoryAction;
 import com.cirrus.distribution.scheduler.exception.CirrusAgentCannotBeFoundException;
 import com.cirrus.server.IGlobalContext;

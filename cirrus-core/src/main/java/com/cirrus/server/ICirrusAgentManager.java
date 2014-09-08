@@ -23,6 +23,11 @@ import com.cirrus.server.exception.*;
 import java.io.InputStream;
 import java.util.List;
 
+/**
+ * The {@link com.cirrus.server.ICirrusAgentManager} is responsible of the administration of cirrus agents
+ * {@link ICirrusAgent}. The management consists to add, remove and manage lifecycle of agents represented by
+ * OSGI bundle.
+ */
 public interface ICirrusAgentManager {
 
     /**

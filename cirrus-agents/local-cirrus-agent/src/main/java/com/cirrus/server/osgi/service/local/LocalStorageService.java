@@ -18,10 +18,10 @@
 
 package com.cirrus.server.osgi.service.local;
 
-import com.cirrus.agent.authentication.impl.AnonymousTrustedToken;
-import com.cirrus.data.ICirrusData;
-import com.cirrus.data.impl.CirrusFileData;
-import com.cirrus.data.impl.CirrusFolderData;
+import com.cirrus.agent.authentication.impl.AnonymousAuthenticator;
+import com.cirrus.model.data.ICirrusData;
+import com.cirrus.model.data.impl.CirrusFileData;
+import com.cirrus.model.data.impl.CirrusFolderData;
 import com.cirrus.server.osgi.extension.AbstractStorageService;
 import com.cirrus.server.osgi.extension.ServiceRequestFailedException;
 import org.apache.commons.io.IOUtils;
@@ -36,7 +36,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LocalStorageService extends AbstractStorageService<AnonymousTrustedToken> {
+public class LocalStorageService extends AbstractStorageService<AnonymousAuthenticator> {
 
     //==================================================================================================================
     // Private
@@ -53,7 +53,7 @@ public class LocalStorageService extends AbstractStorageService<AnonymousTrusted
     // Public
     //==================================================================================================================
     @Override
-    public void authenticate(final AnonymousTrustedToken trustedToken) {
+    public void authenticate(final AnonymousAuthenticator trustedToken) {
         // do nothing here
     }
 

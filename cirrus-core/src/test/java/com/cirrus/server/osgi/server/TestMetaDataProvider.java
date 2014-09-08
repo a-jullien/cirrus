@@ -17,9 +17,9 @@
 package com.cirrus.server.osgi.server;
 
 import com.cirrus.agent.impl.NameBasedCirrusAgentIdentifier;
-import com.cirrus.data.ICirrusMetaData;
-import com.cirrus.data.impl.CirrusFileData;
-import com.cirrus.data.impl.DataType;
+import com.cirrus.model.data.ICirrusMetaData;
+import com.cirrus.model.data.impl.CirrusFileData;
+import com.cirrus.model.data.impl.DataType;
 import com.cirrus.distribution.event.data.impl.CirrusDataCreatedEvent;
 import com.cirrus.distribution.event.data.impl.CirrusDataRemovedEvent;
 import com.cirrus.persistence.dao.meta.IMetaDataDAO;

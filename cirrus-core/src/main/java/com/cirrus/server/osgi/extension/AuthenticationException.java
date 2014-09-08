@@ -28,4 +28,8 @@ public class AuthenticationException extends Exception {
     public AuthenticationException(final String cause) {
         super(cause);
     }
+
+    public AuthenticationException(final Throwable cause) {
+        super(cause);
+    }
 }

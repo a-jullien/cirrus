@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>box-cirrus-agent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>box-cirrus-agent</name>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <parent>
+        <groupId>com.cirrus</groupId>
+        <artifactId>cirrus-agents</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>com.cirrus</groupId>
+            <artifactId>cirrus-core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>net.box</groupId>
+            <artifactId>boxjavalibv2</artifactId>
+            <version>2.2.2</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.4.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-Vendor>Antoine Jullien</Bundle-Vendor>
+                        <Storage-Service-Name>${artifactId}</Storage-Service-Name>
+                        <Storage-Service-Version>1.0</Storage-Service-Version>
+                        <Storage-Service-Class>com.cirrus.server.osgi.service.box.BoxStorageService</Storage-Service-Class>
+                        <Storage-Service-Vendor>Box</Storage-Service-Vendor>
+                        <Storage-Service-Authentication-Mode>ACCESS_KEY_PASSWORD</Storage-Service-Authentication-Mode>
+                        <Import-Package>com.cirrus.server.osgi.extension.*, com.cirrus.model.data.*,
+                            com.cirrus.agent.authentication.*,com.cirrus.server.*</Import-Package>
+                        <Export-Package>com.box.*</Export-Package>
+                        <Embed-Dependency>*;scope=runtime;inline=true</Embed-Dependency>
+                        <Embed-Transitive>true</Embed-Transitive>
+                    </instructions>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+</project>

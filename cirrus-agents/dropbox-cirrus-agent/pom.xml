@@ -6,9 +6,15 @@
     <packaging>bundle</packaging>
     <name>Dropbox Cirrus Bundle</name>
     <description>Dropbox integration</description>
-    <groupId>com.cirrus</groupId>
     <artifactId>dropbox-cirrus-agent</artifactId>
     <version>1.0-SNAPSHOT</version>
+
+    <parent>
+        <artifactId>cirrus-agents</artifactId>
+        <groupId>com.cirrus</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
     <dependencies>
         <dependency>
             <groupId>com.cirrus</groupId>
@@ -21,31 +27,11 @@
             <artifactId>dropbox-core-sdk</artifactId>
             <version>1.7.6</version>
         </dependency>
+
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
             <version>2.3.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.8.1</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>1.5.0</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.9.0</version>
-            <scope>test</scope>
         </dependency>
 
     </dependencies>
@@ -61,46 +47,20 @@
                         <Bundle-Vendor>Antoine Jullien</Bundle-Vendor>
                         <Storage-Service-Name>${artifactId}</Storage-Service-Name>
                         <Storage-Service-Version>1.7.6</Storage-Service-Version>
-                        <Storage-Service-Class>com.cirrus.server.osgi.service.dropbox.DropBoxStorageService</Storage-Service-Class>
+                        <Storage-Service-Class>com.cirrus.server.osgi.service.dropbox.DropBoxStorageService
+                        </Storage-Service-Class>
                         <Storage-Service-Vendor>Dropbox</Storage-Service-Vendor>
                         <Storage-Service-Authentication-Mode>ACCESS_KEY</Storage-Service-Authentication-Mode>
-                        <Import-Package>com.cirrus.server.osgi.extension.*, com.cirrus.data.*,
-                            com.cirrus.agent.authentication.*,com.cirrus.server.*</Import-Package>
+                        <Import-Package>com.cirrus.server.osgi.extension.*, com.cirrus.model.data.*,
+                            com.cirrus.agent.authentication.*,com.cirrus.server.*
+                        </Import-Package>
                         <Export-Package>com.dropbox.core.*,com.fasterxml.jackson.*</Export-Package>
                         <Embed-Dependency>*;scope=runtime;inline=true</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                     </instructions>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.7.1.201405082137</version>
-                <executions>
-                    <execution>
-                        <id>jacoco-initialize</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>jacoco-site</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+
         </plugins>
     </build>
 </project>

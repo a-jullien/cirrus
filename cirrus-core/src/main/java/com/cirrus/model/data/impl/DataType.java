@@ -16,7 +16,9 @@
  *
  */
 
-package com.cirrus.agent.authentication;
+package com.cirrus.model.data.impl;
 
-public interface IStorageServiceTrustedToken {
+public enum DataType {
+    FILE,
+    DIRECTORY
 }

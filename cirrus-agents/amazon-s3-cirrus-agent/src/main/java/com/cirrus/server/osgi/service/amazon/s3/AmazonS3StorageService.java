@@ -20,10 +20,10 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
-import com.cirrus.agent.authentication.impl.AccessKeyPasswordTrustedToken;
-import com.cirrus.data.ICirrusData;
-import com.cirrus.data.impl.CirrusFileData;
-import com.cirrus.data.impl.CirrusFolderData;
+import com.cirrus.agent.authentication.impl.AccessKeyPasswordAuthenticator;
+import com.cirrus.model.data.ICirrusData;
+import com.cirrus.model.data.impl.CirrusFileData;
+import com.cirrus.model.data.impl.CirrusFolderData;
 import com.cirrus.server.osgi.extension.AbstractStorageService;
 import com.cirrus.server.osgi.extension.ServiceRequestFailedException;
 
@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class AmazonS3StorageService extends AbstractStorageService<AccessKeyPasswordTrustedToken> {
+public class AmazonS3StorageService extends AbstractStorageService<AccessKeyPasswordAuthenticator> {
 
     //==================================================================================================================
     // Constants
@@ -58,7 +58,7 @@ public class AmazonS3StorageService extends AbstractStorageService<AccessKeyPass
     //==================================================================================================================
 
     @Override
-    public void authenticate(final AccessKeyPasswordTrustedToken trustedToken) {
+    public void authenticate(final AccessKeyPasswordAuthenticator trustedToken) {
         final String accessKey = trustedToken.getAccessKey();
         final String accessSecret = trustedToken.getAccessPassword();
         final AWSCredentials credentials = new BasicAWSCredentials(accessKey, accessSecret);

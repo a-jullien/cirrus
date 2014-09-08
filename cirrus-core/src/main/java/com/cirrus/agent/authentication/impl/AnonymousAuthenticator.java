@@ -18,7 +18,15 @@
 
 package com.cirrus.agent.authentication.impl;
 
-import com.cirrus.agent.authentication.IStorageServiceTrustedToken;
+import com.cirrus.agent.authentication.AuthenticationMode;
 
-public class AnonymousTrustedToken implements IStorageServiceTrustedToken {
+public class AnonymousAuthenticator extends AbstractAuthenticator {
+
+    //==================================================================================================================
+    // Constructors
+    //==================================================================================================================
+
+    public AnonymousAuthenticator() {
+        super(AuthenticationMode.ANONYMOUS);
+    }
 }

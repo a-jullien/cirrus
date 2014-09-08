@@ -114,8 +114,8 @@ public class CirrusServerManagementServiceTest extends AbstractJerseyTest {
         final List<CirrusAgentBundleDescription> bundleDescriptions = agents.getAgents();
         assertThat(bundleDescriptions.size()).isEqualTo(1);
         final ICirrusAgentBundleDescription cirrusAgentBundleDescription = bundleDescriptions.get(0);
-        assertThat(cirrusAgentBundleDescription.getName()).isEqualTo("Dropbox Cirrus Bundle");
-        assertThat(cirrusAgentBundleDescription.getDescription()).isEqualTo("Dropbox integration");
+        assertThat(cirrusAgentBundleDescription.getName()).isEqualTo("Local Cirrus Bundle");
+        assertThat(cirrusAgentBundleDescription.getDescription()).isEqualTo("cirrus bundle based on local file system");
         assertThat(cirrusAgentBundleDescription.getVendor()).isEqualTo("Antoine Jullien");
         assertThat(cirrusAgentBundleDescription.getVersion()).isEqualTo("1.0.0.SNAPSHOT");
     }

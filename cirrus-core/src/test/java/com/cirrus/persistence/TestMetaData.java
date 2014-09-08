@@ -1,7 +1,7 @@
 package com.cirrus.persistence;
 
-import com.cirrus.data.ICirrusMetaData;
-import com.cirrus.data.impl.CirrusMetaData;
+import com.cirrus.model.data.ICirrusMetaData;
+import com.cirrus.model.data.impl.CirrusMetaData;
 import com.cirrus.persistence.service.IMongoDBService;
 import com.cirrus.persistence.service.MongoDBService;
 import com.cirrus.server.configuration.CirrusProperties;

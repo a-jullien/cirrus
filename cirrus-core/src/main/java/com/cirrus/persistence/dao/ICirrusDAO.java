@@ -16,9 +16,12 @@
  *
  */
 
-package com.cirrus.data.impl;
+package com.cirrus.persistence.dao;
 
-public enum DataType {
-    FILE,
-    DIRECTORY
+public interface ICirrusDAO {
+
+    /**
+     * Drop collection
+     */
+    void dropCollection();
 }

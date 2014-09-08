@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.cirrus.data;
+package com.cirrus.model.data;
 
-import com.cirrus.data.impl.DataType;
+import com.cirrus.model.data.impl.DataType;
 
 import java.io.Serializable;
 

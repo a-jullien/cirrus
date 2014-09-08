@@ -18,9 +18,11 @@
 
 package com.cirrus.agent.authentication.impl;
 
-import com.cirrus.agent.authentication.IStorageServiceTrustedToken;
+import com.cirrus.agent.authentication.AuthenticationMode;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class AccessKeyPasswordTrustedToken implements IStorageServiceTrustedToken {
+public class AccessKeyPasswordAuthenticator extends AbstractAuthenticator {
 
     //==================================================================================================================
     // Attributes
@@ -31,7 +33,10 @@ public class AccessKeyPasswordTrustedToken implements IStorageServiceTrustedToke
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
-    public AccessKeyPasswordTrustedToken(final String accessKey, final String accessPassword) {
+    @JsonCreator
+    public AccessKeyPasswordAuthenticator(@JsonProperty("accessKey") final String accessKey,
+                                          @JsonProperty("accessPassword") final String accessPassword) {
+        super(AuthenticationMode.ACCESS_KEY_PASSWORD);
         this.accessKey = accessKey;
         this.accessPassword = accessPassword;
     }
