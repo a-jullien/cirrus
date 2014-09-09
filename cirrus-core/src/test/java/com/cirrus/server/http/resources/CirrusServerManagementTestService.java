@@ -29,7 +29,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 @SuppressWarnings("UnusedDeclaration")
-@Path("/test/admin")
+@Path("/cirrus/test/admin")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class CirrusServerManagementTestService extends CirrusServerManagementService {

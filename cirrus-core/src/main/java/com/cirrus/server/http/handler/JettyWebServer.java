@@ -49,7 +49,7 @@ public class JettyWebServer {
         this.server = new Server(httpPort);
         final ServletContextHandler handler = new ServletContextHandler();
         handler.setContextPath("");
-        handler.addServlet(new ServletHolder(new ServletContainer(this.createResourceConfig())), "/*");
+        handler.addServlet(new ServletHolder(new ServletContainer(this.createResourceConfig())), "/cirrus/*");
         this.server.setHandler(handler);
     }
 

@@ -67,7 +67,7 @@ public class TestUserProfileDAO {
 
     @Test
     public void shouldSaveUserProfileWithoutStorageServiceProfile() throws Exception {
-        this.profileDAO.save(new UserProfile("test1@flunny.org"));
+        this.profileDAO.save(new UserProfile("test1@flunny.org", "myPassword"));
 
         final List<IUserProfile> userProfiles = this.profileDAO.listUserProfiles();
         assertThat(userProfiles).isNotNull();
@@ -80,7 +80,7 @@ public class TestUserProfileDAO {
 
     @Test
     public void testSaveUserProfileWithOneStorageServiceProfileUsingAnonymousAuthenticator() throws Exception {
-        final IUserProfile userProfile = new UserProfile("test1@flunny.org");
+        final IUserProfile userProfile = new UserProfile("test1@flunny.org", "myPassword");
 
         final StorageServiceProfile storageServiceProfile = new StorageServiceProfile("profile1", "DropBox");
         storageServiceProfile.setStorageServiceAuthenticator(new AnonymousAuthenticator());
@@ -99,7 +99,7 @@ public class TestUserProfileDAO {
 
     @Test
     public void testSaveUserProfileWithOneStorageServiceProfileUsingAccessKeyAuthenticator() throws Exception {
-        final IUserProfile userProfile = new UserProfile("test1@flunny.org");
+        final IUserProfile userProfile = new UserProfile("test1@flunny.org", "myPassword");
 
         final StorageServiceProfile storageServiceProfile = new StorageServiceProfile("profile1", "DropBox");
         storageServiceProfile.setStorageServiceAuthenticator(new AccessKeyAuthenticator("myAccessKey"));
@@ -118,7 +118,7 @@ public class TestUserProfileDAO {
 
     @Test
     public void testSaveUserProfileWithOneStorageServiceProfileUsingAccessKeyPasswordAuthenticator() throws Exception {
-        final IUserProfile userProfile = new UserProfile("test1@flunny.org");
+        final IUserProfile userProfile = new UserProfile("test1@flunny.org", "myPassword");
 
         final StorageServiceProfile storageServiceProfile = new StorageServiceProfile("profile1", "DropBox");
         storageServiceProfile.setStorageServiceAuthenticator(new AccessKeyPasswordAuthenticator("myAccessKey", "myAccessPassword"));
@@ -137,7 +137,7 @@ public class TestUserProfileDAO {
 
     @Test
     public void shouldSuccessfullyDeleteAnExistingUserProfile() throws Exception {
-        final IUserProfile userProfile = new UserProfile("test1@flunny.org");
+        final IUserProfile userProfile = new UserProfile("test1@flunny.org", "myPassword");
         this.profileDAO.save(userProfile);
 
 
@@ -154,7 +154,7 @@ public class TestUserProfileDAO {
 
     @Test
     public void shouldSuccessfullyDeleteStorageProfileFromUserProfile() throws Exception {
-        final IUserProfile userProfile = new UserProfile("test1@flunny.org");
+        final IUserProfile userProfile = new UserProfile("test1@flunny.org", "myPassword");
         final StorageServiceProfile dropbox = new StorageServiceProfile("profile1", "Dropbox");
         dropbox.setStorageServiceAuthenticator(new AnonymousAuthenticator());
         userProfile.addStorageProfile(dropbox);
@@ -167,7 +167,7 @@ public class TestUserProfileDAO {
 
     @Test
     public void shouldSuccessfullyAddStorageProfileFromUserProfile() throws Exception {
-        final IUserProfile userProfile = new UserProfile("test1@flunny.org");
+        final IUserProfile userProfile = new UserProfile("test1@flunny.org", "myPassword");
         this.profileDAO.save(userProfile);
 
         final StorageServiceProfile dropbox = new StorageServiceProfile("profile1", "Dropbox");

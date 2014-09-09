@@ -29,6 +29,8 @@ public interface IUserProfileDAO extends ICirrusDAO {
 
     /**
      * Saves a new user profile
+     *
+     * @param profile the user profile
      */
     void save(IUserProfile profile);
 
@@ -40,14 +42,18 @@ public interface IUserProfileDAO extends ICirrusDAO {
     void delete(String emailAddress) throws UserProfileNotFoundException;
 
     /**
-     *  @param emailAddress
-     * @param storageServiceProfile
+     * Add a new profile of storage service
+     *
+     * @param emailAddress          the email address of the user
+     * @param storageServiceProfile the new storage service profile
      */
     IUserProfile addStorageService(final String emailAddress, final IStorageServiceProfile storageServiceProfile) throws UserProfileNotFoundException;
 
     /**
-     *  @param emailAddress
-     * @param storageServiceProfile
+     * Remove an existing profile of storage service
+     *
+     * @param emailAddress          the email address
+     * @param storageServiceProfile the existing storage service profile
      */
     IUserProfile removeStorageService(final String emailAddress, final IStorageServiceProfile storageServiceProfile) throws UserProfileNotFoundException;
 

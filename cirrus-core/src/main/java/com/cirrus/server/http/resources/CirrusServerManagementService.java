@@ -36,7 +36,7 @@ import java.io.InputStream;
 import java.util.List;
 
 @SuppressWarnings("UnusedDeclaration")
-@Path("/admin")
+@Path("/cirrus/admin")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class CirrusServerManagementService {

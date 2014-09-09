@@ -17,6 +17,7 @@
 package com.cirrus.server;
 
 import com.cirrus.server.exception.*;
+import com.cirrus.server.http.client.SessionService;
 
 public interface ICirrusServer {
 
@@ -53,4 +54,10 @@ public interface ICirrusServer {
      * Returns the user operations
      */
     ICirrusUserOperationManager getCirrusUserOperations();
+
+    /**
+     *
+     * @return
+     */
+    SessionService getSessionService();
 }

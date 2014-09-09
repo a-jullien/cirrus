@@ -25,6 +25,8 @@ import com.cirrus.server.IGlobalContext;
 import com.cirrus.server.configuration.CirrusProperties;
 import com.cirrus.server.exception.StartCirrusServerException;
 import com.cirrus.server.exception.StopCirrusServerException;
+import com.cirrus.server.http.client.ClientTokenProvider;
+import com.cirrus.server.http.client.SessionService;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -35,6 +37,7 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     // Constants
     //==================================================================================================================
     private static final String LOGGER_NAME = "<cirrus-server>";
+    public final static int DEFAULT_SESSION_EXPIRATION_TIME = 20;
 
     //==================================================================================================================
     // Attributes
@@ -44,6 +47,7 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     private final ICirrusAgentManager cirrusAgentManager;
     private final ICirrusUserOperationManager cirrusUserOperations;
     private final String name;
+    private final SessionService sessionService;
 
     //==================================================================================================================
     // Constructors
@@ -62,6 +66,8 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
         this.cirrusAgentManager = new CirrusAgentManager(globalContext);
         // user operations
         this.cirrusUserOperations = new CirrusUserOperationManager(this.cirrusAgentManager, metaDataDAO);
+        // session service
+        this.sessionService = new SessionService(new ClientTokenProvider(mongoDBService.getUserProfileDAO(), DEFAULT_SESSION_EXPIRATION_TIME));
         LOGGER.info("cirrus server initialized");
     }
 
@@ -99,5 +105,10 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     @Override
     public ICirrusUserOperationManager getCirrusUserOperations() {
         return this.cirrusUserOperations;
+    }
+
+    @Override
+    public SessionService getSessionService() {
+        return this.sessionService;
     }
 }

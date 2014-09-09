@@ -16,83 +16,43 @@
  *
  */
 
-package com.cirrus.model.profile.impl;
+package com.cirrus.model.authentication;
 
-import com.cirrus.model.profile.IStorageServiceProfile;
-import com.cirrus.model.profile.IUserProfile;
-import com.cirrus.utils.EncryptionUtils;
-import org.jongo.marshall.jackson.oid.Id;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class UserProfile implements IUserProfile {
+import javax.xml.bind.annotation.XmlRootElement;
+
+@SuppressWarnings("UnusedDeclaration")
+@XmlRootElement
+public class Token {
 
     //==================================================================================================================
-    // Attributes
+    // Private
     //==================================================================================================================
-
-    @Id
-    private String emailAddress;
-    private String password;
-    private final List<IStorageServiceProfile> storageProfiles;
+    private String tokenValue;
 
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
-
-    public UserProfile() {
+    @JsonCreator
+    public Token(@JsonProperty("tokenValue") final String tokenValue) {
         super();
-        this.storageProfiles = new ArrayList<>();
-    }
-
-    public UserProfile(final String emailAddress, final String password) {
-        this();
-        this.emailAddress = emailAddress;
-        this.password = EncryptionUtils.encrypt(password);
+        this.tokenValue = tokenValue;
     }
 
     //==================================================================================================================
-    // Public
+    // Getters
     //==================================================================================================================
-
-
-    @Override
-    public String getEmailAddress() {
-        return emailAddress;
+    public String getTokenValue() {
+        return tokenValue;
     }
-
-    @Override
-    public String getPassword() {
-        return this.password;
-    }
-
-    @Override
-    public void addStorageProfile(final IStorageServiceProfile profile) {
-        this.storageProfiles.add(profile);
-    }
-
-    @Override
-    public void removeStorageProfile(final IStorageServiceProfile profile) {
-        this.storageProfiles.remove(profile);
-    }
-
-    @Override
-    public List<IStorageServiceProfile> listStorageProfiles() {
-        return this.storageProfiles;
-    }
-
 
     //==================================================================================================================
     // Setters
     //==================================================================================================================
-
-
-    public void setEmailAddress(final String emailAddress) {
-        this.emailAddress = emailAddress;
-    }
-
-    public void setPassword(final String password) {
-        this.password = EncryptionUtils.encrypt(password);
+    public void setTokenValue(final String tokenValue) {
+        this.tokenValue = tokenValue;
     }
 }

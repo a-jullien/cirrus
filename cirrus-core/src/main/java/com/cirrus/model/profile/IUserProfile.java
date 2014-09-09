@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.util.List;
 
-@JsonDeserialize(as=UserProfile.class)
+@JsonDeserialize(as = UserProfile.class)
 public interface IUserProfile {
 
     /**
@@ -32,13 +32,22 @@ public interface IUserProfile {
     String getEmailAddress();
 
     /**
+     * Returns the password
+     *
+     * @return the password
+     */
+    String getPassword();
+
+    /**
      * Adds a new storage service profile
+     *
      * @param profile the storage service profile
      */
     void addStorageProfile(final IStorageServiceProfile profile);
 
     /**
      * Removes a storage service profile
+     *
      * @param profile the storage service profile
      */
     void removeStorageProfile(final IStorageServiceProfile profile);

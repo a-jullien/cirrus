@@ -42,7 +42,7 @@ public class CirrusServerManagementServiceTest extends AbstractJerseyTest {
 
     @Test
     public void shouldErrorWhenTryToListAgentsWhenServerIsNotStarted() {
-        final WebTarget webTargetForPath = super.getWebTargetFor("admin", "agents");
+        final WebTarget webTargetForPath = super.getWebTargetFor("cirrus", "admin", "agents");
         final Response response = webTargetForPath.request().accept(MediaType.APPLICATION_JSON).get();
         assertNotNull(response);
         assertThat(response.getStatus()).isEqualTo(406);
@@ -50,7 +50,7 @@ public class CirrusServerManagementServiceTest extends AbstractJerseyTest {
 
     @Test
     public void shouldCheckStatusWhenServerNotStarted() {
-        final WebTarget webTargetForPath = super.getWebTargetFor("admin");
+        final WebTarget webTargetForPath = super.getWebTargetFor("cirrus", "admin");
         final CirrusServerInformation serverInformation = webTargetForPath.request().accept(MediaType.APPLICATION_JSON).get(CirrusServerInformation.class);
         assertThat(serverInformation).isNotNull();
         assertThat(serverInformation.getName()).isEqualTo("Atlantis");
@@ -83,7 +83,7 @@ public class CirrusServerManagementServiceTest extends AbstractJerseyTest {
     @Test
     public void shouldErrorWhenInstallBundleWithNonStartedServer() throws IOException {
         final URL resource = this.getClass().getResource("/bundle.jar");
-        final WebTarget startWebTargetForPath = super.getWebTargetFor("admin", "agents");
+        final WebTarget startWebTargetForPath = super.getWebTargetFor("cirrus", "admin", "agents");
         try (final InputStream stream = resource.openStream()) {
             final Entity<InputStream> entity = Entity.entity(stream, MediaType.APPLICATION_OCTET_STREAM);
             final Response post = startWebTargetForPath.request().header("name", "myBundle").accept(MediaType.APPLICATION_OCTET_STREAM).post(entity);
@@ -98,7 +98,7 @@ public class CirrusServerManagementServiceTest extends AbstractJerseyTest {
         this.startServer();
 
         final URL resource = this.getClass().getResource("/bundle.jar");
-        final WebTarget startWebTargetForPath = super.getWebTargetFor("admin", "agents");
+        final WebTarget startWebTargetForPath = super.getWebTargetFor("cirrus", "admin", "agents");
         try (final InputStream stream = resource.openStream()) {
             final Invocation.Builder builder = startWebTargetForPath.request();
             final Response response = builder.
@@ -125,17 +125,17 @@ public class CirrusServerManagementServiceTest extends AbstractJerseyTest {
     //==================================================================================================================
 
     private CirrusAgents listAgents() {
-        final WebTarget target = super.getWebTargetFor("admin", "agents");
+        final WebTarget target = super.getWebTargetFor("cirrus", "admin", "agents");
         return target.request().accept(MediaType.APPLICATION_JSON).get(CirrusAgents.class);
     }
 
     private CirrusServerInformation startServer() {
-        final WebTarget target = super.getWebTargetFor("test", "admin", "start");
+        final WebTarget target = super.getWebTargetFor("cirrus", "test", "admin", "start");
         return target.request().accept(MediaType.APPLICATION_JSON).get(CirrusServerInformation.class);
     }
 
     private CirrusServerInformation stopServer() {
-        final WebTarget target = super.getWebTargetFor("test", "admin", "stop");
+        final WebTarget target = super.getWebTargetFor("cirrus", "test", "admin", "stop");
         return target.request().accept(MediaType.APPLICATION_JSON).get(CirrusServerInformation.class);
     }
 }
