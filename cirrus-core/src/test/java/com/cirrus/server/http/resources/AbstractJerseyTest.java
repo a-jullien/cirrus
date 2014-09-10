@@ -18,6 +18,7 @@
 
 package com.cirrus.server.http.resources;
 
+import com.cirrus.server.http.handler.JacksonContextResolver;
 import com.cirrus.server.http.handler.JettyWebServer;
 import com.cirrus.server.http.handler.WebApplicationBinder;
 import org.glassfish.jersey.jackson.JacksonFeature;
@@ -36,6 +37,7 @@ public class AbstractJerseyTest extends JerseyTest {
     protected Application configure() {
         final ResourceConfig resourceConfig = new ResourceConfig();
         resourceConfig.packages(true, JettyWebServer.RESOURCES_PACKAGE, JettyWebServer.EXCEPTION_MAPPER_PACKAGE);
+        resourceConfig.register(new JacksonContextResolver());
         resourceConfig.register(new WebApplicationBinder());
         resourceConfig.register(JacksonFeature.class);
         resourceConfig.register(MultiPartFeature.class);
@@ -45,6 +47,7 @@ public class AbstractJerseyTest extends JerseyTest {
 
     protected WebTarget getWebTargetFor(final String... paths) {
         final Client client = ClientBuilder.newClient();
+        client.register(new JacksonContextResolver());
         client.register(new WebApplicationBinder());
         client.register(JacksonFeature.class);
         client.register(MultiPartFeature.class);

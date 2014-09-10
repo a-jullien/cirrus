@@ -18,7 +18,6 @@
 
 package com.cirrus.server.http.resources;
 
-import com.cirrus.model.authentication.Token;
 import com.cirrus.model.authentication.impl.LoginPasswordCredentials;
 import org.junit.Test;
 
@@ -31,16 +30,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class CirrusAuthenticationServiceTest extends AbstractJerseyTest {
 
-    // TODO fix this test
-    /*@Test
-    public void shouldErrorWhenBadAuthentication() {
-        final WebTarget webTargetForPath = super.getWebTargetFor("cirrus", "authentication", "fli");
+    @Test
+    public void shouldAuthenticationErrorWhenTryToAuthenticationWithNonExistingUser() {
+        final WebTarget webTargetForPath = super.getWebTargetFor("cirrus", "authentication");
 
-        final LoginPasswordCredentials credentials = new LoginPasswordCredentials("test1@flunny.org", "myPassword");
+        final LoginPasswordCredentials credentials = new LoginPasswordCredentials("notExist@flunny.org", "myPassword");
         final Response response = webTargetForPath.request().accept(MediaType.APPLICATION_JSON).post(Entity.entity(credentials, MediaType.APPLICATION_JSON));
 
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(401);
-    }*/
-
+    }
 }

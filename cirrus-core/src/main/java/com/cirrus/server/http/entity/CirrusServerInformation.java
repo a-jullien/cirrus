@@ -18,6 +18,9 @@
 
 package com.cirrus.server.http.entity;
 
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
@@ -31,19 +34,15 @@ public class CirrusServerInformation {
     //==================================================================================================================
     // Attributes
     //==================================================================================================================
-    private String name;
-    private STATUS status;
+    private final String name;
+    private final STATUS status;
 
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
 
-    public CirrusServerInformation() {
-        super();
-    }
-
-    public CirrusServerInformation(final String name, final STATUS status) {
-        this();
+    @JsonCreator
+    public CirrusServerInformation(@JsonProperty("name") final String name, @JsonProperty("status") final STATUS status) {
         this.name = name;
         this.status = status;
     }
@@ -58,17 +57,5 @@ public class CirrusServerInformation {
 
     public STATUS getStatus() {
         return status;
-    }
-
-    //==================================================================================================================
-    // Setters
-    //==================================================================================================================
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public void setStatus(final STATUS status) {
-        this.status = status;
     }
 }

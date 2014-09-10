@@ -19,34 +19,27 @@
 package com.cirrus.model.authentication.impl;
 
 import com.cirrus.model.authentication.ICredentials;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 public abstract class AbstractCredentials implements ICredentials {
 
     //==================================================================================================================
     // Attributes
     //==================================================================================================================
-
-    @JsonIgnore
-    private String type;
+    private final String mode;
 
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
 
     @JsonCreator
-    public AbstractCredentials(@JsonProperty("type") final String type) {
+    public AbstractCredentials(@JsonProperty("mode") final String mode) {
         super();
-        this.type = type;
+        this.mode = mode;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(final String type) {
-        this.type = type;
+    public String getMode() {
+        return mode;
     }
 }

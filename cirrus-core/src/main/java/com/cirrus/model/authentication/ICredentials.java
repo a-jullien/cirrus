@@ -22,13 +22,13 @@ package com.cirrus.model.authentication;
 import com.cirrus.model.authentication.impl.LoginPasswordCredentials;
 import com.cirrus.server.http.client.AuthenticationProvider;
 import com.cirrus.server.osgi.extension.AuthenticationException;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.codehaus.jackson.annotate.JsonSubTypes;
+import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.PROPERTY,
-        property = "type")
+        property = "mode")
 @JsonSubTypes({
         @JsonSubTypes.Type(value = LoginPasswordCredentials.class, name = "LoginPassword")})
 

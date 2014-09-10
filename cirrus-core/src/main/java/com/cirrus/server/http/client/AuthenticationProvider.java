@@ -26,22 +26,38 @@ import com.cirrus.utils.EncryptionUtils;
 
 public class AuthenticationProvider {
 
+    //==================================================================================================================
+    // Attributes
+    //==================================================================================================================
+
     private final IUserProfileDAO userProfileDAO;
+
+    //==================================================================================================================
+    // Constructors
+    //==================================================================================================================
 
     public AuthenticationProvider(final IUserProfileDAO userProfileDAO) {
         this.userProfileDAO = userProfileDAO;
     }
+
+    //==================================================================================================================
+    // Public
+    //==================================================================================================================
 
     public void authenticate(final LoginPasswordCredentials credential) throws AuthenticationException {
         final String userName = credential.getEmailAddress();
         final String password = credential.getPassword();
 
         final IUserProfile userProfile = this.userProfileDAO.getUserProfileByEmailAddress(userName);
-        final String encryptedPassword = userProfile.getPassword();
-
-        final boolean match = EncryptionUtils.match(password, encryptedPassword);
-        if (!match) {
+        if (userProfile == null) {
             throw new AuthenticationException("Not authorized");
+        } else {
+            final String encryptedPassword = userProfile.getPassword();
+
+            final boolean match = EncryptionUtils.match(password, encryptedPassword);
+            if (!match) {
+                throw new AuthenticationException("Not authorized");
+            }
         }
     }
 }

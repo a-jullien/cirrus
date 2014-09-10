@@ -20,12 +20,9 @@ package com.cirrus.model.authentication.impl;
 
 import com.cirrus.server.http.client.AuthenticationProvider;
 import com.cirrus.server.osgi.extension.AuthenticationException;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement
 public class LoginPasswordCredentials extends AbstractCredentials {
 
     //==================================================================================================================

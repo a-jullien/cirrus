@@ -81,9 +81,11 @@ public class JettyWebServer {
     //==================================================================================================================
     private ResourceConfig createResourceConfig() {
         final ResourceConfig resourceConfig = new ResourceConfig();
+        resourceConfig.register(new JacksonContextResolver());
         resourceConfig.register(new WebApplicationBinder());
         resourceConfig.register(JacksonFeature.class);
         resourceConfig.register(MultiPartFeature.class);
+
         return resourceConfig.packages(true, RESOURCES_PACKAGE, EXCEPTION_MAPPER_PACKAGE);
     }
 

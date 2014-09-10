@@ -19,8 +19,9 @@
 package com.cirrus.model.authentication;
 
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -31,7 +32,7 @@ public class Token {
     //==================================================================================================================
     // Private
     //==================================================================================================================
-    private String tokenValue;
+    private final String tokenValue;
 
     //==================================================================================================================
     // Constructors
@@ -47,12 +48,5 @@ public class Token {
     //==================================================================================================================
     public String getTokenValue() {
         return tokenValue;
-    }
-
-    //==================================================================================================================
-    // Setters
-    //==================================================================================================================
-    public void setTokenValue(final String tokenValue) {
-        this.tokenValue = tokenValue;
     }
 }
