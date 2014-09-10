@@ -71,9 +71,9 @@ public class TestUserProfileDAO {
 
         final List<IUserProfile> userProfiles = this.profileDAO.listUserProfiles();
         assertThat(userProfiles).isNotNull();
-        assertThat(userProfiles.size()).isEqualTo(1);
+        assertThat(userProfiles.size()).isEqualTo(2); // 2 because there is admin user by default
 
-        final IUserProfile loadedUserProfile = userProfiles.get(0);
+        final IUserProfile loadedUserProfile = this.profileDAO.getUserProfileByEmailAddress("test1@flunny.org");
         assertThat(loadedUserProfile.getEmailAddress()).isEqualTo("test1@flunny.org");
         assertThat(loadedUserProfile.listStorageProfiles().size()).isEqualTo(0);
     }

@@ -16,42 +16,36 @@
  *
  */
 
-package com.cirrus.server.http.resources;
+package com.cirrus.server.http.client;
 
-import com.cirrus.model.authentication.ICredentials;
-import com.cirrus.model.authentication.Token;
-import com.cirrus.server.http.client.ClientServiceFactory;
-import com.cirrus.server.osgi.extension.AuthenticationException;
+import com.cirrus.server.ICirrusAgentManager;
+import com.cirrus.server.ICirrusServer;
 
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-
-@SuppressWarnings("UnusedDeclaration")
-
-@Path("/authentication")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
-public class CirrusAuthenticationService {
+public class ClientService {
 
     //==================================================================================================================
     // Attributes
     //==================================================================================================================
 
-    @Inject
-    private ClientServiceFactory clientServiceFactory;
+    private final ICirrusServer cirrusServer;
+
+    //==================================================================================================================
+    // Attributes
+    //==================================================================================================================
+
+    public ClientService(final ICirrusServer cirrusServer) {
+        this.cirrusServer = cirrusServer;
+    }
 
     //==================================================================================================================
     // Public
     //==================================================================================================================
 
-    @POST
-    public Token authenticate(final ICredentials credentials) throws AuthenticationException {
-        return clientServiceFactory.authenticate(credentials);
+    public String getServerName() {
+        return this.cirrusServer.getName();
     }
 
-    @DELETE
-    public void logout(@HeaderParam("token") final String tokenValue) {
-        this.clientServiceFactory.invalidateToken(tokenValue);
+    public ICirrusAgentManager getAgentManager() {
+        return this.cirrusServer.getCirrusAgentManager();
     }
 }

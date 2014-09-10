@@ -16,45 +16,51 @@
  *
  */
 
-package com.cirrus.server.http.entity;
+package com.cirrus.server.http.client;
 
-import com.cirrus.agent.ICirrusAgentBundleDescription;
-import com.cirrus.agent.impl.CirrusAgentBundleDescription;
+import com.cirrus.model.authentication.ICredentials;
+import com.cirrus.model.authentication.Token;
+import com.cirrus.server.ICirrusServer;
+import com.cirrus.server.impl.OSGIBasedCirrusServer;
+import com.cirrus.server.osgi.extension.AuthenticationException;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 
-@XmlRootElement
-public class CirrusAgents {
+public class ClientServiceFactory {
 
     //==================================================================================================================
     // Attributes
     //==================================================================================================================
 
-    private final List<ICirrusAgentBundleDescription> agents;
+    private final ICirrusServer cirrusServer;
 
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
 
-    public CirrusAgents() {
-        this.agents = new ArrayList<>();
+    public ClientServiceFactory() throws IOException {
+        this.cirrusServer = new OSGIBasedCirrusServer();
     }
 
     //==================================================================================================================
     // Public
     //==================================================================================================================
 
-    public void addAgent(final ICirrusAgentBundleDescription agentDescription) {
-        this.agents.add(agentDescription);
+    public Token authenticate(final ICredentials credentials) throws AuthenticationException {
+        final SessionService sessionService = this.cirrusServer.getSessionService();
+        return sessionService.getClientTokenProvider().authenticate(credentials);
     }
 
-    //==================================================================================================================
-    // Getters
-    //==================================================================================================================
+    public void invalidateToken(final String tokenValue) {
+        final SessionService sessionService = this.cirrusServer.getSessionService();
+        sessionService.getClientTokenProvider().invalidateToken(tokenValue);
+    }
 
-    public List<ICirrusAgentBundleDescription> getAgents() {
-        return agents;
+    public ClientService createClientService(final Token token) throws AuthenticationException {
+        final SessionService sessionService = this.cirrusServer.getSessionService();
+        final ClientTokenProvider clientTokenProvider = sessionService.getClientTokenProvider();
+        clientTokenProvider.validateToken(token);
+        return new ClientService(this.cirrusServer); // TODO optimize -> store client service to IClientSession
+
     }
 }

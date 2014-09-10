@@ -28,16 +28,18 @@ public class ClientSession implements IClientSession {
     //==================================================================================================================
 
     private final Token token;
-    private final int expirationTime;
+    private final long expirationTime;
+    private long lastAccess;
 
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
 
-    public ClientSession(final Token token, final int expirationTime) {
+    public ClientSession(final Token token, final long expirationTime) {
         super();
         this.token = token;
         this.expirationTime = expirationTime;
+        this.setLastAccessTime();
     }
 
     //==================================================================================================================
@@ -45,7 +47,31 @@ public class ClientSession implements IClientSession {
     //==================================================================================================================
 
     @Override
+    public void update() {
+        if (this.isValid()) {
+            this.setLastAccessTime();
+        }
+    }
+
+    @Override
     public Token getToken() {
-        return null;
+        return this.token;
+    }
+
+    @Override
+    public boolean isValid() {
+        return getElapsedTimeAfterLastAccess() < this.expirationTime;
+    }
+
+    //==================================================================================================================
+    // Private
+    //==================================================================================================================
+
+    private void setLastAccessTime() {
+        this.lastAccess = System.currentTimeMillis();
+    }
+
+    private long getElapsedTimeAfterLastAccess() {
+        return System.currentTimeMillis() - this.lastAccess;
     }
 }

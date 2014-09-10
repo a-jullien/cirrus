@@ -18,6 +18,7 @@
 
 package com.cirrus.server.http.handler;
 
+import com.cirrus.server.http.client.ClientServiceFactory;
 import com.cirrus.server.impl.OSGIBasedCirrusServer;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 
@@ -26,6 +27,6 @@ import javax.inject.Singleton;
 public class WebApplicationBinder extends AbstractBinder {
     @Override
     protected void configure() {
-        bind(OSGIBasedCirrusServer.class).to(OSGIBasedCirrusServer.class).in(Singleton.class);
+        bind(ClientServiceFactory.class).to(ClientServiceFactory.class).in(Singleton.class);
     }
 }

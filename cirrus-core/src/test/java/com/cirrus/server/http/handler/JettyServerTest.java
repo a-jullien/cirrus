@@ -22,19 +22,21 @@ import com.cirrus.server.exception.StartWebServiceException;
 import com.cirrus.server.exception.StopWebServiceException;
 import org.junit.Test;
 
+import java.io.IOException;
+
 import static com.mongodb.util.MyAsserts.assertFalse;
 import static com.mongodb.util.MyAsserts.assertTrue;
 
 public class JettyServerTest {
 
     @Test
-    public void shouldHaveServerNotStartedAfterCreation() {
+    public void shouldHaveServerNotStartedAfterCreation() throws IOException {
         final JettyWebServer jettyWebServer = new JettyWebServer(1919);
         assertFalse(jettyWebServer.isStarted());
     }
 
     @Test
-    public void shouldServerStartedAndStopped() throws StartWebServiceException, StopWebServiceException {
+    public void shouldServerStartedAndStopped() throws StartWebServiceException, StopWebServiceException, IOException {
         final JettyWebServer jettyWebServer = new JettyWebServer(1919);
         jettyWebServer.start();
         assertTrue(jettyWebServer.isStarted());

@@ -29,6 +29,8 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 
+import java.io.IOException;
+
 public class JettyWebServer {
 
     //==================================================================================================================
@@ -45,7 +47,7 @@ public class JettyWebServer {
     //==================================================================================================================
     // Constructors
     //==================================================================================================================
-    public JettyWebServer(final int httpPort) {
+    public JettyWebServer(final int httpPort) throws IOException {
         this.server = new Server(httpPort);
         final ServletContextHandler handler = new ServletContextHandler();
         handler.setContextPath("");
@@ -79,20 +81,19 @@ public class JettyWebServer {
     //==================================================================================================================
     // Private
     //==================================================================================================================
-    private ResourceConfig createResourceConfig() {
+    private ResourceConfig createResourceConfig() throws IOException {
         final ResourceConfig resourceConfig = new ResourceConfig();
-        resourceConfig.register(new JacksonContextResolver());
+        resourceConfig.register(new JacksonJaxbContextResolver());
         resourceConfig.register(new WebApplicationBinder());
         resourceConfig.register(JacksonFeature.class);
         resourceConfig.register(MultiPartFeature.class);
-
         return resourceConfig.packages(true, RESOURCES_PACKAGE, EXCEPTION_MAPPER_PACKAGE);
     }
 
     //==================================================================================================================
     // MAIN
     //==================================================================================================================
-    public static void main(final String[] args) throws StartWebServiceException {
+    public static void main(final String[] args) throws StartWebServiceException, IOException {
         if (args.length == 0) {
             throw new StartWebServiceException("Please specify the port of the http port");
         } else {

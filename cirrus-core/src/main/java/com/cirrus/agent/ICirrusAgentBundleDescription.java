@@ -16,8 +16,12 @@
 
 package com.cirrus.agent;
 
+import com.cirrus.agent.impl.CirrusAgentBundleDescription;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+
 import java.io.Serializable;
 
+@JsonDeserialize(as = CirrusAgentBundleDescription.class)
 public interface ICirrusAgentBundleDescription extends Serializable {
 
     /**

@@ -32,7 +32,7 @@ public class CirrusAuthenticationServiceTest extends AbstractJerseyTest {
 
     @Test
     public void shouldAuthenticationErrorWhenTryToAuthenticationWithNonExistingUser() {
-        final WebTarget webTargetForPath = super.getWebTargetFor("cirrus", "authentication");
+        final WebTarget webTargetForPath = super.getWebTargetFor("authentication");
 
         final LoginPasswordCredentials credentials = new LoginPasswordCredentials("notExist@flunny.org", "myPassword");
         final Response response = webTargetForPath.request().accept(MediaType.APPLICATION_JSON).post(Entity.entity(credentials, MediaType.APPLICATION_JSON));

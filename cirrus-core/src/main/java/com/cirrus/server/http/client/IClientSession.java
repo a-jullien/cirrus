@@ -22,4 +22,6 @@ import com.cirrus.model.authentication.Token;
 
 public interface IClientSession {
     Token getToken();
+    void update();
+    boolean isValid();
 }

@@ -34,16 +34,19 @@ import javax.ws.rs.ext.Provider;
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class JacksonContextResolver implements ContextResolver<ObjectMapper> {
+public class JacksonJaxbContextResolver implements ContextResolver<ObjectMapper> {
+
+    //==================================================================================================================
+    // Attributes
+    //==================================================================================================================
 
     private ObjectMapper objectMapper;
 
-    /**
-     * Creates a new instance.
-     *
-     * @throws Exception
-     */
-    public JacksonContextResolver() {
+    //==================================================================================================================
+    // Constructors
+    //==================================================================================================================
+
+    public JacksonJaxbContextResolver() {
         this.objectMapper = new ObjectMapper();
         final AnnotationIntrospector primary = new JacksonAnnotationIntrospector();
         final AnnotationIntrospector secondary = new JaxbAnnotationIntrospector();
@@ -53,9 +56,10 @@ public class JacksonContextResolver implements ContextResolver<ObjectMapper> {
         this.objectMapper.getSerializationConfig().setAnnotationIntrospector(pair);
     }
 
-    /**
-     * @see javax.ws.rs.ext.ContextResolver#getContext(java.lang.Class)
-     */
+    //==================================================================================================================
+    // Public
+    //==================================================================================================================
+
     public ObjectMapper getContext(Class<?> objectType) {
         return objectMapper;
     }

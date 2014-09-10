@@ -20,6 +20,7 @@ package com.cirrus.persistence.dao.profile.impl;
 
 import com.cirrus.model.profile.IStorageServiceProfile;
 import com.cirrus.model.profile.IUserProfile;
+import com.cirrus.model.profile.impl.UserProfile;
 import com.cirrus.persistence.dao.profile.IUserProfileDAO;
 import com.cirrus.persistence.exception.UserProfileNotFoundException;
 import org.jongo.MongoCollection;
@@ -42,6 +43,7 @@ public class UserProfileDAO implements IUserProfileDAO {
 
     public UserProfileDAO(final MongoCollection profileCollection) {
         this.profileCollection = profileCollection;
+        this.createAdministrator();
     }
 
     //==================================================================================================================
@@ -120,5 +122,10 @@ public class UserProfileDAO implements IUserProfileDAO {
 
     private boolean isExist(final String emailAddress) {
         return this.getUserProfileByEmailAddress(emailAddress) != null;
+    }
+
+    // TODO remove ASAP
+    private void createAdministrator() {
+        this.save(new UserProfile("admin@admin.com", "admin"));
     }
 }

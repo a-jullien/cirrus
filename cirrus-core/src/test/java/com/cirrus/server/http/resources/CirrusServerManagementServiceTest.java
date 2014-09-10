@@ -19,7 +19,8 @@
 package com.cirrus.server.http.resources;
 
 import com.cirrus.agent.ICirrusAgentBundleDescription;
-import com.cirrus.agent.impl.CirrusAgentBundleDescription;
+import com.cirrus.model.authentication.Token;
+import com.cirrus.model.authentication.impl.LoginPasswordCredentials;
 import com.cirrus.server.http.entity.CirrusAgents;
 import com.cirrus.server.http.entity.CirrusServerInformation;
 import org.junit.Test;
@@ -42,16 +43,24 @@ public class CirrusServerManagementServiceTest extends AbstractJerseyTest {
 
     @Test
     public void shouldErrorWhenTryToListAgentsWhenServerIsNotStarted() {
-        final WebTarget webTargetForPath = super.getWebTargetFor("cirrus", "admin", "agents");
-        final Response response = webTargetForPath.request().accept(MediaType.APPLICATION_JSON).get();
+        final Token token = getToken();
+
+        final WebTarget webTargetForPath = super.getWebTargetFor("admin", "agents");
+        final Response response = webTargetForPath.request().
+                header("Authorization", token.getTokenValue()).
+                accept(MediaType.APPLICATION_JSON).get();
         assertNotNull(response);
         assertThat(response.getStatus()).isEqualTo(406);
     }
 
     @Test
     public void shouldCheckStatusWhenServerNotStarted() {
-        final WebTarget webTargetForPath = super.getWebTargetFor("cirrus", "admin");
-        final CirrusServerInformation serverInformation = webTargetForPath.request().accept(MediaType.APPLICATION_JSON).get(CirrusServerInformation.class);
+        final Token token = getToken();
+
+        final WebTarget webTargetForPath = super.getWebTargetFor("admin");
+        final CirrusServerInformation serverInformation = webTargetForPath.request().
+                header("Authorization", token.getTokenValue()).
+                accept(MediaType.APPLICATION_JSON).get(CirrusServerInformation.class);
         assertThat(serverInformation).isNotNull();
         assertThat(serverInformation.getName()).isEqualTo("Atlantis");
         assertThat(serverInformation.getStatus()).isEqualTo(CirrusServerInformation.STATUS.STOPPED);
@@ -59,6 +68,7 @@ public class CirrusServerManagementServiceTest extends AbstractJerseyTest {
 
     @Test
     public void shouldSuccessfullyStartServer() {
+        getToken();
         final CirrusServerInformation serverInformation = startServer();
         assertThat(serverInformation).isNotNull();
         assertThat(serverInformation.getName()).isEqualTo("Atlantis");
@@ -67,6 +77,7 @@ public class CirrusServerManagementServiceTest extends AbstractJerseyTest {
 
     @Test
     public void shouldSuccessfullyStopServer() {
+        getToken();
         // start first
         final CirrusServerInformation serverInformationAfterStart = startServer();
         assertThat(serverInformationAfterStart).isNotNull();
@@ -82,8 +93,9 @@ public class CirrusServerManagementServiceTest extends AbstractJerseyTest {
 
     @Test
     public void shouldErrorWhenInstallBundleWithNonStartedServer() throws IOException {
+        getToken();
         final URL resource = this.getClass().getResource("/bundle.jar");
-        final WebTarget startWebTargetForPath = super.getWebTargetFor("cirrus", "admin", "agents");
+        final WebTarget startWebTargetForPath = super.getWebTargetFor("admin", "agents");
         try (final InputStream stream = resource.openStream()) {
             final Entity<InputStream> entity = Entity.entity(stream, MediaType.APPLICATION_OCTET_STREAM);
             final Response post = startWebTargetForPath.request().header("name", "myBundle").accept(MediaType.APPLICATION_OCTET_STREAM).post(entity);
@@ -95,13 +107,15 @@ public class CirrusServerManagementServiceTest extends AbstractJerseyTest {
 
     @Test
     public void shouldSuccessWhenInstallBundle() throws IOException {
+        final Token token = getToken();
         this.startServer();
 
         final URL resource = this.getClass().getResource("/bundle.jar");
-        final WebTarget startWebTargetForPath = super.getWebTargetFor("cirrus", "admin", "agents");
+        final WebTarget startWebTargetForPath = super.getWebTargetFor("admin", "agents");
         try (final InputStream stream = resource.openStream()) {
             final Invocation.Builder builder = startWebTargetForPath.request();
             final Response response = builder.
+                    header("Authorization", token.getTokenValue()).
                     header("name", "myBundle").
                     method("POST", Entity.entity(stream, MediaType.APPLICATION_OCTET_STREAM));
 
@@ -111,7 +125,7 @@ public class CirrusServerManagementServiceTest extends AbstractJerseyTest {
 
         final CirrusAgents agents = this.listAgents();
         assertThat(agents).isNotNull();
-        final List<CirrusAgentBundleDescription> bundleDescriptions = agents.getAgents();
+        final List<ICirrusAgentBundleDescription> bundleDescriptions = agents.getAgents();
         assertThat(bundleDescriptions.size()).isEqualTo(1);
         final ICirrusAgentBundleDescription cirrusAgentBundleDescription = bundleDescriptions.get(0);
         assertThat(cirrusAgentBundleDescription.getName()).isEqualTo("Local Cirrus Bundle");
@@ -125,17 +139,33 @@ public class CirrusServerManagementServiceTest extends AbstractJerseyTest {
     //==================================================================================================================
 
     private CirrusAgents listAgents() {
-        final WebTarget target = super.getWebTargetFor("cirrus", "admin", "agents");
-        return target.request().accept(MediaType.APPLICATION_JSON).get(CirrusAgents.class);
+        final Token token = this.getToken();
+        final WebTarget target = super.getWebTargetFor("admin", "agents");
+        return target.request().
+                header("Authorization", token.getTokenValue()).
+                accept(MediaType.APPLICATION_JSON).get(CirrusAgents.class);
     }
 
     private CirrusServerInformation startServer() {
-        final WebTarget target = super.getWebTargetFor("cirrus", "test", "admin", "start");
-        return target.request().accept(MediaType.APPLICATION_JSON).get(CirrusServerInformation.class);
+        final Token token = this.getToken();
+        final WebTarget target = super.getWebTargetFor("test", "admin", "start");
+        return target.request().
+                header("Authorization", token.getTokenValue()).
+                accept(MediaType.APPLICATION_JSON).get(CirrusServerInformation.class);
     }
 
     private CirrusServerInformation stopServer() {
-        final WebTarget target = super.getWebTargetFor("cirrus", "test", "admin", "stop");
-        return target.request().accept(MediaType.APPLICATION_JSON).get(CirrusServerInformation.class);
+        final Token token = this.getToken();
+        final WebTarget target = super.getWebTargetFor("test", "admin", "stop");
+        return target.request().
+                header("Authorization", token.getTokenValue()).
+                accept(MediaType.APPLICATION_JSON).get(CirrusServerInformation.class);
+    }
+
+    private Token getToken() {
+        final WebTarget webTargetForPath = super.getWebTargetFor("authentication");
+
+        final LoginPasswordCredentials credentials = new LoginPasswordCredentials("admin@admin.com", "admin");
+        return webTargetForPath.request().accept(MediaType.APPLICATION_JSON).post(Entity.entity(credentials, MediaType.APPLICATION_JSON), Token.class);
     }
 }

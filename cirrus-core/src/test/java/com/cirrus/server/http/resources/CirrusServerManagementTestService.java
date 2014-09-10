@@ -21,28 +21,26 @@ package com.cirrus.server.http.resources;
 import com.cirrus.server.exception.StartCirrusServerException;
 import com.cirrus.server.exception.StopCirrusServerException;
 import com.cirrus.server.http.entity.CirrusServerInformation;
+import com.cirrus.server.osgi.extension.AuthenticationException;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 @SuppressWarnings("UnusedDeclaration")
-@Path("/cirrus/test/admin")
+@Path("/test/admin")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class CirrusServerManagementTestService extends CirrusServerManagementService {
 
     @GET
     @Path("start")
-    public CirrusServerInformation startServer() throws StartCirrusServerException {
-        return super.start();
+    public CirrusServerInformation startServer(@HeaderParam("Authorization") final String tokenValue) throws StartCirrusServerException, AuthenticationException {
+        return super.start(tokenValue);
     }
 
     @GET
     @Path("stop")
-    public CirrusServerInformation stopServer() throws StopCirrusServerException {
-        return super.stop();
+    public CirrusServerInformation stopServer(@HeaderParam("Authorization") final String tokenValue) throws StopCirrusServerException, AuthenticationException {
+        return super.stop(tokenValue);
     }
 }
