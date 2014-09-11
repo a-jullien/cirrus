@@ -18,21 +18,20 @@
 
 package com.cirrus.server.http.resources;
 
-import com.cirrus.model.authentication.ICredentials;
 import com.cirrus.model.authentication.Token;
+import com.cirrus.server.http.client.ClientService;
 import com.cirrus.server.http.client.ClientServiceFactory;
 import com.cirrus.server.osgi.extension.AuthenticationException;
 
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-@SuppressWarnings("UnusedDeclaration")
-
-@Path("/authentication")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class CirrusAuthenticationService {
+public abstract class AbstractAuthenticatedService {
 
     //==================================================================================================================
     // Attributes
@@ -40,18 +39,14 @@ public class CirrusAuthenticationService {
 
     @Inject
     private ClientServiceFactory clientServiceFactory;
+    @HeaderParam("Authorization")
+    private String token;
 
     //==================================================================================================================
     // Public
     //==================================================================================================================
 
-    @POST
-    public Token authenticate(final ICredentials credentials) throws AuthenticationException {
-        return clientServiceFactory.authenticate(credentials);
-    }
-
-    @DELETE
-    public void logout(@HeaderParam("token") final String tokenValue) {
-        this.clientServiceFactory.invalidateToken(new Token(tokenValue));
+    protected ClientService getClientService() throws AuthenticationException {
+        return clientServiceFactory.createClientService(new Token(token));
     }
 }

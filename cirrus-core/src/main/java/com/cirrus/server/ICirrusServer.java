@@ -17,7 +17,8 @@
 package com.cirrus.server;
 
 import com.cirrus.server.exception.*;
-import com.cirrus.server.http.client.SessionService;
+import com.cirrus.server.http.client.ISessionService;
+import com.cirrus.server.http.client.impl.SessionService;
 
 public interface ICirrusServer {
 
@@ -56,8 +57,7 @@ public interface ICirrusServer {
     ICirrusUserOperationManager getCirrusUserOperations();
 
     /**
-     *
-     * @return
+     * Returns the session service responsible of the token management
      */
-    SessionService getSessionService();
+    ISessionService getSessionService();
 }

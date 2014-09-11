@@ -16,9 +16,12 @@
  *
  */
 
-package com.cirrus.server.http.client;
+package com.cirrus.server.http.client.impl;
 
-public class SessionService {
+import com.cirrus.server.http.client.ClientTokenProvider;
+import com.cirrus.server.http.client.ISessionService;
+
+public class SessionService implements ISessionService {
 
 
     //==================================================================================================================

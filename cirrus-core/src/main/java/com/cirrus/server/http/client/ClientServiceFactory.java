@@ -21,6 +21,7 @@ package com.cirrus.server.http.client;
 import com.cirrus.model.authentication.ICredentials;
 import com.cirrus.model.authentication.Token;
 import com.cirrus.server.ICirrusServer;
+import com.cirrus.server.http.client.impl.SessionService;
 import com.cirrus.server.impl.OSGIBasedCirrusServer;
 import com.cirrus.server.osgi.extension.AuthenticationException;
 
@@ -47,17 +48,17 @@ public class ClientServiceFactory {
     //==================================================================================================================
 
     public Token authenticate(final ICredentials credentials) throws AuthenticationException {
-        final SessionService sessionService = this.cirrusServer.getSessionService();
+        final ISessionService sessionService = this.cirrusServer.getSessionService();
         return sessionService.getClientTokenProvider().authenticate(credentials);
     }
 
-    public void invalidateToken(final String tokenValue) {
-        final SessionService sessionService = this.cirrusServer.getSessionService();
-        sessionService.getClientTokenProvider().invalidateToken(tokenValue);
+    public void invalidateToken(final Token token) {
+        final ISessionService sessionService = this.cirrusServer.getSessionService();
+        sessionService.getClientTokenProvider().invalidateToken(token);
     }
 
     public ClientService createClientService(final Token token) throws AuthenticationException {
-        final SessionService sessionService = this.cirrusServer.getSessionService();
+        final ISessionService sessionService = this.cirrusServer.getSessionService();
         final ClientTokenProvider clientTokenProvider = sessionService.getClientTokenProvider();
         clientTokenProvider.validateToken(token);
         return new ClientService(this.cirrusServer); // TODO optimize -> store client service to IClientSession

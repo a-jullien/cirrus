@@ -22,7 +22,6 @@ package com.cirrus.server.http.resources;
 import com.cirrus.agent.ICirrusAgent;
 import com.cirrus.agent.ICirrusAgentBundleDescription;
 import com.cirrus.agent.impl.UUIDBasedCirrusAgentIdentifier;
-import com.cirrus.model.authentication.Token;
 import com.cirrus.server.ICirrusAgentManager;
 import com.cirrus.server.exception.*;
 import com.cirrus.server.http.client.ClientService;
@@ -41,9 +40,7 @@ import java.util.List;
 
 @SuppressWarnings("UnusedDeclaration")
 @Path("/admin")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
-public class CirrusServerManagementService {
+public class CirrusServerManagementService extends AbstractAuthenticatedService {
 
     //==================================================================================================================
     // Attributes
@@ -58,10 +55,10 @@ public class CirrusServerManagementService {
 
     @Path("/agents")
     @GET
-    public CirrusAgents getInstalledAgents(@HeaderParam("Authorization") final String tokenValue) throws ServerNotStartedException, AuthenticationException {
+    public CirrusAgents getInstalledAgents() throws ServerNotStartedException, AuthenticationException {
         final CirrusAgents agents = new CirrusAgents();
 
-        final ClientService clientService = this.clientServiceFactory.createClientService(new Token(tokenValue));
+        final ClientService clientService = this.getClientService();
 
         final List<ICirrusAgent> cirrusAgents = clientService.getAgentManager().listCirrusAgents();
         for (final ICirrusAgent cirrusAgent : cirrusAgents) {
@@ -75,43 +72,40 @@ public class CirrusServerManagementService {
     @Path("/agents")
     @POST
     @Consumes(MediaType.APPLICATION_OCTET_STREAM)
-    public void installNewAgent(@HeaderParam("Authorization") final String tokenValue,
-                                @HeaderParam("name") final String name,
+    public void installNewAgent(@HeaderParam("name") final String name,
                                 final InputStream inputStream) throws CirrusAgentAlreadyExistException, ServerNotStartedException, StartCirrusAgentException, CirrusAgentInstallationException, AuthenticationException {
-        final ClientService clientService = this.clientServiceFactory.createClientService(new Token(tokenValue));
+        final ClientService clientService = this.getClientService();
         clientService.getAgentManager().installCirrusAgent(name, inputStream);
     }
 
     @DELETE
     @Path("/agents/{agentId}")
-    public void uninstallExistingAgent(@HeaderParam("Authorization") final String tokenValue,
-                                       @PathParam("agentId") final String agentId) throws CirrusAgentNotExistException, UninstallCirrusAgentException, ServerNotStartedException, StopCirrusAgentException, AuthenticationException {
-        final ClientService clientService = this.clientServiceFactory.createClientService(new Token(tokenValue));
+    public void uninstallExistingAgent(@PathParam("agentId") final String agentId) throws CirrusAgentNotExistException, UninstallCirrusAgentException, ServerNotStartedException, StopCirrusAgentException, AuthenticationException {
+        final ClientService clientService = this.getClientService();
         clientService.getAgentManager().uninstallCirrusAgent(new UUIDBasedCirrusAgentIdentifier(agentId));
     }
 
     @START
-    public CirrusServerInformation start(@HeaderParam("Authorization") final String tokenValue) throws StartCirrusServerException, AuthenticationException {
-        final ClientService clientService = this.clientServiceFactory.createClientService(new Token(tokenValue));
+    public CirrusServerInformation start() throws StartCirrusServerException, AuthenticationException {
+        final ClientService clientService = this.getClientService();
         clientService.getAgentManager().start();
-        return this.getCirrusServerStatus(tokenValue);
+        return this.getCirrusServerStatus();
     }
 
     @STOP
-    public CirrusServerInformation stop(@HeaderParam("Authorization") final String tokenValue) throws StopCirrusServerException, AuthenticationException {
-        final ClientService clientService = this.clientServiceFactory.createClientService(new Token(tokenValue));
+    public CirrusServerInformation stop() throws StopCirrusServerException, AuthenticationException {
+        final ClientService clientService = this.getClientService();
         clientService.getAgentManager().stop();
-        return this.getCirrusServerStatus(tokenValue);
+        return this.getCirrusServerStatus();
     }
 
     @GET
-    public CirrusServerInformation getCirrusServerStatus(@HeaderParam("Authorization") final String tokenValue) throws AuthenticationException {
-        final ClientService clientService = this.clientServiceFactory.createClientService(new Token(tokenValue));
+    public CirrusServerInformation getCirrusServerStatus() throws AuthenticationException {
+        final ClientService clientService = this.getClientService();
         final ICirrusAgentManager agentManagerService = clientService.getAgentManager();
         final boolean started = agentManagerService.isStarted();
         final CirrusServerInformation.STATUS status = started ?
                 CirrusServerInformation.STATUS.STARTED : CirrusServerInformation.STATUS.STOPPED;
         return new CirrusServerInformation(clientService.getServerName(), status);
-
     }
 }

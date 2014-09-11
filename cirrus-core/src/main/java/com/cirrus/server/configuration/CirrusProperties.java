@@ -28,6 +28,7 @@ public class CirrusProperties {
     public static final String CIRRUS_SERVER_NAME = "cirrus.server.name";
     public static final String MONGODB_URL = "cirrus.mongodb.url";
     public static final String CIRRUS_ROOT_DIRECTORY = "cirrus.root.directory";
+    public static final String DEFAULT_SESSION_EXPIRATION_TIME = "cirrus.session.expiration.time";
 
     //==================================================================================================================
     // Attributes

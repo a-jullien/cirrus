@@ -26,7 +26,8 @@ import com.cirrus.server.configuration.CirrusProperties;
 import com.cirrus.server.exception.StartCirrusServerException;
 import com.cirrus.server.exception.StopCirrusServerException;
 import com.cirrus.server.http.client.ClientTokenProvider;
-import com.cirrus.server.http.client.SessionService;
+import com.cirrus.server.http.client.ISessionService;
+import com.cirrus.server.http.client.impl.SessionService;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -37,7 +38,6 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     // Constants
     //==================================================================================================================
     private static final String LOGGER_NAME = "<cirrus-server>";
-    public final static int DEFAULT_SESSION_EXPIRATION_TIME = 20;
 
     //==================================================================================================================
     // Attributes
@@ -67,7 +67,8 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
         // user operations
         this.cirrusUserOperations = new CirrusUserOperationManager(this.cirrusAgentManager, metaDataDAO);
         // session service
-        this.sessionService = new SessionService(new ClientTokenProvider(mongoDBService.getUserProfileDAO(), DEFAULT_SESSION_EXPIRATION_TIME));
+        final int defaultSessionExpirationTime = Integer.valueOf(cirrusProperties.getProperty(CirrusProperties.DEFAULT_SESSION_EXPIRATION_TIME));
+        this.sessionService = new SessionService(new ClientTokenProvider(mongoDBService.getUserProfileDAO(), defaultSessionExpirationTime));
         LOGGER.info("cirrus server initialized");
     }
 
@@ -108,7 +109,7 @@ public class OSGIBasedCirrusServer implements ICirrusServer {
     }
 
     @Override
-    public SessionService getSessionService() {
+    public ISessionService getSessionService() {
         return this.sessionService;
     }
 }

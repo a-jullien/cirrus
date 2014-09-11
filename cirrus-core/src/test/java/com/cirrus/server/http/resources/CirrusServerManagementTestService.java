@@ -34,13 +34,13 @@ public class CirrusServerManagementTestService extends CirrusServerManagementSer
 
     @GET
     @Path("start")
-    public CirrusServerInformation startServer(@HeaderParam("Authorization") final String tokenValue) throws StartCirrusServerException, AuthenticationException {
-        return super.start(tokenValue);
+    public CirrusServerInformation startServer() throws StartCirrusServerException, AuthenticationException {
+        return super.start();
     }
 
     @GET
     @Path("stop")
-    public CirrusServerInformation stopServer(@HeaderParam("Authorization") final String tokenValue) throws StopCirrusServerException, AuthenticationException {
-        return super.stop(tokenValue);
+    public CirrusServerInformation stopServer() throws StopCirrusServerException, AuthenticationException {
+        return super.stop();
     }
 }

@@ -24,8 +24,13 @@ import com.cirrus.persistence.dao.profile.IUserProfileDAO;
 import com.cirrus.server.http.client.impl.ClientSession;
 import com.cirrus.server.osgi.extension.AuthenticationException;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiConsumer;
 
 public class ClientTokenProvider {
@@ -35,8 +40,9 @@ public class ClientTokenProvider {
     //==================================================================================================================
 
     private final int sessionExpirationTimeInSecond;
-    private final Map<String, IClientSession> sessions;
+    private final Map<Token, IClientSession> sessions;
     private final AuthenticationProvider authenticationProvider;
+    private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
     //==================================================================================================================
     // Constructors
@@ -44,7 +50,7 @@ public class ClientTokenProvider {
 
     public ClientTokenProvider(final IUserProfileDAO userProfileDAO, final int sessionExpirationTimeInSecond) {
         this.sessionExpirationTimeInSecond = sessionExpirationTimeInSecond;
-        this.sessions = new HashMap<>();
+        this.sessions = new ConcurrentHashMap<>();
         this.authenticationProvider = new AuthenticationProvider(userProfileDAO);
         final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.scheduleAtFixedRate(new SessionChecker(), 0, sessionExpirationTimeInSecond, TimeUnit.SECONDS);
@@ -55,36 +61,45 @@ public class ClientTokenProvider {
     //==================================================================================================================
 
     public Token authenticate(final ICredentials credentials) throws AuthenticationException {
-        credentials.authenticate(this.authenticationProvider);
+        this.readWriteLock.writeLock().lock();
 
-        final UUID tokenValueUUID = UUID.randomUUID();
-        final Token token = new Token(tokenValueUUID.toString());
+        try {
+            credentials.authenticate(this.authenticationProvider);
 
-        final ClientSession clientSession = new ClientSession(token, this.sessionExpirationTimeInSecond * 1000);
+            final Token token = new Token();
 
-        synchronized (this.sessions) {
-            this.sessions.put(token.getTokenValue(), clientSession);
-            this.sessions.notify();
+            final ClientSession clientSession = new ClientSession(token, this.sessionExpirationTimeInSecond * 1000);
+
+            this.sessions.putIfAbsent(token, clientSession);
+
+            return token;
+        } finally {
+            this.readWriteLock.writeLock().unlock();
         }
-
-        return token;
     }
 
-    public void invalidateToken(final String tokenValue) {
-        synchronized (this.sessions) {
+    public void invalidateToken(final Token tokenValue) {
+        this.readWriteLock.writeLock().lock();
+        try {
             this.sessions.remove(tokenValue);
-            this.sessions.notify();
+        } finally {
+            this.readWriteLock.writeLock().unlock();
         }
     }
 
     public void validateToken(final Token token) throws AuthenticationException {
-        final IClientSession clientSession = this.sessions.get(token.getTokenValue());
-        if (clientSession == null) {
-            throw new AuthenticationException("No session for specified token");
-        } else {
-            if (!clientSession.isValid()) {
-                throw new AuthenticationException("A new authentication is necessary");
+        this.readWriteLock.readLock().lock();
+        try {
+            final IClientSession clientSession = this.sessions.get(token);
+            if (clientSession == null) {
+                throw new AuthenticationException("No session for specified token");
+            } else {
+                if (!clientSession.isValid()) {
+                    throw new AuthenticationException("A new authentication is necessary");
+                }
             }
+        } finally {
+            this.readWriteLock.readLock().unlock();
         }
     }
 
@@ -97,18 +112,19 @@ public class ClientTokenProvider {
 
         @Override
         public void run() {
-            System.out.println("SessionRunner check token validity, " + sessions.size());
-
-            sessions.forEach(new BiConsumer<String, IClientSession>() {
-                @Override
-                public void accept(final String key, final IClientSession clientSession) {
-                    System.out.println("handling token " + key);
-                    if (!clientSession.isValid()) {
-                        invalidateToken(key);
-                        System.out.println("Token " + key + " invalidated");
+            synchronized (sessions) {
+                sessions.forEach(new BiConsumer<Token, IClientSession>() {
+                    @Override
+                    public void accept(final Token token, final IClientSession clientSession) {
+                        if (!clientSession.isValid()) {
+                            invalidateToken(token);
+                            System.out.println("Session with token <" + token + "> invalidated");
+                        }
                     }
-                }
-            });
+                });
+            }
+
+            System.out.println("Active sessions:" + sessions.size());
         }
     }
 }
